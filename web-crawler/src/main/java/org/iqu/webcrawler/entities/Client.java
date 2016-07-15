@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public class Client {
 
-	private String host, location;
+	private String host;
+	private String location;
 	private int port;
 	private boolean active;
 
