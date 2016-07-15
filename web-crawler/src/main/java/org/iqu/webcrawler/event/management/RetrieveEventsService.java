@@ -6,11 +6,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 /**
  * 
- * @author Mitroi Stefan-Daniel
- *
  * Service that retrieve events based on filters
+ * 
  */
 @Path("/")
 public class RetrieveEventsService {
@@ -21,15 +21,14 @@ public class RetrieveEventsService {
 			@QueryParam("type") String type, @QueryParam("subType") String subType,
 			@QueryParam("sourceId") String sourceId, @QueryParam("author") String author,
 			@QueryParam("location") String location) {
-		
-		String response="";
+
+		String response = "";
 		if (startDate == null) {
 			response = "{\"error\" : \"Requested location not available\"}";
 			return Response.status(400).entity(response).build();
-		}
-		else{
+		} else {
 			return Response.ok().build();
-		}	
+		}
 	}
-	//TO DO : implement filter of data
+	// TO DO : implement filter of data
 }
