@@ -8,7 +8,7 @@ package org.iqu.webcrawler.entities;
  */
 public class ErrorMessage {
 
-	String message;
+	private String message;
 
 	public ErrorMessage() {
 
