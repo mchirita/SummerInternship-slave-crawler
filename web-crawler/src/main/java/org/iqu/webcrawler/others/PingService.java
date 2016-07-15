@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 public class PingService {
 
 	@HEAD
-	public Response retrievePing() {
+	public Response ping() {
 
 		return Response.status(200).build();
 
