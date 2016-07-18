@@ -4,4 +4,54 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+  
+  
+  <servlet>
+  <servlet-name>Event Management Service</servlet-name>
+  <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+  <init-param>
+       <param-name>jersey.config.server.provider.packages</param-name>
+       <param-value>org.iqu.webcrawler.events.management</param-value>
+  </init-param>
+  
+  <load-on-startup>1</load-on-startup>
+ </servlet>
+ 
+ <servlet>
+  <servlet-name>News Management Service</servlet-name>
+  <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+  <init-param>
+       <param-name>jersey.config.server.provider.packages</param-name>
+       <param-value>org.iqu.webcrawler.news.management</param-value>
+  </init-param>
+  
+  <load-on-startup>1</load-on-startup>
+ </servlet>
+ 
+  <servlet>
+  <servlet-name>Other Services</servlet-name>
+  <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+  <init-param>
+       <param-name>jersey.config.server.provider.packages</param-name>
+       <param-value>org.iqu.webcrawler.others</param-value>
+  </init-param>
+  
+  <load-on-startup>1</load-on-startup>
+ </servlet>
+
+ <servlet-mapping>
+  <servlet-name>Event Management Service</servlet-name>
+  <url-pattern>/events/*</url-pattern>
+ </servlet-mapping>
+ 
+  <servlet-mapping>
+  <servlet-name>News Management Service</servlet-name>
+  <url-pattern>/news/*</url-pattern>
+ </servlet-mapping>
+ 
+  <servlet-mapping>
+  <servlet-name>Other Services</servlet-name>
+  <url-pattern>/*</url-pattern>
+ </servlet-mapping>
+  
 </web-app>
