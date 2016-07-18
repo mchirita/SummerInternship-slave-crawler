@@ -11,21 +11,24 @@ import java.util.Properties;
 
 public class ConfigurationManager {
 	
+	private String path = "/config/iqu/crawler-app-config/crawler.properties";
+	private ConfigChangeNotifier notifier = new CrawlerChangeNotifier(); 
+	private ConfigLoader loader = new CrawlerConfigLoader(notifier, path);
 	private Properties prop = new Properties();
 	private InputStream input = null;
 	private List<SourceConfiguration> properties = new ArrayList<SourceConfiguration>();
 
 	public void loadFile() {
 		try {
-			input = new FileInputStream("src/main/resources/configuration.properties");
+			input = new FileInputStream("/");
 			prop.load(input);
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			
 		} finally {
 			try {
 				input.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				
 			}
 		}
 	}
