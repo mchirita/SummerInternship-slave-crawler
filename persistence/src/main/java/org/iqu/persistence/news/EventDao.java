@@ -6,11 +6,11 @@ import org.iqu.persistence.entities.Event;
 
 public interface EventDao {
 	
-	public List<Event> getAllStudents();
+	public List<Event> findAll();
 
-	public Event getStudent(int rollNo);
+	public Event find(int rollNo);
 
-	public void updateStudent(Event event);
+	public void update(Event event);
 
-	public void deleteStudent(Event event);
+	public void delete(Event event);
 }
