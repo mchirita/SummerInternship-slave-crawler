@@ -1,5 +1,14 @@
 package org.iqu.crawler.configuration;
 
-public class ConfigLoaderException extends Exception {
 
+/**
+ * 
+ * @author Beniamin Savu
+ *
+ */
+public class ConfigLoaderException extends Exception {
+	public ConfigLoaderException(String message){
+		super(message);
+	}
+	
 }

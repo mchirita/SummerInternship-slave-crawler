@@ -1,47 +1,38 @@
 package org.iqu.crawler.configuration;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
-
-public class ConfigurationManager {
+/**
+ * 
+ * @author Beniamin Savu
+ *
+ */
+public class ConfigurationManager implements Runnable {
 	
-	private String path = "/config/iqu/crawler-app-config/crawler.properties";
+	private String path = "../config/iqu/crawler-app-config/crawler.properties";
 	private ConfigChangeNotifier notifier = new CrawlerChangeNotifier(); 
 	private ConfigLoader loader = new CrawlerConfigLoader(notifier, path);
-	private Properties prop = new Properties();
-	private InputStream input = null;
-	private List<SourceConfiguration> properties = new ArrayList<SourceConfiguration>();
+	private ScheduledExecutorService executor;
 
-	public void loadFile() {
-		try {
-			input = new FileInputStream("/");
-			prop.load(input);
-		} catch (IOException ex) {
-			
-		} finally {
-			try {
-				input.close();
-			} catch (IOException e) {
-				
-			}
-		}
+	public void init(){
+		executor = Executors.newScheduledThreadPool(1);
+		executor.scheduleWithFixedDelay(new ConfigurationManager(), 0, 10, TimeUnit.MINUTES);
 	}
+	
 
-	public List<SourceConfiguration> getProperties() {
-		
-		int length = Integer.parseInt(prop.getProperty("length"));
-		for (int i = 1; i <= length; i++) {
-			String parserName = prop.getProperty("parser" + i);
-			String source = prop.getProperty("source" + i);
-			properties.add(new SourceConfiguration(parserName, source));
+	@Override
+	public void run() {
+		try {
+			loader.loadProperties();
+		} catch (ConfigLoaderException e) {
+
+		} catch (IOException e) {
+
 		}
-
-		return properties;
+		
 	}
 }

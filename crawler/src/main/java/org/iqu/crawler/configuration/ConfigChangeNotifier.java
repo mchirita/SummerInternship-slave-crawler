@@ -9,5 +9,5 @@ public interface ConfigChangeNotifier {
 	
 	public void removeAll();
 	
-	public void notify(List<SourceConfiguration> properties);
+	public void notify(List<CrawlerProperty> properties);
 }
