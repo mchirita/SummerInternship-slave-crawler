@@ -1,38 +1,55 @@
 package org.iqu.crawler.configuration;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 
 /**
  * 
  * @author Beniamin Savu
  *
  */
-public class ConfigurationManager implements Runnable {
-	
-	private String path = "../config/iqu/crawler-app-config/crawler.properties";
-	private ConfigChangeNotifier notifier = new CrawlerChangeNotifier(); 
-	private ConfigLoader loader = new CrawlerConfigLoader(notifier, path);
+public class ConfigurationManager {
+
+	private final static String PATH = "/iqu/crawler-app-config/crawler.properties";
+	private static volatile ConfigurationManager instance = null;
+	private ConfigChangeNotifier notifier;
+	private ConfigLoader loader;
 	private ScheduledExecutorService executor;
 
-	public void init(){
-		executor = Executors.newScheduledThreadPool(1);
-		executor.scheduleWithFixedDelay(new ConfigurationManager(), 0, 10, TimeUnit.SECONDS);
-	}
-	
+	private ConfigurationManager() {
+		notifier = new CrawlerChangeNotifier();
+		loader = new CrawlerConfigLoader(notifier, PATH);
 
-	@Override
-	public void run() {
-		try {
-			loader.loadProperties();
-		} catch (ConfigLoaderException e) {
-			//log message
-		} catch (IOException e) {
-			//log message
-		}
-		
 	}
+
+	public static synchronized ConfigurationManager getInstance() {
+		if (instance == null) {
+			synchronized (ConfigurationManager.class) {
+				if (instance == null) {
+					instance = new ConfigurationManager();
+				}
+			}
+		}
+		return instance;
+
+	}
+
+	public void init() {
+		if (executor == null) {
+			executor = Executors.newScheduledThreadPool(1);
+			executor.scheduleWithFixedDelay(loader, 0, 10, TimeUnit.MINUTES);
+		}
+
+	}
+
+	public void destroy() {
+		executor.shutdown();
+		notifier.removeAll();
+	}
+
+	public void register(ConfigChangeListener listener) {
+		notifier.register(listener);
+	}
+
 }

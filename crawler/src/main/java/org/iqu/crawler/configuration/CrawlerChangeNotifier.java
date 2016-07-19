@@ -3,6 +3,7 @@ package org.iqu.crawler.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iqu.crawler.configuration.entities.SourceConfig;
 
 /**
  * 
@@ -11,8 +12,8 @@ import java.util.List;
  */
 public class CrawlerChangeNotifier implements ConfigChangeNotifier {
 
-	private List<ConfigChangeListener> listeners = new ArrayList<ConfigChangeListener>(); 
-	
+	private List<ConfigChangeListener> listeners = new ArrayList<ConfigChangeListener>();
+
 	@Override
 	public void register(ConfigChangeListener listener) {
 		listeners.add(listener);
@@ -30,7 +31,7 @@ public class CrawlerChangeNotifier implements ConfigChangeNotifier {
 	}
 
 	@Override
-	public void notify(List<CrawlerProperty> properties) {
+	public void notify(List<SourceConfig> properties) {
 		for (ConfigChangeListener listener : listeners) {
 			listener.onConfigChange(properties);
 		}

@@ -1,17 +1,16 @@
-package org.iqu.crawler.configuration;
-
+package org.iqu.crawler.configuration.entities;
 
 /**
  * 
  * @author BeniaminSavu
  *
  */
-public class CrawlerProperty {
+public class SourceConfig {
 
 	private String parserClassName;
 	private String source;
 
-	public CrawlerProperty(String parserName, String source) {
+	public SourceConfig(String parserName, String source) {
 		this.parserClassName = parserName;
 		this.source = source;
 	}
@@ -46,7 +45,7 @@ public class CrawlerProperty {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CrawlerProperty other = (CrawlerProperty) obj;
+		SourceConfig other = (SourceConfig) obj;
 		if (parserClassName == null) {
 			if (other.parserClassName != null)
 				return false;
@@ -59,6 +58,5 @@ public class CrawlerProperty {
 			return false;
 		return true;
 	}
-	
-	
+
 }
