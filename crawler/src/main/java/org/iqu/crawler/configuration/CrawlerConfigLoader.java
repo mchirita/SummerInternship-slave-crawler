@@ -36,7 +36,6 @@ public class CrawlerConfigLoader implements ConfigLoader{
 			checkForNewProperties();
 		}
 
-		System.out.println(crawlerProperties);
 	}
 
 	private void init() throws IOException {
