@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.naming.ConfigurationException;
+
 
 /**
  * 
@@ -46,8 +48,11 @@ public class CrawlerConfigLoader implements ConfigLoader{
 	}
 
 	private void readProperties(List<CrawlerProperty> crawlerProperties) throws ConfigLoaderException {
-		int length = Integer.parseInt(properties.getProperty("length"));
-
+		String numberOfParsers = properties.getProperty("length");
+		if(numberOfParsers==null || numberOfParsers.equals("")){
+			throw new ConfigLoaderException("No properties");
+		}
+		int length = Integer.parseInt(numberOfParsers);
 		for (int i = 1; i <= length; i++) {
 			String parserName = properties.getProperty("parser" + i);
 			String source = properties.getProperty("source" + i);

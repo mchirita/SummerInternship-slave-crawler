@@ -20,7 +20,7 @@ public class ConfigurationManager implements Runnable {
 
 	public void init(){
 		executor = Executors.newScheduledThreadPool(1);
-		executor.scheduleWithFixedDelay(new ConfigurationManager(), 0, 10, TimeUnit.MINUTES);
+		executor.scheduleWithFixedDelay(new ConfigurationManager(), 0, 10, TimeUnit.SECONDS);
 	}
 	
 
@@ -29,9 +29,9 @@ public class ConfigurationManager implements Runnable {
 		try {
 			loader.loadProperties();
 		} catch (ConfigLoaderException e) {
-
+			//log message
 		} catch (IOException e) {
-
+			//log message
 		}
 		
 	}
