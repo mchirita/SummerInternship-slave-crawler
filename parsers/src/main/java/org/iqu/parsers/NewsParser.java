@@ -1,8 +1,8 @@
-package parsers;
+package org.iqu.parsers;
 
 import java.util.List;
 
-import entities.NewsArticle;
+import org.iqu.parsers.entities.NewsArticle;
 
 /**
  * Defines a NewsParser.

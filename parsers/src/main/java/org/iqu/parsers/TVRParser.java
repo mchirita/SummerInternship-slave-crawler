@@ -1,4 +1,4 @@
-package parsers;
+package org.iqu.parsers;
 
 import java.io.IOException;
 import java.net.URL;
@@ -9,25 +9,28 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 
-import entities.NewsArticle;
+import org.iqu.parsers.entities.NewsArticle;
 
 /**
- * NewsParser implementation customised for "www.realitatea.net".
+ * NewsParser implementation customised for "stiri.tvr.ro".
  * 
  * @author Cristi Badoi
  *
  */
-public class RealitateaParser implements NewsParser {
+public class TVRParser implements NewsParser {
 
   @Override
   public List<NewsArticle> readFeed(String sourceURL, String encoding) {
+
     List<NewsArticle> result = new ArrayList<NewsArticle>();
     try {
       URL url = new URL(sourceURL);
@@ -79,11 +82,23 @@ public class RealitateaParser implements NewsParser {
                 e.printStackTrace();
               }
             }
+            break;
+          case "creator":
+            if (reader.peek().isCharacters()) {
+              article.getAuthors().add(reader.nextEvent().asCharacters().getData());
+            }
+            break;
+          case "enclosure":
+            Attribute attribute = event.asStartElement().getAttributeByName(new QName("url"));
+            if (attribute != null) {
+              String imageLink = event.asStartElement().getAttributeByName(new QName("url")).getValue();
+              article.getImages().add(imageLink);
+            }
           }
           break;
         case XMLStreamConstants.END_ELEMENT:
           if (event.asEndElement().getName().getLocalPart().equals("item")) {
-            article.setSource("www.realitatea.net");
+            article.setSource("stiri.tvr.ro");
             result.add(article);
           }
         }

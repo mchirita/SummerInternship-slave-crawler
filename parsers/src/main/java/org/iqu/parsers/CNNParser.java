@@ -1,4 +1,4 @@
-package parsers;
+package org.iqu.parsers;
 
 import java.io.IOException;
 import java.net.URL;
@@ -9,22 +9,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 
-import entities.NewsArticle;
+import org.iqu.parsers.entities.NewsArticle;
 
 /**
- * NewsParser implementation customised for "www.gds.ro".
+ * NewsParser implementation customised for "www.cnn.com".
  * 
  * @author Cristi Badoi
  *
  */
-public class GDSParser implements NewsParser {
+public class CNNParser implements NewsParser {
 
   @Override
   public List<NewsArticle> readFeed(String sourceURL, String encoding) {
@@ -49,9 +51,19 @@ public class GDSParser implements NewsParser {
               article.setTitle(reader.nextEvent().asCharacters().getData());
             }
             break;
+          case "description":
+            if (reader.peek().isCharacters()) {
+              article.setDescription(reader.nextEvent().asCharacters().getData());
+            }
+            break;
           case "link":
             if (reader.peek().isCharacters()) {
               article.setExternal_url(reader.nextEvent().asCharacters().getData());
+            }
+            break;
+          case "guid":
+            if (reader.peek().isCharacters()) {
+              article.setId(reader.nextEvent().asCharacters().getData());
             }
             break;
           case "pubdate":
@@ -65,30 +77,17 @@ public class GDSParser implements NewsParser {
               }
             }
             break;
-          case "creator":
-            if (reader.peek().isCharacters()) {
-              article.getAuthors().add(reader.nextEvent().asCharacters().getData());
-            }
-            break;
-          case "category":
-            if (reader.peek().isCharacters()) {
-              article.getCategories().add(reader.nextEvent().asCharacters().getData());
-            }
-            break;
-          case "guid":
-            if (reader.peek().isCharacters()) {
-              article.setId(reader.nextEvent().asCharacters().getData());
-            }
-            break;
-          case "description":
-            if (reader.peek().isCharacters()) {
-              article.setDescription(reader.nextEvent().asCharacters().getData());
+          case "content":
+            Attribute attribute = event.asStartElement().getAttributeByName(new QName("url"));
+            if (attribute != null) {
+              String imageLink = event.asStartElement().getAttributeByName(new QName("url")).getValue();
+              article.getImages().add(imageLink);
             }
           }
           break;
         case XMLStreamConstants.END_ELEMENT:
           if (event.asEndElement().getName().getLocalPart().equals("item")) {
-            article.setSource("www.gds.ro");
+            article.setSource("www.cnn.com");
             result.add(article);
           }
         }
