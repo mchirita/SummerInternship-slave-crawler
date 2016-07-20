@@ -1,4 +1,4 @@
-package org.iqu.crawler.configuration;
+package org.iqu.crawler.configuration.crawler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.iqu.crawler.configuration.ConfigChangeHandler;
+import org.iqu.crawler.configuration.ConfigLoader;
 import org.iqu.crawler.configuration.entities.SourceConfig;
 import org.iqu.crawler.configuration.exception.ConfigLoaderException;
 
@@ -15,24 +17,26 @@ import org.iqu.crawler.configuration.exception.ConfigLoaderException;
  * 
  * @author Beniamin Savu
  *
+ *         This class implements the ConfigLoader interface. This class loads
+ *         the crawler properties
  */
 public class CrawlerConfigLoader implements ConfigLoader {
 
 	private String path;
-	private ConfigChangeNotifier notifier;
+	private ConfigChangeHandler notifier;
 	private Properties properties = new Properties();
 	private List<SourceConfig> crawlerProperties = new ArrayList<SourceConfig>();
 	private File file;
 	private Long lastModified;
 
-	public CrawlerConfigLoader(ConfigChangeNotifier notifier, String path) {
+	public CrawlerConfigLoader(ConfigChangeHandler notifier, String path) {
 		this.notifier = notifier;
 		this.path = path;
 		file = new File(path);
 	}
 
 	@Override
-	public void run() {
+	public void loadProperties() {
 		if (fileIsValid()) {
 			if (lastModified == null) {
 				readProperties(crawlerProperties);
@@ -42,7 +46,16 @@ public class CrawlerConfigLoader implements ConfigLoader {
 		} else {
 			throw new ConfigLoaderException("File corrupted");
 		}
+	}
 
+	@Override
+	public List<SourceConfig> getProperties() {
+		return crawlerProperties;
+	}
+
+	@Override
+	public void run() {
+		loadProperties();
 	}
 
 	private boolean fileIsValid() {
@@ -54,27 +67,27 @@ public class CrawlerConfigLoader implements ConfigLoader {
 		return valid;
 	}
 
-	private void loadProperties() {
+	private void loadFile() {
 
 		try (InputStream input = new FileInputStream(file)) {
 			properties.load(input);
 		} catch (IOException e) {
-			throw new ConfigLoaderException("Could not load content from file");
+			throw new ConfigLoaderException("Could not load content from file", e);
 		}
 	}
 
 	private void readProperties(List<SourceConfig> crawlerProperties) {
-		loadProperties();
+		loadFile();
 
-		String numberOfParsers = properties.getProperty(CrawlerConfigParameters.NUMBER_OF_PARSERS);
+		String numberOfParsers = properties.getProperty(CrawlerConfigConstants.NUMBER_OF_PARSERS_KEY);
 		if (numberOfParsers == null || numberOfParsers.equals("")) {
 			throw new ConfigLoaderException("No properties");
 		}
 		int length = Integer.parseInt(numberOfParsers);
 
 		for (int i = 1; i <= length; i++) {
-			String parserName = properties.getProperty(CrawlerConfigParameters.PARSER_PREFIX + i);
-			String source = properties.getProperty(CrawlerConfigParameters.SOURCE_PREFIX + i);
+			String parserName = properties.getProperty(CrawlerConfigConstants.PARSER_KEY_PREFIX + i);
+			String source = properties.getProperty(CrawlerConfigConstants.SOURCE_KEY_PREFIX + i);
 			if (parserName == null || parserName.equals("") || source == null || source.equals("")) {
 				throw new ConfigLoaderException("Properties values are null or empty");
 			}
@@ -110,4 +123,5 @@ public class CrawlerConfigLoader implements ConfigLoader {
 		crawlerProperties.addAll(newCrawlerProperties);
 
 	}
+
 }

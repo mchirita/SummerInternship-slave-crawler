@@ -3,6 +3,8 @@ package org.iqu.crawler.configuration.entities;
 /**
  * 
  * @author BeniaminSavu
+ * 
+ *         Entity that stores the crawler properties
  *
  */
 public class SourceConfig {
