@@ -12,6 +12,7 @@ import org.iqu.crawler.configuration.ConfigChangeHandler;
 import org.iqu.crawler.configuration.ConfigLoader;
 import org.iqu.crawler.configuration.entities.SourceConfig;
 import org.iqu.crawler.configuration.exception.ConfigLoaderException;
+import org.iqu.crawler.configuration.exception.LoaderExceptionConstants;
 
 /**
  * 
@@ -44,7 +45,7 @@ public class CrawlerConfigLoader implements ConfigLoader {
 				checkForNewProperties();
 			}
 		} else {
-			throw new ConfigLoaderException("File corrupted");
+			throw new ConfigLoaderException(LoaderExceptionConstants.FILE_CORRUPTED);
 		}
 	}
 
@@ -72,7 +73,7 @@ public class CrawlerConfigLoader implements ConfigLoader {
 		try (InputStream input = new FileInputStream(file)) {
 			properties.load(input);
 		} catch (IOException e) {
-			throw new ConfigLoaderException("Could not load content from file", e);
+			throw new ConfigLoaderException(LoaderExceptionConstants.FILE_UNLOADED, e);
 		}
 	}
 
@@ -81,7 +82,7 @@ public class CrawlerConfigLoader implements ConfigLoader {
 
 		String numberOfParsers = properties.getProperty(CrawlerConfigConstants.NUMBER_OF_PARSERS_KEY);
 		if (numberOfParsers == null || numberOfParsers.equals("")) {
-			throw new ConfigLoaderException("No properties");
+			throw new ConfigLoaderException(LoaderExceptionConstants.PROPERTIES_NOT_FOUND);
 		}
 		int length = Integer.parseInt(numberOfParsers);
 
@@ -89,7 +90,7 @@ public class CrawlerConfigLoader implements ConfigLoader {
 			String parserName = properties.getProperty(CrawlerConfigConstants.PARSER_KEY_PREFIX + i);
 			String source = properties.getProperty(CrawlerConfigConstants.SOURCE_KEY_PREFIX + i);
 			if (parserName == null || parserName.equals("") || source == null || source.equals("")) {
-				throw new ConfigLoaderException("Properties values are null or empty");
+				throw new ConfigLoaderException(LoaderExceptionConstants.NULL_PROPERTIES_VALUES);
 			}
 
 			SourceConfig crawlerProperty = new SourceConfig(parserName, source);
