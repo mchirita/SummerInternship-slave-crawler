@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
+import org.apache.log4j.Logger;
 import org.iqu.parsers.entities.NewsArticle;
 
 /**
@@ -26,6 +27,8 @@ import org.iqu.parsers.entities.NewsArticle;
  *
  */
 public class StaxNewsParser implements Parser<NewsArticle> {
+  private static final Logger logger = Logger.getLogger(StaxNewsParser.class);
+
   private XMLEventReader reader;
   private NewsArticle article;
   private XMLEvent event;
@@ -52,11 +55,11 @@ public class StaxNewsParser implements Parser<NewsArticle> {
       }
       reader.close();
     } catch (XMLStreamException e) {
-      e.printStackTrace();
+      logger.error("XMLEventReader error!", e);
     } catch (FactoryConfigurationError e) {
-      e.printStackTrace();
+      logger.error("XMLInputFactory error!", e);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("InputStream error!", e);
     }
     return result;
   }
@@ -99,7 +102,7 @@ public class StaxNewsParser implements Parser<NewsArticle> {
         article.setEnclosure(enclosureURL);
       }
     } catch (ParseException e) {
-      e.printStackTrace();
+      logger.error("DateFormat parsing error!", e);
     }
   }
 
@@ -117,7 +120,7 @@ public class StaxNewsParser implements Parser<NewsArticle> {
         text += reader.nextEvent().asCharacters().getData();
       }
     } catch (XMLStreamException e) {
-      e.printStackTrace();
+      logger.error("XMLStreamReader error!", e);
     }
     return text;
   }
@@ -133,8 +136,8 @@ public class StaxNewsParser implements Parser<NewsArticle> {
         }
         reader.nextEvent();
       }
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (XMLStreamException e) {
+      logger.error("XMLStreamReader error!", e);
     }
   }
 

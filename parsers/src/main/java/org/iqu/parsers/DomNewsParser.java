@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.iqu.parsers.entities.NewsArticle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,6 +31,7 @@ import org.xml.sax.SAXException;
  *
  */
 public class DomNewsParser implements Parser<NewsArticle> {
+  private static final Logger logger = Logger.getLogger(DomNewsParser.class);
 
   @Override
   public List<NewsArticle> readFeed(String sourceURL, String encoding) {
@@ -62,13 +64,13 @@ public class DomNewsParser implements Parser<NewsArticle> {
       }
 
     } catch (ParserConfigurationException e) {
-      e.printStackTrace();
+      logger.error("DocumentBuilderFactory error!", e);
     } catch (MalformedURLException e) {
-      e.printStackTrace();
+      logger.error("Invalid URL!", e);
     } catch (SAXException e) {
-      e.printStackTrace();
+      logger.error("DocumentBuilder parsing error!", e);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("InputStream error!", e);
     }
     return result;
   }
@@ -118,7 +120,7 @@ public class DomNewsParser implements Parser<NewsArticle> {
     try {
       temp = formatter.parse(date);
     } catch (ParseException e) {
-      e.printStackTrace();
+      logger.error("DateFormat parsing error!", e);
       return 0;
     }
     return temp.getTime() / 1000;
