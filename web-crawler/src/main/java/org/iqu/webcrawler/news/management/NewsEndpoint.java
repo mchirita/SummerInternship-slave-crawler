@@ -1,4 +1,4 @@
-package org.iqu.webcrawler.event.management;
+package org.iqu.webcrawler.news.management;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,14 +11,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.iqu.webcrawler.entities.Author;
+import org.iqu.webcrawler.entities.Categories;
+import org.iqu.webcrawler.entities.ErrorMessage;
 import org.iqu.webcrawler.entities.Source;
 
-public class EventEndpoint {
+@Path("/")
+public class NewsEndpoint {
 
 	/**
 	 * Service that will return all authors
-	 * 
 	 */
+
 	@Path("/authors")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -47,23 +50,57 @@ public class EventEndpoint {
 		return Response.status(status).entity(response).build();
 	}
 
+	/**
+	 * This method implements retrieve categories service.
+	 */
+
+	@Path("/categories")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response retriveCategories() {
+		Categories categories = new Categories();
+
+		// ToDo get categories from db.
+		categories.addCategory("music");
+		categories.addCategory("music");
+		categories.addCategory("politics");
+		categories.addCategory("IT");
+
+		if (categories.isEmpty()) {
+			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+			return Response.ok("{\"error\" : " + "\"" + errorMessage.getMessage() + "\"}").build();
+		}
+
+		return Response.status(200).entity("{\"categories\" : " + "\"" + categories.getCategories() + "\"}").build();
+	}
+
+	/**
+	 * Retrieves news based on filters, that are sent as query parameters.
+	 * 
+	 */
 	@Path("/")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response retriveEvents(@QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
-			@QueryParam("type") String type, @QueryParam("subType") String subType,
+	public Response getNews(@QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
+			@QueryParam("categories") String categories, @QueryParam("about") String about,
 			@QueryParam("sourceId") String sourceId, @QueryParam("author") String author,
 			@QueryParam("location") String location) {
 
 		String response = "";
-		if (startDate == null) {
-			response = "{\"error\" : \"Requested location not available\"}";
-			return Response.status(400).entity(response).build();
-		} else {
-			return Response.ok().build();
+		int status = 200;
+
+		try {
+			long startDateLong = Long.parseLong(startDate);
+
+			// TODO: implement actual filtering of data
+
+		} catch (NumberFormatException e) {
+			status = 400;
+			response = "{ \"error\" : \"startDate parameter missing/invalid\" }";
 		}
+
+		return Response.status(status).entity(response).build();
 	}
-	// TO DO : implement filter of data
 
 	/**
 	 * This method returns a list of sources where we grab our content.
@@ -85,20 +122,6 @@ public class EventEndpoint {
 			response = "\"error\" : \"Could not fetch sources, please try again later.\"";
 			return Response.status(status).entity(response).build();
 		}
-	}
-
-	/**
-	 * This method returns all types and subtypes of events.
-	 * 
-	 * @return
-	 */
-	@Path("/types")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response retriveTypes() {
-
-		String type = "Concert";
-		return Response.ok("[{\"Type\": " + "\"" + type + "\",\n\"Subtypes\" : [\"rock\", \"classical\"]}]").build();
 	}
 
 }
