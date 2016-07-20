@@ -2,14 +2,12 @@ package org.iqu.parsers;
 
 import java.util.List;
 
-import org.iqu.parsers.entities.NewsArticle;
-
 /**
- * Defines a NewsParser.
+ * Defines an information parser.
  * 
  * @author Cristi Badoi
  */
-public interface NewsParser {
+public interface Parser<T> {
 
   /**
    * Parses the RSS at the given URL and returns the content as a List of
@@ -21,6 +19,6 @@ public interface NewsParser {
    *          the encoding of the source material
    * @return parsed material as a List of NewsArticle objects
    */
-  public List<NewsArticle> readFeed(String sourceURL, String encoding);
+  public List<T> readFeed(String sourceURL, String encoding);
 
 }

@@ -3,12 +3,6 @@ package org.iqu.parsers.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Holds data representing a news article.
- * 
- * @author Cristi Badoi
- *
- */
 public class NewsArticle {
   private long date;
   private String id;
@@ -22,11 +16,20 @@ public class NewsArticle {
   private List<String> images;
   private String thumbnail_id;
   private String external_url;
+  private String enclosure;
 
   public NewsArticle() {
     authors = new ArrayList<String>();
     categories = new ArrayList<String>();
     images = new ArrayList<String>();
+    id = "";
+    title = "";
+    subtitle = "";
+    description = "";
+    source = "";
+    body = "";
+    thumbnail_id = "";
+    external_url = "";
   }
 
   public long getDate() {
@@ -125,6 +128,14 @@ public class NewsArticle {
     this.external_url = external_url;
   }
 
+  public String getEnclosure() {
+    return enclosure;
+  }
+
+  public void setEnclosure(String enclosure) {
+    this.enclosure = enclosure;
+  }
+
   @Override
   public String toString() {
     return "NewsArticle [date=" + date + ", id=" + id + ", title=" + title + ", subtitle=" + subtitle + ", description="
@@ -132,9 +143,6 @@ public class NewsArticle {
         + ", images=" + images + ", thumbnail_id=" + thumbnail_id + ", external_url=" + external_url + "]";
   }
 
-  /**
-   * Based solely on id.
-   */
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -143,9 +151,6 @@ public class NewsArticle {
     return result;
   }
 
-  /**
-   * Based solely on id.
-   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
