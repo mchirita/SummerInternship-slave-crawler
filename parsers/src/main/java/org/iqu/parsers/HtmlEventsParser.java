@@ -95,7 +95,7 @@ public class HtmlEventsParser implements Parser<Event> {
 		event.setImage_id(element.getElementsByTag(IMG).attr(IMGSRC));
 		event.setExternal_url(element.getElementsByTag("a").attr(URL));
 		event.setDescription(element.getElementsByClass(DESCRIPTION).html());
-		event.setId(element.getElementsByClass(EVENTLIST).attr(ID) + categories);
+		event.setId(element.getElementsByClass(EVENTLIST).attr(ID) + "-" + categories);
 		event.setStartDate(convertDate(element.getElementsByTag(TIME).attr(DATE)));
 		event.setSource(source);
 		event.setCategories(categories);
