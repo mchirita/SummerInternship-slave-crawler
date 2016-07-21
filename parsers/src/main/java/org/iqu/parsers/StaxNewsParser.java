@@ -27,7 +27,7 @@ import org.iqu.parsers.entities.NewsArticle;
  *
  */
 public class StaxNewsParser implements Parser<NewsArticle> {
-  private static final Logger logger = Logger.getLogger(StaxNewsParser.class);
+  private static final Logger LOGGER = Logger.getLogger(StaxNewsParser.class);
 
   private XMLEventReader reader;
   private NewsArticle article;
@@ -55,11 +55,11 @@ public class StaxNewsParser implements Parser<NewsArticle> {
       }
       reader.close();
     } catch (XMLStreamException e) {
-      logger.error("XMLEventReader error!", e);
+      LOGGER.error("XMLEventReader error!", e);
     } catch (FactoryConfigurationError e) {
-      logger.error("XMLInputFactory error!", e);
+      LOGGER.error("XMLInputFactory error!", e);
     } catch (IOException e) {
-      logger.error("InputStream error!", e);
+      LOGGER.error("InputStream error!", e);
     }
     return result;
   }
@@ -102,7 +102,7 @@ public class StaxNewsParser implements Parser<NewsArticle> {
         article.setEnclosure(enclosureURL);
       }
     } catch (ParseException e) {
-      logger.error("DateFormat parsing error!", e);
+      LOGGER.error("DateFormat parsing error!", e);
     }
   }
 
@@ -120,7 +120,7 @@ public class StaxNewsParser implements Parser<NewsArticle> {
         text += reader.nextEvent().asCharacters().getData();
       }
     } catch (XMLStreamException e) {
-      logger.error("XMLStreamReader error!", e);
+      LOGGER.error("XMLStreamReader error!", e);
     }
     return text;
   }
@@ -137,7 +137,7 @@ public class StaxNewsParser implements Parser<NewsArticle> {
         reader.nextEvent();
       }
     } catch (XMLStreamException e) {
-      logger.error("XMLStreamReader error!", e);
+      LOGGER.error("XMLStreamReader error!", e);
     }
   }
 
