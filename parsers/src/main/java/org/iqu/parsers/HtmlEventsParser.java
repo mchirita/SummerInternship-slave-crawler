@@ -36,8 +36,8 @@ import org.jsoup.select.Elements;
 public class HtmlEventsParser implements Parser<Event> {
 
 	private Event event;
-	private static final Logger logger = Logger.getLogger(HtmlEventsParser.class);
-	private static String pattern = "yyyy/MM/dd";
+	private static final Logger lOGGER = Logger.getLogger(HtmlEventsParser.class);
+	private static String pattern = "yyyy-MM-dd'T'HH:mm";
 	private static DateFormat dF = new SimpleDateFormat(pattern);
 	private long endDate = 0;
 	private String categories = "";
@@ -53,7 +53,7 @@ public class HtmlEventsParser implements Parser<Event> {
 		try {
 			doc = Jsoup.connect(sourceURL).get();
 		} catch (IOException e) {
-			logger.error("Error loading URL");
+			lOGGER.error("Error loading URL");
 		}
 		Elements item = doc.getElementsByClass(EVENTGROUP);
 
@@ -72,9 +72,9 @@ public class HtmlEventsParser implements Parser<Event> {
 		try {
 			doc = Jsoup.connect(eventsURL).get();
 		} catch (MalformedURLException e) {
-			logger.error("Invalid URL!", e);
+			lOGGER.error("Invalid URL!", e);
 		} catch (IOException e) {
-			logger.error("InputStream error!", e);
+			lOGGER.error("InputStream error!", e);
 		}
 		categories = doc.body().id();
 		Elements item = doc.getElementsByClass(EVENTLIST);
@@ -82,10 +82,10 @@ public class HtmlEventsParser implements Parser<Event> {
 			event = new Event();
 			try {
 				getTags(element);
+				events.add(event);
 			} catch (ParseException e) {
-				logger.error("Invalid tags");
+				lOGGER.error("Invalid tags");
 			}
-			events.add(event);
 		}
 
 	}
@@ -104,7 +104,7 @@ public class HtmlEventsParser implements Parser<Event> {
 			try {
 				endDate = convertDate(dateEnd);
 			} catch (ParseException e) {
-				logger.error("Invalid date format");
+				lOGGER.error("Invalid date format");
 			}
 		} else
 			endDate = 0;
@@ -112,8 +112,7 @@ public class HtmlEventsParser implements Parser<Event> {
 	}
 
 	private long convertDate(String date) throws ParseException {
-		date = date.substring(0, 10);
-		date = date.replaceAll("-", "/");
+		date = date.substring(0, 16);
 		return dF.parse(date).getTime();
 	}
 }
