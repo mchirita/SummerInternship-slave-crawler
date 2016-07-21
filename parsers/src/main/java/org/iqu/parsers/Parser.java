@@ -1,6 +1,5 @@
 package org.iqu.parsers;
 
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -20,6 +19,6 @@ public interface Parser<T> {
 	 *            the encoding of the source material
 	 * @return parsed material as a List of objects
 	 */
-	public List<T> readFeed(String sourceURL, String encoding) throws ParseException;
+	public List<T> readFeed(String sourceURL, String encoding);
 
 }
