@@ -3,6 +3,11 @@ package org.iqu.parsers.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class defining a news article.
+ * 
+ * @author Cristi Badoi
+ */
 public class NewsArticle {
   private long date;
   private String id;
@@ -143,6 +148,9 @@ public class NewsArticle {
         + ", images=" + images + ", thumbnail_id=" + thumbnail_id + ", external_url=" + external_url + "]";
   }
 
+  /**
+   * Based solely on the id field;
+   */
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -151,6 +159,9 @@ public class NewsArticle {
     return result;
   }
 
+  /**
+   * Based solely on the id field;
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj)

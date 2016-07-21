@@ -1,5 +1,10 @@
 package org.iqu.parsers;
 
+/**
+ * Constants for the parser classes.
+ * 
+ * @author Cristi Badoi
+ */
 public class ParserConstants {
   public static final String ITEM = "item";
   public static final String TITLE = "title";
@@ -13,4 +18,5 @@ public class ParserConstants {
   public static final String AUTHOR = "creator";
   public static final String DC_AUTHOR = "dc:creator";
   public static final String IMAGE_ENCLOSURE = "enclosure";
+  public static final String DATE_FORMAT = "EEE, dd MMM yyy HH:mm:ss zzz";
 }

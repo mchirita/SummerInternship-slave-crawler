@@ -86,7 +86,7 @@ public class StaxNewsParser implements Parser<NewsArticle> {
         article.getCategories().add(parseCharacters());
         break;
       case ParserConstants.DATE:
-        DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss zzz");
+        DateFormat formatter = new SimpleDateFormat(ParserConstants.DATE_FORMAT);
         Date date = formatter.parse(parseCharacters());
         article.setDate(date.getTime() / 1000);
         break;
