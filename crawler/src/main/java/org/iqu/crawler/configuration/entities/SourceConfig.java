@@ -11,12 +11,10 @@ public class SourceConfig {
 
   private String parserClassName;
   private String source;
-  private String type;
 
-  public SourceConfig(String parserName, String source, String type) {
+  public SourceConfig(String parserName, String source) {
     this.parserClassName = parserName;
     this.source = source;
-    this.setType(type);
   }
 
   public String getParserName() {
@@ -25,14 +23,6 @@ public class SourceConfig {
 
   public String getSource() {
     return source;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
   }
 
   @Override

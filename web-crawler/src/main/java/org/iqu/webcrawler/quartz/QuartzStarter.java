@@ -18,8 +18,8 @@ import org.quartz.impl.StdSchedulerFactory;
 
 /**
  * Creates a Crawler instance and starts a Quartz Scheduler on servlet
- * initialization that periodically triggers the crawler to read the feeds and
- * update database information. Shuts down the Scheduler on servlet destruction.
+ * initialization that periodically triggers the crawler to parse the feeds and
+ * forward the information. Shuts down the Scheduler on servlet destruction.
  * 
  * @author Cristi Badoi
  */
@@ -29,21 +29,24 @@ public class QuartzStarter implements ServletContextListener {
   private static final Logger LOGGER = Logger.getLogger(QuartzStarter.class);
 
   Scheduler scheduler;
-  private static final int MINUTE_INTERVAL = 15;
+  private static final int MINUTE_INTERVAL = 10;
 
   @Override
   public void contextInitialized(ServletContextEvent arg0) {
     try {
-      scheduler = new StdSchedulerFactory().getScheduler();
-      scheduler.getContext().put("crawlerInstance", new Crawler(new CrawlerConfiguration()));
 
-      JobDetail job = JobBuilder.newJob(TriggerCrawlerJob.class).withIdentity("trigger-crawler-job", "slave-app")
-          .build();
+      Crawler crawler = new Crawler(new CrawlerConfiguration());
+
+      scheduler = new StdSchedulerFactory().getScheduler();
+      scheduler.getContext().put("crawlerInstance", crawler);
+
+      JobDetail job = JobBuilder.newJob(CrawlerJob.class).withIdentity("crawler-job", "slave-app").build();
       Trigger trigger = TriggerBuilder.newTrigger().withIdentity("crawler-trigger", "slave-app")
           .withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(MINUTE_INTERVAL)).build();
 
       scheduler.scheduleJob(job, trigger);
       scheduler.start();
+
     } catch (SchedulerException e) {
       LOGGER.error("Scheduler error!", e);
     }
@@ -52,7 +55,9 @@ public class QuartzStarter implements ServletContextListener {
   @Override
   public void contextDestroyed(ServletContextEvent arg0) {
     try {
+
       scheduler.shutdown();
+
     } catch (SchedulerException e) {
       LOGGER.error("Scheduler error!", e);
     }
