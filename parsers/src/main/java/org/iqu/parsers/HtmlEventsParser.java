@@ -39,10 +39,8 @@ public class HtmlEventsParser implements Parser<Event> {
 	private static final Logger LOGGER = Logger.getLogger(HtmlEventsParser.class);
 	private static String pattern = "yyyy-MM-dd'T'HH:mm";
 	private static DateFormat dF = new SimpleDateFormat(pattern);
-	private long endDate = 0;
 	private String categories = "";
 	private String source;
-	private String dateEnd;
 
 	@Override
 	public List<Event> readFeed(String sourceURL, String encoding) {
@@ -99,20 +97,14 @@ public class HtmlEventsParser implements Parser<Event> {
 		event.setStartDate(convertDate(element.getElementsByTag(TIME).attr(DATE)));
 		event.setSource(source);
 		event.setCategories(categories);
-		dateEnd = element.getElementsByAttributeValue("itemprop", "endDate").attr(HtmlParserConstants.DATE);
-		if (dateEnd.length() > 0) {
-			try {
-				endDate = convertDate(dateEnd);
-			} catch (ParseException e) {
-				LOGGER.error("Invalid date format");
-			}
-		} else
-			endDate = 0;
-		event.setEndDate(endDate);
+		event.setEndDate(
+				convertDate(element.getElementsByAttributeValue("itemprop", "endDate").attr(HtmlParserConstants.DATE)));
 	}
 
 	private long convertDate(String date) throws ParseException {
-		date = date.substring(0, 16);
-		return dF.parse(date).getTime();
+		if (date.length() > 0) {
+			return dF.parse(date.substring(0, 16)).getTime();
+		}
+		return 0;
 	}
 }
