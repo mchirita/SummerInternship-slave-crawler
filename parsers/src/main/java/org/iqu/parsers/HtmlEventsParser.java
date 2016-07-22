@@ -37,7 +37,7 @@ public class HtmlEventsParser implements Parser<Event> {
 
 	private Event event;
 	private static final Logger LOGGER = Logger.getLogger(HtmlEventsParser.class);
-	private static String pattern = "yyyy-MM-dd'T'HH:mm";
+	private static String pattern = "yyyy-MM-dd'T'HH:mm:ss'+'hh:mm";
 	private static DateFormat dF = new SimpleDateFormat(pattern);
 	private String categories = "";
 	private String source;
@@ -103,8 +103,9 @@ public class HtmlEventsParser implements Parser<Event> {
 
 	private long convertDate(String date) throws ParseException {
 		if (date.length() > 0) {
-			return dF.parse(date.substring(0, 16)).getTime();
+			return dF.parse(date).getTime();
 		}
 		return 0;
 	}
+
 }
