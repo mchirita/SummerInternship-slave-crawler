@@ -1,22 +1,26 @@
 package org.iqu.persistence.entities;
 
 public class Source {
-	private String id;
+	private String sourceId;
 	private String displayName;
 	private String description;
 
-	public Source(String id, String displayName, String description) {
-		this.id = id;
+	public Source(String sourceId, String displayName, String description) {
+		this.sourceId = sourceId;
 		this.displayName = displayName;
 		this.description = description;
 	}
 
-	public String getId() {
-		return id;
+	public Source() {
+
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public String getId() {
+		return sourceId;
+	}
+
+	public void setId(String sourceId) {
+		this.sourceId = sourceId;
 	}
 
 	public String getDisplayName() {
@@ -37,7 +41,7 @@ public class Source {
 
 	@Override
 	public String toString() {
-		return "Source [id=" + id + ", displayName=" + displayName + ", description=" + description + "]";
+		return "Source [sourceId=" + sourceId + ", displayName=" + displayName + ", description=" + description + "]";
 	}
 
 }

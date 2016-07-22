@@ -4,24 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class News {
-	private String date;
+	private int date;
 	private String id;
 	private String title;
 	private String subtitle;
 	private String description;
-	private List<String> authors = new ArrayList<String>();
-	private List<String> categories = new ArrayList<String>();
-	private String source;
+	private List<Author> authors = new ArrayList<Author>();
+	private List<Category> categories = new ArrayList<Category>();
+	private Source source;
 	private String body;
 	private String image_id;
 	private String thumbnail_id;
 	private String external_url;
 
-	public String getDate() {
+	public int getDate() {
 		return date;
 	}
 
-	public void setDate(String date) {
+	public void setDate(int date) {
 		this.date = date;
 	}
 
@@ -57,27 +57,27 @@ public class News {
 		this.description = description;
 	}
 
-	public List<String> getAuthors() {
+	public List<Author> getAuthors() {
 		return authors;
 	}
 
-	public void setAuthors(List<String> authors) {
+	public void setAuthors(List<Author> authors) {
 		this.authors = authors;
 	}
 
-	public List<String> getCategories() {
+	public List<Category> getCategories() {
 		return categories;
 	}
 
-	public void setCategories(List<String> categories) {
+	public void setCategories(List<Category> categories) {
 		this.categories = categories;
 	}
 
-	public String getSource() {
+	public Source getSource() {
 		return source;
 	}
 
-	public void setSource(String source) {
+	public void setSource(Source source) {
 		this.source = source;
 	}
 
