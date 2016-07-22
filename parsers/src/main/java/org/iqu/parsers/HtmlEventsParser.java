@@ -36,7 +36,7 @@ import org.jsoup.select.Elements;
 public class HtmlEventsParser implements Parser<Event> {
 
 	private Event event;
-	private static final Logger lOGGER = Logger.getLogger(HtmlEventsParser.class);
+	private static final Logger LOGGER = Logger.getLogger(HtmlEventsParser.class);
 	private static String pattern = "yyyy-MM-dd'T'HH:mm";
 	private static DateFormat dF = new SimpleDateFormat(pattern);
 	private long endDate = 0;
@@ -53,7 +53,7 @@ public class HtmlEventsParser implements Parser<Event> {
 		try {
 			doc = Jsoup.connect(sourceURL).get();
 		} catch (IOException e) {
-			lOGGER.error("Error loading URL");
+			LOGGER.error("Error loading URL");
 		}
 		Elements item = doc.getElementsByClass(EVENTGROUP);
 
@@ -72,9 +72,9 @@ public class HtmlEventsParser implements Parser<Event> {
 		try {
 			doc = Jsoup.connect(eventsURL).get();
 		} catch (MalformedURLException e) {
-			lOGGER.error("Invalid URL!", e);
+			LOGGER.error("Invalid URL!", e);
 		} catch (IOException e) {
-			lOGGER.error("InputStream error!", e);
+			LOGGER.error("InputStream error!", e);
 		}
 		categories = doc.body().id();
 		Elements item = doc.getElementsByClass(EVENTLIST);
@@ -84,7 +84,7 @@ public class HtmlEventsParser implements Parser<Event> {
 				getTags(element);
 				events.add(event);
 			} catch (ParseException e) {
-				lOGGER.error("Invalid tags");
+				LOGGER.error("Invalid tags");
 			}
 		}
 
@@ -104,7 +104,7 @@ public class HtmlEventsParser implements Parser<Event> {
 			try {
 				endDate = convertDate(dateEnd);
 			} catch (ParseException e) {
-				lOGGER.error("Invalid date format");
+				LOGGER.error("Invalid date format");
 			}
 		} else
 			endDate = 0;
