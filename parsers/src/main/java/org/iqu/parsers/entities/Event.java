@@ -2,35 +2,22 @@ package org.iqu.parsers.entities;
 
 public class Event {
 
-  String title;
-  String subtitle;
-  long startDate;
-  long endDate;
-  String id;
-  String description;
-  String[] authors;
-  String categories;
-  String source;
-  String body;
-  String image_id;
-  String thumbnail_id;
-  String external_url;
-
-  public Event(String title, long startDate, long endDate, String id, String desription, String categories,
-      String source, String image_id, String external_url) {
-    super();
-    this.title = title;
-    this.startDate = startDate;
-    this.endDate = endDate;
-    this.id = id;
-    this.description = desription;
-    this.categories = categories;
-    this.source = source;
-    this.image_id = image_id;
-    this.external_url = external_url;
-  }
+  private String title;
+  private String subtitle;
+  private long startDate;
+  private long endDate;
+  private String id;
+  private String description;
+  private String[] authors;
+  private String categories;
+  private String source;
+  private String body;
+  private String image_id;
+  private String thumbnail_id;
+  private String external_url;
 
   public Event() {
+    // TODO Auto-generated constructor stub
   }
 
   public String getTitle() {

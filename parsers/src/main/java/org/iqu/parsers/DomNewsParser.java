@@ -49,15 +49,15 @@ public class DomNewsParser implements Parser<NewsArticle> {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
           Element element = (Element) node;
           NewsArticle article = new NewsArticle();
-          article.setTitle(getValue(element, ParserConstants.TITLE));
-          article.setExternal_url(getValue(element, ParserConstants.EXTERNAL_URL));
-          article.setId(getValue(element, ParserConstants.ID));
-          article.setDescription(getValue(element, ParserConstants.DESCRIPTION));
-          article.setCategories(getValues(element, ParserConstants.CATEGORY));
-          article.setDate(convertDate(getValue(element, ParserConstants.DATE)));
-          article.setImages(getAttributeValues(element, ParserConstants.IMAGE_MEDIA_CONTENT, "url"));
-          article.setEnclosure(getAttributeValue(element, ParserConstants.IMAGE_ENCLOSURE, "url"));
-          article.setAuthors(getValues(element, ParserConstants.DC_AUTHOR));
+          article.setTitle(getValue(element, XMLParserConstants.TITLE));
+          article.setExternal_url(getValue(element, XMLParserConstants.EXTERNAL_URL));
+          article.setId(getValue(element, XMLParserConstants.ID));
+          article.setDescription(getValue(element, XMLParserConstants.DESCRIPTION));
+          article.setCategories(getValues(element, XMLParserConstants.CATEGORY));
+          article.setDate(convertDate(getValue(element, XMLParserConstants.DATE)));
+          article.setImages(getAttributeValues(element, XMLParserConstants.IMAGE_MEDIA_CONTENT, "url"));
+          article.setEnclosure(getAttributeValue(element, XMLParserConstants.IMAGE_ENCLOSURE, "url"));
+          article.setAuthors(getValues(element, XMLParserConstants.DC_AUTHOR));
           article.setSource(sourceURL);
           result.add(article);
         }
