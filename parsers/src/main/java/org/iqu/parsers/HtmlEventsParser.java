@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.iqu.parsers.entities.Event;
 import org.iqu.parsers.entities.Source;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -56,9 +57,12 @@ public class HtmlEventsParser implements Parser<Event> {
     this.sourceURL = sourceURL;
     Document doc = null;
     try {
-      doc = Jsoup.connect(sourceURL).get();
-      readSource(doc);
-      readItems(events, doc);
+      Connection connection = Jsoup.connect(sourceURL);
+      if (connection != null) {
+        doc = connection.get();
+        readSource(doc);
+        readItems(events, doc);
+      }
 
     } catch (IOException e) {
       LOGGER.error("Error loading URL", e);
