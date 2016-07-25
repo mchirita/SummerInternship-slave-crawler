@@ -12,12 +12,8 @@ import javax.ws.rs.core.Response;
 
 import org.iqu.crawler.entities.Source;
 import org.iqu.webcrawler.entities.Author;
-<<<<<<< HEAD
 import org.iqu.webcrawler.entities.Event;
 import org.iqu.webcrawler.entities.Events;
-import org.iqu.webcrawler.entities.Source;
-=======
->>>>>>> master
 
 @Path("/")
 public class EventEndpoint {
