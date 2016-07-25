@@ -41,7 +41,7 @@ public class NewsEndpoint {
 			return Response.status(status).entity(authors).build();
 		}
 		status = 404;
-		ErrorMessage errorMessage = new ErrorMessage("Could not fetch authors, please try again later.");
+		ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
 		return Response.status(status).entity(errorMessage).build();
 	}
 
@@ -88,7 +88,7 @@ public class NewsEndpoint {
 			// TODO: implement actual filtering of data
 
 		} catch (NumberFormatException e) {
-			ErrorMessage errorMessage = new ErrorMessage("Requested location not available.");
+			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
 			status = 400;
 			return Response.status(400).entity(errorMessage).build();
 		}
@@ -115,7 +115,7 @@ public class NewsEndpoint {
 
 		if (sources.isEmpty()) {
 			status = 404;
-			ErrorMessage errorMessage = new ErrorMessage("Could not fetch sources, please try again later.");
+			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
 			return Response.status(status).entity(errorMessage).build();
 		}
 

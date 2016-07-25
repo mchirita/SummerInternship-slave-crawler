@@ -1,5 +1,5 @@
 package org.iqu.crawler.entities;
 
-public enum ParserDataType {
+public enum DataType {
   NEWS, EVENTS
 }
