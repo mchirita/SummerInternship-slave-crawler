@@ -23,12 +23,12 @@ public class DAOFactoryImp implements DAOFactory {
 
 	@Override
 	public NewsDAO getNewsDAO() {
-		return new NewsService();
+		return new NewsDAOImpl();
 	}
 
 	@Override
 	public EventDAO getEventDAO() {
-		return new EventService();
+		return new EventDAOImpl();
 	}
 
 }

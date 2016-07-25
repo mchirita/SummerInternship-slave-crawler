@@ -3,6 +3,7 @@ package org.iqu.persistence.service;
 import java.util.List;
 
 import org.iqu.persistence.entities.Author;
+import org.iqu.persistence.entities.News;
 import org.iqu.persistence.entities.Source;
 
 public interface DaoService<E> {
@@ -20,4 +21,6 @@ public interface DaoService<E> {
 	public List<Author> retrieveAuthors();
 
 	public List<Source> retrieveSources();
+
+	public List<News> findAllBySource(Source source);
 }

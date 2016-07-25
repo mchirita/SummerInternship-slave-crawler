@@ -5,7 +5,7 @@ import java.util.List;
 
 public class News {
 	private int date;
-	private String id;
+	private int id;
 	private String title;
 	private String subtitle;
 	private String description;
@@ -25,11 +25,11 @@ public class News {
 		this.date = date;
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

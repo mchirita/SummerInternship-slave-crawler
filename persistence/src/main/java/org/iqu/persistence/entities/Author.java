@@ -20,4 +20,9 @@ public class Author {
 	public void setName(String authorName) {
 		this.ame = authorName;
 	}
+
+	@Override
+	public String toString() {
+		return "Author [authorID=" + authorID + ", ame=" + ame + "]";
+	}
 }

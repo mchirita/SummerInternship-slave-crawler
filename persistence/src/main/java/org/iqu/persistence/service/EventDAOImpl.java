@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.iqu.persistence.entities.Author;
 import org.iqu.persistence.entities.Event;
+import org.iqu.persistence.entities.News;
 import org.iqu.persistence.entities.Source;
 import org.iqu.persistence.entities.Type;
 
-public class EventService implements EventDAO {
+public class EventDAOImpl implements EventDAO {
 
 	@Override
 	public void create(Event entity) {
@@ -53,6 +54,12 @@ public class EventService implements EventDAO {
 
 	@Override
 	public List<Type> retrieveTypesAndSubtypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<News> findAllBySource(Source source) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -21,4 +21,9 @@ public class Category {
 		this.name = string;
 	}
 
+	@Override
+	public String toString() {
+		return "Category [id=" + id + ", name=" + name + "]";
+	}
+
 }
