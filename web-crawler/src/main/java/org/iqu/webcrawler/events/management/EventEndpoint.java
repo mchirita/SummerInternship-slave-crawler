@@ -11,12 +11,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.iqu.crawler.entities.Source;
 import org.iqu.webcrawler.entities.Authors;
-import org.iqu.webcrawler.entities.Categories;
 import org.iqu.webcrawler.entities.ErrorMessage;
 import org.iqu.webcrawler.entities.Event;
 import org.iqu.webcrawler.entities.Events;
+import org.iqu.webcrawler.entities.Source;
+import org.iqu.webcrawler.entities.Sources;
+import org.iqu.webcrawler.entities.Type;
+import org.iqu.webcrawler.entities.Types;
 
 @Path("/")
 public class EventEndpoint {
@@ -84,9 +86,12 @@ public class EventEndpoint {
 		status = 0;
 		Source source = new Source("1", "BNR Brasov", "This is the official BNR site");
 
-		if (source.getDisplayName().equals("BNR Brasov")) {
+		Sources sources = new Sources();
+		sources.addSource(source);
+
+		if (!sources.isEmpty()) {
 			status = 200;
-			return Response.status(status).entity(source).build();
+			return Response.status(status).entity(sources).build();
 		} else {
 			status = 404;
 			response = "\"error\" : \"Could not fetch sources, please try again later.\"";
@@ -99,22 +104,23 @@ public class EventEndpoint {
 	 * 
 	 * @return
 	 */
-	@Path("/categories")
+	@Path("/types")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response retriveTypes() {
 
-		Categories categories = new Categories();
-		categories.addCategory("music");
-		categories.addCategory("music");
-		categories.addCategory("IT");
-		categories.addCategory("politics");
+		Types types = new Types();
+		Set<String> subtypes = new HashSet<String>();
+		subtypes.add("Rock");
+		subtypes.add("Folk");
+		types.addType(new Type("music", subtypes));
+		types.addType(new Type("Circ", subtypes));
 
-		if (categories.isEmpty()) {
+		if (types.isEmpty()) {
 			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
 			return Response.status(404).entity(errorMessage).build();
 		}
-		return Response.status(200).entity(categories).build();
+		return Response.status(200).entity(types).build();
 	}
 
 }
