@@ -1,11 +1,10 @@
 package org.iqu.crawler;
 
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.iqu.crawler.configuration.CrawlerConfiguration;
 import org.iqu.crawler.configuration.entities.SourceConfig;
+import org.iqu.crawler.entities.ParsedData;
+import org.iqu.crawler.entities.ParserDataType;
 import org.iqu.parsers.Parser;
 import org.iqu.parsers.entities.Event;
 import org.iqu.parsers.entities.NewsArticle;
@@ -26,34 +25,28 @@ public class Crawler {
 
   /**
    * Iterates through every source configuration and extracts the sourceURL and
-   * corresponding parser. Extracts the proper data type to hold the parsed
-   * information (e.g. NewsArticle, Events) from the parser's class information
-   * using reflection.
+   * corresponding parser. Wraps all parsed data into a ParsedData object and
+   * forwards it to a DAO Manager.
    */
   public void runParsers() {
-
     for (SourceConfig sourceConfig : configuration.getConfigs()) {
+      ParsedData parsedData = new ParsedData();
       try {
 
-        Class<?> parserClass = Class.forName(sourceConfig.getParserName());
-        ParameterizedType type = (ParameterizedType) parserClass.getGenericInterfaces()[0];
-        Class<?> dataClass = (Class<?>) type.getActualTypeArguments()[0];
-
-        if (dataClass == NewsArticle.class) {
-
+        if (sourceConfig.getDataType() == ParserDataType.NEWS) {
           Parser<NewsArticle> parser = (Parser<NewsArticle>) Class.forName(sourceConfig.getParserName()).newInstance();
-          List<NewsArticle> news = parser.readFeed(sourceConfig.getSource(), "UTF-8");
-          // TODO: pass News to DAO Manager (unimplemented at this moment)
+          parsedData.setNews(parser.readFeed(sourceConfig.getSource(), "UTF-8"));
 
-        } else if (dataClass == Event.class) {
+        } else if (sourceConfig.getDataType() == ParserDataType.EVENTS) {
 
           Parser<Event> parser = (Parser<Event>) Class.forName(sourceConfig.getParserName()).newInstance();
-          List<Event> news = parser.readFeed(sourceConfig.getSource(), "UTF-8");
-          // TODO: pass Events to DAO Manager (unimplemented at this moment)
+          parsedData.setEvents(parser.readFeed(sourceConfig.getSource(), "UTF-8"));
 
         } else {
-          LOGGER.info("Not programmed to handle " + dataClass + " data type.");
+          LOGGER.info("Unable to handle " + sourceConfig.getDataType() + " data type.");
         }
+
+        // TODO: forward the parsedData object to the DAO Manager
 
       } catch (ClassNotFoundException e) {
         LOGGER.error("Can't find the parser class!", e);
