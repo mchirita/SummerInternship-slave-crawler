@@ -10,118 +10,121 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.iqu.webcrawler.entities.Author;
+import org.iqu.parsers.entities.Source;
+import org.iqu.webcrawler.entities.Authors;
 import org.iqu.webcrawler.entities.Categories;
 import org.iqu.webcrawler.entities.ErrorMessage;
-import org.iqu.webcrawler.entities.Source;
 
 @Path("/")
 public class NewsEndpoint {
 
-	/**
-	 * Service that will return all authors
-	 */
+  /**
+   * Service that will return all authors
+   */
 
-	@Path("/authors")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response retrieveAuthors() {
+  @Path("/authors")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response retrieveAuthors() {
 
-		// TODO connect to the database
+    // TODO connect to the database
 
-		Set<Author> authors = new HashSet<Author>();
-		authors.add(new Author("Clark Kent"));
-		authors.add(new Author("Louis Lane"));
-		authors.add(new Author("Peter Parker"));
-		authors.add(new Author("Ville Valo"));
+    Authors authors = new Authors();
+    authors.addAuthor("Clark Kent");
+    authors.addAuthor("Louis Lane");
+    authors.addAuthor("Peter Parker");
+    authors.addAuthor("Ville Valo");
 
-		// authors.clear();
+    int status = 0;
+    if (authors.size() > 0) {
+      status = 200;
+      return Response.status(status).entity(authors).build();
+    }
+    status = 404;
+    ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+    return Response.status(status).entity(errorMessage).build();
+  }
 
-		String response = "";
-		int status = 0;
-		if (authors.size() > 0) {
-			response = "{\"authors\" :" + authors.toString() + "}";
-			status = 200;
-		} else {
-			response = "{\"eror\" : \"Could not fetch authors, please try again later.\"}";
-			status = 404;
-		}
+  /**
+   * This method implements retrieve categories service.
+   */
 
-		return Response.status(status).entity(response).build();
-	}
+  @Path("/categories")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response retriveCategories() {
 
-	/**
-	 * This method implements retrieve categories service.
-	 */
+    Categories categories = new Categories();
+    categories.addCategory("music");
+    categories.addCategory("music");
+    categories.addCategory("IT");
+    categories.addCategory("politics");
 
-	@Path("/categories")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response retriveCategories() {
-		Categories categories = new Categories();
+    if (categories.isEmpty()) {
+      ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+      return Response.status(404).entity(errorMessage).build();
+    }
+    return Response.status(200).entity(categories).build();
+  }
 
-		// ToDo get categories from db.
-		categories.addCategory("music");
-		categories.addCategory("music");
-		categories.addCategory("politics");
-		categories.addCategory("IT");
+  /**
+   * Retrieves news based on filters, that are sent as query parameters.
+   * 
+   */
+  @Path("/")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getNews(@QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
+      @QueryParam("categories") String categories, @QueryParam("about") String about,
+      @QueryParam("sourceId") String sourceId, @QueryParam("author") String author,
+      @QueryParam("location") String location) {
 
-		if (categories.isEmpty()) {
-			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-			return Response.ok("{\"error\" : " + "\"" + errorMessage.getMessage() + "\"}").build();
-		}
+    String response = "";
+    int status = 200;
 
-		return Response.status(200).entity("{\"categories\" : " + "\"" + categories.getCategories() + "\"}").build();
-	}
+    try {
+      long startDateLong = Long.parseLong(startDate);
 
-	/**
-	 * Retrieves news based on filters, that are sent as query parameters.
-	 * 
-	 */
-	@Path("/")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getNews(@QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
-			@QueryParam("categories") String categories, @QueryParam("about") String about,
-			@QueryParam("sourceId") String sourceId, @QueryParam("author") String author,
-			@QueryParam("location") String location) {
+      // TODO: implement actual filtering of data
 
-		String response = "";
-		int status = 200;
+    } catch (NumberFormatException e) {
+      ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+      status = 400;
+      return Response.status(400).entity(errorMessage).build();
+    }
 
-		try {
-			long startDateLong = Long.parseLong(startDate);
+    return Response.status(status).entity(response).build();
+  }
 
-			// TODO: implement actual filtering of data
+  /**
+   * This method returns a list of sources where we grab our content.
+   */
+  @Path("/sources")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response retrieveSource() {
+    int status;
+    String response = "";
+    status = 0;
+    Set<Source> sources = new HashSet<Source>();
 
-		} catch (NumberFormatException e) {
-			status = 400;
-			response = "{ \"error\" : \"startDate parameter missing/invalid\" }";
-		}
+    // ToDo get sources from db
+    sources.add(new Source("1", "BNR Brasov", "This is the official BNR site",
+        "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
+    sources.add(new Source("2", "BNR Brasov", "This is the official BNR site",
+        "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
+    sources.add(new Source("3", "BNR Brasov", "This is the official BNR site",
+        "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
 
-		return Response.status(status).entity(response).build();
-	}
+    if (sources.isEmpty()) {
+      status = 404;
+      ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+      return Response.status(status).entity(errorMessage).build();
+    }
 
-	/**
-	 * This method returns a list of sources where we grab our content.
-	 */
-	@Path("/sources")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response retrieveSource() {
-		int status;
-		String response = "";
-		status = 0;
-		Source source = new Source("1", "BNR Brasov", "This is the official BNR site");
+    status = 200;
+    return Response.status(status).entity("{\"sources\" : " + "\"" + sources + "\"}").build();
 
-		if (source.getDisplayName().equals("BNR Brasov")) {
-			status = 200;
-			return Response.status(status).entity(source).build();
-		} else {
-			status = 404;
-			response = "\"error\" : \"Could not fetch sources, please try again later.\"";
-			return Response.status(status).entity(response).build();
-		}
-	}
+  }
 
 }

@@ -10,11 +10,20 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.iqu.webcrawler.entities.Author;
+import org.apache.log4j.Logger;
+import org.iqu.webcrawler.entities.Authors;
+import org.iqu.webcrawler.entities.ErrorMessage;
+import org.iqu.webcrawler.entities.Event;
+import org.iqu.webcrawler.entities.Events;
 import org.iqu.webcrawler.entities.Source;
+import org.iqu.webcrawler.entities.Sources;
+import org.iqu.webcrawler.entities.Type;
+import org.iqu.webcrawler.entities.Types;
 
 @Path("/")
 public class EventEndpoint {
+
+	private Logger LOGGER = Logger.getLogger(EventEndpoint.class);
 
 	/**
 	 * Service that will return all authors
@@ -25,27 +34,20 @@ public class EventEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response retrieveAuthors() {
 
-		// TODO connect to the database
+		Authors authors = new Authors();
+		authors.addAuthor("Clark Kent");
+		authors.addAuthor("Louis Lane");
+		authors.addAuthor("Peter Parker");
+		authors.addAuthor("Ville Valo");
 
-		Set<Author> authors = new HashSet<Author>();
-		authors.add(new Author("Clark Kent"));
-		authors.add(new Author("Louis Lane"));
-		authors.add(new Author("Peter Parker"));
-		authors.add(new Author("Ville Valo"));
-
-		// authors.clear();
-
-		String response = "";
 		int status = 0;
 		if (authors.size() > 0) {
-			response = "{\"authors\" :" + authors.toString() + "}";
 			status = 200;
-		} else {
-			response = "{\"eror\" : \"Could not fetch authors, please try again later.\"}";
-			status = 404;
+			return Response.status(status).entity(authors).build();
 		}
-
-		return Response.status(status).entity(response).build();
+		status = 404;
+		ErrorMessage errorMessage = new ErrorMessage("Could not find authors, please try again later.");
+		return Response.status(status).entity(errorMessage).build();
 	}
 
 	@Path("/")
@@ -56,15 +58,21 @@ public class EventEndpoint {
 			@QueryParam("sourceId") String sourceId, @QueryParam("author") String author,
 			@QueryParam("location") String location) {
 
-		String response = "";
+		Set<Event> events = new HashSet<Event>();
+		Event event1 = new Event();
+		event1.setDescription("abcdef");
+		event1.setSource("www.google.com");
+		events.add(event1);
+		Events eevents = new Events(events);
+
 		if (startDate == null) {
-			response = "{\"error\" : \"Requested location not available\"}";
-			return Response.status(400).entity(response).build();
+			String response = "{\"error\" : \"Requested location not available\"}";
+			return Response.status(200).entity(eevents).build();
 		} else {
 			return Response.ok().build();
 		}
 	}
-	// TO DO : implement filter of data
+	// TO DO : implement filter of data, Search in DB
 
 	/**
 	 * This method returns a list of sources where we grab our content.
@@ -78,9 +86,12 @@ public class EventEndpoint {
 		status = 0;
 		Source source = new Source("1", "BNR Brasov", "This is the official BNR site");
 
-		if (source.getDisplayName().equals("BNR Brasov")) {
+		Sources sources = new Sources();
+		sources.addSource(source);
+
+		if (!sources.isEmpty()) {
 			status = 200;
-			return Response.status(status).entity(source).build();
+			return Response.status(status).entity(sources).build();
 		} else {
 			status = 404;
 			response = "\"error\" : \"Could not fetch sources, please try again later.\"";
@@ -98,8 +109,18 @@ public class EventEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response retriveTypes() {
 
-		String type = "Concert";
-		return Response.ok("[{\"Type\": " + "\"" + type + "\",\n\"Subtypes\" : [\"rock\", \"classical\"]}]").build();
+		Types types = new Types();
+		Set<String> subtypes = new HashSet<String>();
+		subtypes.add("Rock");
+		subtypes.add("Folk");
+		types.addType(new Type("music", subtypes));
+		types.addType(new Type("Circ", subtypes));
+
+		if (types.isEmpty()) {
+			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+			return Response.status(404).entity(errorMessage).build();
+		}
+		return Response.status(200).entity(types).build();
 	}
 
 }

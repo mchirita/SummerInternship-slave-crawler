@@ -8,7 +8,7 @@ package org.iqu.webcrawler.entities;
  */
 public class ErrorMessage {
 
-	private String message;
+	private String error;
 
 	public ErrorMessage() {
 
@@ -16,15 +16,15 @@ public class ErrorMessage {
 
 	public ErrorMessage(String message) {
 		super();
-		this.message = message;
+		this.error = message;
 	}
 
 	public String getMessage() {
-		return message;
+		return error;
 	}
 
 	public void setMessage(String message) {
-		this.message = message;
+		this.error = message;
 	}
 
 }

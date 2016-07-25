@@ -3,12 +3,18 @@ package org.iqu.webcrawler.entities;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Categories - Class that represents a set of categories.
  * 
  * @author Razvan Rosu
  *
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Categories {
 
 	private Set<String> categories = new HashSet<String>();

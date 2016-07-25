@@ -1,5 +1,7 @@
 package org.iqu.crawler.configuration.entities;
 
+import org.iqu.crawler.entities.DataType;
+
 /**
  * 
  * @author BeniaminSavu
@@ -9,56 +11,42 @@ package org.iqu.crawler.configuration.entities;
  */
 public class SourceConfig {
 
-	private String parserClassName;
-	private String source;
+  private String parserClassName;
+  private String source;
+  private DataType dataType;
 
-	public SourceConfig(String parserName, String source) {
-		this.parserClassName = parserName;
-		this.source = source;
-	}
+  public SourceConfig(String parserName, String source, String dataType) {
+    this.parserClassName = parserName;
+    this.source = source;
+    this.dataType = DataType.valueOf(dataType);
+  }
 
-	public String getParserName() {
-		return parserClassName;
-	}
+  public String getParserName() {
+    return parserClassName;
+  }
 
-	public String getSource() {
-		return source;
-	}
+  public String getSource() {
+    return source;
+  }
 
-	@Override
-	public String toString() {
-		return "SourceConfiguration [parserName=" + parserClassName + ", source=" + source + "]\n";
-	}
+  public String getParserClassName() {
+    return parserClassName;
+  }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((parserClassName == null) ? 0 : parserClassName.hashCode());
-		result = prime * result + ((source == null) ? 0 : source.hashCode());
-		return result;
-	}
+  public void setParserClassName(String parserClassName) {
+    this.parserClassName = parserClassName;
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		SourceConfig other = (SourceConfig) obj;
-		if (parserClassName == null) {
-			if (other.parserClassName != null)
-				return false;
-		} else if (!parserClassName.equals(other.parserClassName))
-			return false;
-		if (source == null) {
-			if (other.source != null)
-				return false;
-		} else if (!source.equals(other.source))
-			return false;
-		return true;
-	}
+  public DataType getDataType() {
+    return dataType;
+  }
+
+  public void setDataType(DataType dataType) {
+    this.dataType = dataType;
+  }
+
+  public void setSource(String source) {
+    this.source = source;
+  }
 
 }

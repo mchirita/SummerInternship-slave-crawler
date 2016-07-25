@@ -30,7 +30,7 @@ public class ConfigurationManager {
 	private ConfigurationManager() {
 		notifier = new CrawlerConfigChangeHandler();
 		loader = new CrawlerConfigLoader(notifier, PATH);
-		loader.loadProperties();
+		// loader.loadProperties();
 		init();
 	}
 
@@ -63,7 +63,7 @@ public class ConfigurationManager {
 	 * Adds the specified element to the notifier if it is not already present
 	 * 
 	 * @param listener
-	 *          element to be added to the notifier
+	 *            element to be added to the notifier
 	 */
 	public void register(ConfigChangeListener listener) {
 		notifier.addListener(listener);
