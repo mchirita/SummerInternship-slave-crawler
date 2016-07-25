@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.iqu.webcrawler.entities.Author;
-import org.iqu.webcrawler.entities.Categories;
+import org.iqu.webcrawler.entities.Category;
 import org.iqu.webcrawler.entities.ErrorMessage;
 import org.iqu.webcrawler.entities.Source;
 
@@ -35,15 +35,13 @@ public class NewsEndpoint {
 		authors.add(new Author("Peter Parker"));
 		authors.add(new Author("Ville Valo"));
 
-		// authors.clear();
-
 		String response = "";
 		int status = 0;
 		if (authors.size() > 0) {
 			response = "{\"authors\" :" + authors.toString() + "}";
 			status = 200;
 		} else {
-			response = "{\"eror\" : \"Could not fetch authors, please try again later.\"}";
+			response = "{\"error\" : \"Could not fetch authors, please try again later.\"}";
 			status = 404;
 		}
 
@@ -58,20 +56,20 @@ public class NewsEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response retriveCategories() {
-		Categories categories = new Categories();
 
+		Set<Category> categories = new HashSet<Category>();
 		// ToDo get categories from db.
-		categories.addCategory("music");
-		categories.addCategory("music");
-		categories.addCategory("politics");
-		categories.addCategory("IT");
+		categories.add(new Category("music"));
+		categories.add(new Category("music"));
+		categories.add(new Category("politics"));
+		categories.add(new Category("IT"));
 
 		if (categories.isEmpty()) {
 			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-			return Response.ok("{\"error\" : " + "\"" + errorMessage.getMessage() + "\"}").build();
+			return Response.status(404).entity("{\"error\" : " + "\"" + errorMessage.getMessage() + "\"}").build();
 		}
 
-		return Response.status(200).entity("{\"categories\" : " + "\"" + categories.getCategories() + "\"}").build();
+		return Response.status(200).entity("{\"categories\" : " + categories.toString() + "}").build();
 	}
 
 	/**
@@ -112,16 +110,22 @@ public class NewsEndpoint {
 		int status;
 		String response = "";
 		status = 0;
-		Source source = new Source("1", "BNR Brasov", "This is the official BNR site");
+		Set<Source> sources = new HashSet<Source>();
 
-		if (source.getDisplayName().equals("BNR Brasov")) {
-			status = 200;
-			return Response.status(status).entity(source).build();
-		} else {
+		// ToDo get sources from db
+		sources.add(new Source("1", "BNR Brasov", "This is the official BNR site"));
+		sources.add(new Source("2", "BNR Brasov", "This is the official BNR site"));
+		sources.add(new Source("3", "BNR Brasov", "This is the official BNR site"));
+
+		if (sources.isEmpty()) {
 			status = 404;
 			response = "\"error\" : \"Could not fetch sources, please try again later.\"";
 			return Response.status(status).entity(response).build();
 		}
+
+		status = 200;
+		return Response.status(status).entity("{\"sources\" : " + "\"" + sources + "\"}").build();
+
 	}
 
 }

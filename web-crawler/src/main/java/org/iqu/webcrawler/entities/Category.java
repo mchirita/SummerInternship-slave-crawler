@@ -5,17 +5,17 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Category - Entity that represents a category.
  * 
- * @author Beniamin Savu
+ * @author Alex Dragomir
  *
- *         Entity that represents an author
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Author {
+public class Category {
 	private String name;
 
-	public Author(String name) {
+	public Category(String name) {
 		this.name = name;
 	}
 
@@ -40,7 +40,7 @@ public class Author {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Author other = (Author) obj;
+		Category other = (Category) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;

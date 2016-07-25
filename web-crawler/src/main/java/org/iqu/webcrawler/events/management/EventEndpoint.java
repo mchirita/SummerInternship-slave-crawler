@@ -38,7 +38,7 @@ public class EventEndpoint {
 		String response = "";
 		int status = 0;
 		if (authors.size() > 0) {
-			response = "{\"authors\" :" + authors.toString() + "}";
+			response = "{\"authors\" :" + "\"" + authors.toString() + "\"}";
 			status = 200;
 		} else {
 			response = "{\"eror\" : \"Could not fetch authors, please try again later.\"}";
