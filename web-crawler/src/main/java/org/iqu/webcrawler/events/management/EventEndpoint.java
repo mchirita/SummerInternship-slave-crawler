@@ -46,7 +46,7 @@ public class EventEndpoint {
 			return Response.status(status).entity(authors).build();
 		}
 		status = 404;
-		ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+		ErrorMessage errorMessage = new ErrorMessage("Could not find authors, please try again later.");
 		return Response.status(status).entity(errorMessage).build();
 	}
 
@@ -72,7 +72,7 @@ public class EventEndpoint {
 			return Response.ok().build();
 		}
 	}
-	// TO DO : implement filter of data
+	// TO DO : implement filter of data, Search in DB
 
 	/**
 	 * This method returns a list of sources where we grab our content.
