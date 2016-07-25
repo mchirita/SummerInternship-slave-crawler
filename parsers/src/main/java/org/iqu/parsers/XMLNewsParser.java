@@ -17,6 +17,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.iqu.parsers.entities.NewsArticle;
+import org.iqu.parsers.entities.Source;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -25,13 +26,21 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Parser implementation that reads news articles from RSS feeds using DOM API.
+ * Parser implementation that reads RSS news feeds using DOM API.
  * 
  * @author Cristi Badoi
  *
  */
-public class DomNewsParser implements Parser<NewsArticle> {
-  private static final Logger LOGGER = Logger.getLogger(DomNewsParser.class);
+public class XMLNewsParser implements Parser<NewsArticle> {
+
+  private static final Logger LOGGER = Logger.getLogger(XMLNewsParser.class);
+
+  private Source source;
+
+  @Override
+  public Source getSource() {
+    return source;
+  }
 
   @Override
   public List<NewsArticle> readFeed(String sourceURL, String encoding) {
@@ -42,7 +51,18 @@ public class DomNewsParser implements Parser<NewsArticle> {
           .parse(new InputSource(new InputStreamReader(new URL(sourceURL).openStream(), encoding)));
       document.getDocumentElement().normalize();
 
-      NodeList nList = document.getDocumentElement().getElementsByTagName("item");
+      source = new Source();
+      Node sourceTitle = document.getDocumentElement().getElementsByTagName(XMLParserConstants.TITLE).item(0);
+      source.setDisplayName(sourceTitle.getTextContent());
+      Node sourceDescription = document.getDocumentElement().getElementsByTagName(XMLParserConstants.DESCRIPTION)
+          .item(0);
+      source.setDescription(sourceDescription.getTextContent());
+      Element imageNode = (Element) document.getDocumentElement().getElementsByTagName(XMLParserConstants.SOURCE_IMAGE)
+          .item(0);
+      Node imageUrl = imageNode.getElementsByTagName(XMLParserConstants.URL).item(0);
+      source.setImage(imageUrl.getTextContent());
+
+      NodeList nList = document.getDocumentElement().getElementsByTagName(XMLParserConstants.ITEM);
 
       for (int i = 0; i < nList.getLength(); i++) {
         Node node = nList.item(i);
@@ -55,8 +75,9 @@ public class DomNewsParser implements Parser<NewsArticle> {
           article.setDescription(getValue(element, XMLParserConstants.DESCRIPTION));
           article.setCategories(getValues(element, XMLParserConstants.CATEGORY));
           article.setDate(convertDate(getValue(element, XMLParserConstants.DATE)));
-          article.setImages(getAttributeValues(element, XMLParserConstants.IMAGE_MEDIA_CONTENT, "url"));
-          article.setEnclosure(getAttributeValue(element, XMLParserConstants.IMAGE_ENCLOSURE, "url"));
+          article
+              .setImages(getAttributeValues(element, XMLParserConstants.IMAGE_MEDIA_CONTENT, XMLParserConstants.URL));
+          article.setEnclosure(getAttributeValue(element, XMLParserConstants.IMAGE_ENCLOSURE, XMLParserConstants.URL));
           article.setAuthors(getValues(element, XMLParserConstants.DC_AUTHOR));
           article.setSource(sourceURL);
           result.add(article);

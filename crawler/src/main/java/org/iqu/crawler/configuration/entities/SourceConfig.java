@@ -1,6 +1,6 @@
 package org.iqu.crawler.configuration.entities;
 
-import org.iqu.crawler.entities.ParserDataType;
+import org.iqu.crawler.entities.DataType;
 
 /**
  * 
@@ -13,12 +13,12 @@ public class SourceConfig {
 
   private String parserClassName;
   private String source;
-  private ParserDataType dataType;
+  private DataType dataType;
 
   public SourceConfig(String parserName, String source, String dataType) {
     this.parserClassName = parserName;
     this.source = source;
-    this.dataType = ParserDataType.valueOf(dataType);
+    this.dataType = DataType.valueOf(dataType);
   }
 
   public String getParserName() {
@@ -37,11 +37,11 @@ public class SourceConfig {
     this.parserClassName = parserClassName;
   }
 
-  public ParserDataType getDataType() {
+  public DataType getDataType() {
     return dataType;
   }
 
-  public void setDataType(ParserDataType dataType) {
+  public void setDataType(DataType dataType) {
     this.dataType = dataType;
   }
 
