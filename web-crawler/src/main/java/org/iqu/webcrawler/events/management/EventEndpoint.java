@@ -10,13 +10,18 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Logger;
 import org.iqu.crawler.entities.Source;
-import org.iqu.webcrawler.entities.Author;
+import org.iqu.webcrawler.entities.Authors;
+import org.iqu.webcrawler.entities.Categories;
+import org.iqu.webcrawler.entities.ErrorMessage;
 import org.iqu.webcrawler.entities.Event;
 import org.iqu.webcrawler.entities.Events;
 
 @Path("/")
 public class EventEndpoint {
+
+	private Logger LOGGER = Logger.getLogger(EventEndpoint.class);
 
 	/**
 	 * Service that will return all authors
@@ -27,27 +32,20 @@ public class EventEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response retrieveAuthors() {
 
-		// TODO connect to the database
+		Authors authors = new Authors();
+		authors.addAuthor("Clark Kent");
+		authors.addAuthor("Louis Lane");
+		authors.addAuthor("Peter Parker");
+		authors.addAuthor("Ville Valo");
 
-		Set<Author> authors = new HashSet<Author>();
-		authors.add(new Author("Clark Kent"));
-		authors.add(new Author("Louis Lane"));
-		authors.add(new Author("Peter Parker"));
-		authors.add(new Author("Ville Valo"));
-
-		// authors.clear();
-
-		String response = "";
 		int status = 0;
 		if (authors.size() > 0) {
-			response = "{\"authors\" :" + "\"" + authors.toString() + "\"}";
 			status = 200;
-		} else {
-			response = "{\"eror\" : \"Could not fetch authors, please try again later.\"}";
-			status = 404;
+			return Response.status(status).entity(authors).build();
 		}
-
-		return Response.status(status).entity(response).build();
+		status = 404;
+		ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+		return Response.status(status).entity(errorMessage).build();
 	}
 
 	@Path("/")
@@ -101,13 +99,22 @@ public class EventEndpoint {
 	 * 
 	 * @return
 	 */
-	@Path("/types")
+	@Path("/categories")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response retriveTypes() {
 
-		String type = "Concert";
-		return Response.ok("[{\"Type\": " + "\"" + type + "\",\n\"Subtypes\" : [\"rock\", \"classical\"]}]").build();
+		Categories categories = new Categories();
+		categories.addCategory("music");
+		categories.addCategory("music");
+		categories.addCategory("IT");
+		categories.addCategory("politics");
+
+		if (categories.isEmpty()) {
+			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+			return Response.status(404).entity(errorMessage).build();
+		}
+		return Response.status(200).entity(categories).build();
 	}
 
 }
