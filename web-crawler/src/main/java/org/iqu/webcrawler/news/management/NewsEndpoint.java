@@ -10,7 +10,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.iqu.crawler.entities.Source;
+import org.iqu.parsers.entities.Source;
 import org.iqu.webcrawler.entities.Authors;
 import org.iqu.webcrawler.entities.Categories;
 import org.iqu.webcrawler.entities.ErrorMessage;
@@ -109,9 +109,12 @@ public class NewsEndpoint {
 		Set<Source> sources = new HashSet<Source>();
 
 		// ToDo get sources from db
-		sources.add(new Source("1", "BNR Brasov", "This is the official BNR site"));
-		sources.add(new Source("2", "BNR Brasov", "This is the official BNR site"));
-		sources.add(new Source("3", "BNR Brasov", "This is the official BNR site"));
+		sources.add(new Source("1", "BNR Brasov", "This is the official BNR site",
+				"http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
+		sources.add(new Source("2", "BNR Brasov", "This is the official BNR site",
+				"http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
+		sources.add(new Source("3", "BNR Brasov", "This is the official BNR site",
+				"http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
 
 		if (sources.isEmpty()) {
 			status = 404;
