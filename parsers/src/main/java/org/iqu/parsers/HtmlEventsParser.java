@@ -60,7 +60,7 @@ public class HtmlEventsParser implements Parser<Event> {
       Connection connection = Jsoup.connect(sourceURL);
       if (connection != null) {
         doc = connection.get();
-        readSource(doc);
+        readSourceInfo(doc);
         readItems(events, doc);
       }
 
@@ -71,7 +71,7 @@ public class HtmlEventsParser implements Parser<Event> {
     return events;
   }
 
-  private void readSource(Document doc) {
+  private void readSourceInfo(Document doc) {
     // TODO: Read information about the source.
 
   }
@@ -90,7 +90,10 @@ public class HtmlEventsParser implements Parser<Event> {
   private void takeEvents(String eventsURL, List<Event> events) {
     Document doc = null;
     try {
-      doc = Jsoup.connect(eventsURL).get();
+      Connection connection = Jsoup.connect(eventsURL);
+      if (connection != null) {
+        doc = connection.get();
+      }
     } catch (MalformedURLException e) {
       LOGGER.error("Invalid URL!", e);
     } catch (IOException e) {
