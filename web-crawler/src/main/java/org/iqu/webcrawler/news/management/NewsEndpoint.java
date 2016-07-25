@@ -10,8 +10,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.iqu.webcrawler.entities.Author;
-import org.iqu.webcrawler.entities.Category;
+import org.iqu.webcrawler.entities.Authors;
+import org.iqu.webcrawler.entities.Categories;
 import org.iqu.webcrawler.entities.ErrorMessage;
 import org.iqu.webcrawler.entities.Source;
 
@@ -29,23 +29,20 @@ public class NewsEndpoint {
 
 		// TODO connect to the database
 
-		Set<Author> authors = new HashSet<Author>();
-		authors.add(new Author("Clark Kent"));
-		authors.add(new Author("Louis Lane"));
-		authors.add(new Author("Peter Parker"));
-		authors.add(new Author("Ville Valo"));
+		Authors authors = new Authors();
+		authors.addAuthor("Clark Kent");
+		authors.addAuthor("Louis Lane");
+		authors.addAuthor("Peter Parker");
+		authors.addAuthor("Ville Valo");
 
-		String response = "";
 		int status = 0;
 		if (authors.size() > 0) {
-			response = "{\"authors\" :" + authors.toString() + "}";
 			status = 200;
-		} else {
-			response = "{\"error\" : \"Could not fetch authors, please try again later.\"}";
-			status = 404;
+			return Response.status(status).entity(authors).build();
 		}
-
-		return Response.status(status).entity(response).build();
+		status = 404;
+		ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+		return Response.status(status).entity(errorMessage).build();
 	}
 
 	/**
@@ -57,19 +54,17 @@ public class NewsEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response retriveCategories() {
 
-		Set<Category> categories = new HashSet<Category>();
-		// ToDo get categories from db.
-		categories.add(new Category("music"));
-		categories.add(new Category("music"));
-		categories.add(new Category("politics"));
-		categories.add(new Category("IT"));
+		Categories categories = new Categories();
+		categories.addCategory("music");
+		categories.addCategory("music");
+		categories.addCategory("IT");
+		categories.addCategory("politics");
 
 		if (categories.isEmpty()) {
 			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-			return Response.status(404).entity("{\"error\" : " + "\"" + errorMessage.getMessage() + "\"}").build();
+			return Response.status(404).entity(errorMessage).build();
 		}
-
-		return Response.status(200).entity("{\"categories\" : " + categories.toString() + "}").build();
+		return Response.status(200).entity(categories).build();
 	}
 
 	/**
@@ -93,8 +88,9 @@ public class NewsEndpoint {
 			// TODO: implement actual filtering of data
 
 		} catch (NumberFormatException e) {
+			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
 			status = 400;
-			response = "{ \"error\" : \"startDate parameter missing/invalid\" }";
+			return Response.status(400).entity(errorMessage).build();
 		}
 
 		return Response.status(status).entity(response).build();
@@ -119,8 +115,8 @@ public class NewsEndpoint {
 
 		if (sources.isEmpty()) {
 			status = 404;
-			response = "\"error\" : \"Could not fetch sources, please try again later.\"";
-			return Response.status(status).entity(response).build();
+			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
+			return Response.status(status).entity(errorMessage).build();
 		}
 
 		status = 200;
