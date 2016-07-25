@@ -41,35 +41,46 @@ public class HtmlEventsParser implements Parser<Event> {
   private static String pattern = "yyyy-MM-dd'T'HH:mm:ss'+'hh:mm";
   private static DateFormat dF = new SimpleDateFormat(pattern);
   private String categories = "";
-  private String source;
+  private String sourceURL;
+  private Source source;
 
   @Override
   public Source getSource() {
-    // TODO: implement reading of source information from feed
-    return null;
+    return source;
   }
 
   @Override
   public List<Event> readFeed(String sourceURL, String encoding) {
 
     List<Event> events = new ArrayList<Event>();
-    source = sourceURL;
+    this.sourceURL = sourceURL;
     Document doc = null;
     try {
       doc = Jsoup.connect(sourceURL).get();
+      readSource(doc);
+      readItems(events, doc);
+
     } catch (IOException e) {
-      LOGGER.error("Error loading URL");
-    }
-    Elements item = doc.getElementsByClass(EVENTGROUP);
-
-    for (Element element : item) {
-
-      String UrlToConnect = element.getElementsByTag(A).attr(URL);
-      if (UrlToConnect != null && UrlToConnect.length() != 0)
-        takeEvents(element.getElementsByTag(A).attr(URL), events);
+      LOGGER.error("Error loading URL", e);
     }
 
     return events;
+  }
+
+  private void readSource(Document doc) {
+    // TODO: Read information about the source.
+
+  }
+
+  private void readItems(List<Event> events, Document doc) {
+    Elements item = doc.getElementsByClass(EVENTGROUP);
+
+    for (Element element : item) {
+      String UrlToConnect = element.getElementsByTag(A).attr(URL);
+      if (UrlToConnect != null && UrlToConnect.length() != 0) {
+        takeEvents(element.getElementsByTag(A).attr(URL), events);
+      }
+    }
   }
 
   private void takeEvents(String eventsURL, List<Event> events) {
@@ -89,7 +100,7 @@ public class HtmlEventsParser implements Parser<Event> {
         getTags(element);
         events.add(event);
       } catch (ParseException e) {
-        LOGGER.error("Invalid tags");
+        LOGGER.error("Invalid tags", e);
       }
     }
 
@@ -102,7 +113,7 @@ public class HtmlEventsParser implements Parser<Event> {
     event.setDescription(element.getElementsByClass(DESCRIPTION).html());
     event.setId(element.getElementsByClass(EVENTLIST).attr(ID) + "-" + categories);
     event.setStartDate(convertDate(element.getElementsByTag(TIME).attr(DATE)));
-    event.setSource(source);
+    event.setSource(sourceURL);
     event.setCategories(categories);
     event.setEndDate(
         convertDate(element.getElementsByAttributeValue("itemprop", "endDate").attr(HtmlParserConstants.DATE)));
