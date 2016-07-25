@@ -23,106 +23,108 @@ import org.iqu.crawler.configuration.exception.LoaderExceptionConstants;
  */
 public class CrawlerConfigLoader implements ConfigLoader {
 
-	private String path;
-	private ConfigChangeHandler notifier;
-	private Properties properties = new Properties();
-	private List<SourceConfig> crawlerProperties = new ArrayList<SourceConfig>();
-	private File file;
-	private Long lastModified;
+  private String path;
+  private ConfigChangeHandler notifier;
+  private Properties properties = new Properties();
+  private List<SourceConfig> crawlerProperties = new ArrayList<SourceConfig>();
+  private File file;
+  private Long lastModified;
 
-	public CrawlerConfigLoader(ConfigChangeHandler notifier, String path) {
-		this.notifier = notifier;
-		this.path = path;
-		file = new File(path);
-	}
+  public CrawlerConfigLoader(ConfigChangeHandler notifier, String path) {
+    this.notifier = notifier;
+    this.path = path;
+    file = new File(path);
+  }
 
-	@Override
-	public void loadProperties() {
-		if (fileIsValid()) {
-			if (lastModified == null) {
-				readProperties(crawlerProperties);
-			} else if (lastModified < file.lastModified()) {
-				checkForNewProperties();
-			}
-		} else {
-			throw new ConfigLoaderException(LoaderExceptionConstants.FILE_CORRUPTED);
-		}
-	}
+  @Override
+  public void loadProperties() {
+    if (fileIsValid()) {
+      if (lastModified == null) {
+        readProperties(crawlerProperties);
+      } else if (lastModified < file.lastModified()) {
+        checkForNewProperties();
+      }
+    } else {
+      throw new ConfigLoaderException(LoaderExceptionConstants.FILE_CORRUPTED);
+    }
+  }
 
-	@Override
-	public List<SourceConfig> getProperties() {
-		return crawlerProperties;
-	}
+  @Override
+  public List<SourceConfig> getProperties() {
+    return crawlerProperties;
+  }
 
-	@Override
-	public void run() {
-		loadProperties();
-	}
+  @Override
+  public void run() {
+    loadProperties();
+  }
 
-	private boolean fileIsValid() {
-		boolean valid = false;
-		if (file.exists() && file.isFile()) {
-			valid = true;
-		}
+  private boolean fileIsValid() {
+    boolean valid = false;
+    if (file.exists() && file.isFile()) {
+      valid = true;
+    }
 
-		return valid;
-	}
+    return valid;
+  }
 
-	private void loadFile() {
+  private void loadFile() {
 
-		try (InputStream input = new FileInputStream(file)) {
-			properties.load(input);
-		} catch (IOException e) {
-			throw new ConfigLoaderException(LoaderExceptionConstants.FILE_UNLOADED, e);
-		}
-	}
+    try (InputStream input = new FileInputStream(file)) {
+      properties.load(input);
+    } catch (IOException e) {
+      throw new ConfigLoaderException(LoaderExceptionConstants.FILE_UNLOADED, e);
+    }
+  }
 
-	private void readProperties(List<SourceConfig> crawlerProperties) {
-		loadFile();
+  private void readProperties(List<SourceConfig> crawlerProperties) {
+    loadFile();
 
-		String numberOfParsers = properties.getProperty(CrawlerConfigConstants.NUMBER_OF_PARSERS_KEY);
-		if (numberOfParsers == null || numberOfParsers.equals("")) {
-			throw new ConfigLoaderException(LoaderExceptionConstants.PROPERTIES_NOT_FOUND);
-		}
-		int length = Integer.parseInt(numberOfParsers);
+    String numberOfParsers = properties.getProperty(CrawlerConfigConstants.NUMBER_OF_PARSERS_KEY);
+    if (numberOfParsers == null || numberOfParsers.equals("")) {
+      throw new ConfigLoaderException(LoaderExceptionConstants.PROPERTIES_NOT_FOUND);
+    }
+    int length = Integer.parseInt(numberOfParsers);
 
-		for (int i = 1; i <= length; i++) {
-			String parserName = properties.getProperty(CrawlerConfigConstants.PARSER_KEY_PREFIX + i);
-			String source = properties.getProperty(CrawlerConfigConstants.SOURCE_KEY_PREFIX + i);
-			if (parserName == null || parserName.equals("") || source == null || source.equals("")) {
-				throw new ConfigLoaderException(LoaderExceptionConstants.NULL_PROPERTIES_VALUES);
-			}
+    for (int i = 1; i <= length; i++) {
+      String parserName = properties.getProperty(CrawlerConfigConstants.PARSER_KEY_PREFIX + i);
+      String source = properties.getProperty(CrawlerConfigConstants.SOURCE_KEY_PREFIX + i);
+      String type = properties.getProperty(CrawlerConfigConstants.TYPE_KEY_PREFIX + i);
+      if (parserName == null || parserName.equals("") || source == null || source.equals("") || type.equals("")
+          || type == null) {
+        throw new ConfigLoaderException(LoaderExceptionConstants.NULL_PROPERTIES_VALUES);
+      }
 
-			SourceConfig crawlerProperty = new SourceConfig(parserName, source);
-			crawlerProperties.add(crawlerProperty);
+      SourceConfig crawlerProperty = new SourceConfig(parserName, source, type);
+      crawlerProperties.add(crawlerProperty);
 
-		}
+    }
 
-		lastModified = file.lastModified();
-	}
+    lastModified = file.lastModified();
+  }
 
-	private void checkForNewProperties() {
-		boolean newPropertyFound = false;
-		List<SourceConfig> newCrawlerProperties = new ArrayList<SourceConfig>();
+  private void checkForNewProperties() {
+    boolean newPropertyFound = false;
+    List<SourceConfig> newCrawlerProperties = new ArrayList<SourceConfig>();
 
-		readProperties(newCrawlerProperties);
-		for (SourceConfig newCrawlerProperty : newCrawlerProperties) {
-			if (crawlerProperties.contains(newCrawlerProperty)) {
-				newPropertyFound = true;
-			}
-		}
+    readProperties(newCrawlerProperties);
+    for (SourceConfig newCrawlerProperty : newCrawlerProperties) {
+      if (crawlerProperties.contains(newCrawlerProperty)) {
+        newPropertyFound = true;
+      }
+    }
 
-		if (newPropertyFound) {
-			updateProperties(newCrawlerProperties);
-			notifier.notify(crawlerProperties);
-		}
+    if (newPropertyFound) {
+      updateProperties(newCrawlerProperties);
+      notifier.notify(crawlerProperties);
+    }
 
-	}
+  }
 
-	private void updateProperties(List<SourceConfig> newCrawlerProperties) {
-		crawlerProperties.clear();
-		crawlerProperties.addAll(newCrawlerProperties);
+  private void updateProperties(List<SourceConfig> newCrawlerProperties) {
+    crawlerProperties.clear();
+    crawlerProperties.addAll(newCrawlerProperties);
 
-	}
+  }
 
 }
