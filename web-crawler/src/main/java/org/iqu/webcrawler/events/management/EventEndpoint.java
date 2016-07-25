@@ -11,6 +11,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.iqu.webcrawler.entities.Author;
+import org.iqu.webcrawler.entities.Event;
+import org.iqu.webcrawler.entities.Events;
 import org.iqu.webcrawler.entities.Source;
 
 @Path("/")
@@ -56,10 +58,16 @@ public class EventEndpoint {
 			@QueryParam("sourceId") String sourceId, @QueryParam("author") String author,
 			@QueryParam("location") String location) {
 
-		String response = "";
+		Set<Event> events = new HashSet<Event>();
+		Event event1 = new Event();
+		event1.setDescription("abcdef");
+		event1.setSource("www.google.com");
+		events.add(event1);
+		Events eevents = new Events(events);
+
 		if (startDate == null) {
-			response = "{\"error\" : \"Requested location not available\"}";
-			return Response.status(400).entity(response).build();
+			String response = "{\"error\" : \"Requested location not available\"}";
+			return Response.status(200).entity(eevents).build();
 		} else {
 			return Response.ok().build();
 		}
