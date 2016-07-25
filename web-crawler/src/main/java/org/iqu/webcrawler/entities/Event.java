@@ -1,5 +1,11 @@
 package org.iqu.webcrawler.entities;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Event {
 
 	private String title;
@@ -122,13 +128,6 @@ public class Event {
 
 	public void setExternal_url(String external_url) {
 		this.external_url = external_url;
-	}
-
-	@Override
-	public String toString() {
-		return "Event [title = " + title + ", startDate = " + startDate + ", endDate=" + endDate + ", id = " + id
-				+ ", desription = " + description + ", categories = " + categories + ", source = " + source
-				+ ", image_id = " + image_id + ", external_url = " + external_url + "]";
 	}
 
 }
