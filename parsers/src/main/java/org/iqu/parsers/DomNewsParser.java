@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
  *
  */
 public class DomNewsParser implements Parser<NewsArticle> {
-  private static final Logger logger = Logger.getLogger(DomNewsParser.class);
+  private static final Logger LOGGER = Logger.getLogger(DomNewsParser.class);
 
   @Override
   public List<NewsArticle> readFeed(String sourceURL, String encoding) {
@@ -49,28 +49,28 @@ public class DomNewsParser implements Parser<NewsArticle> {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
           Element element = (Element) node;
           NewsArticle article = new NewsArticle();
-          article.setTitle(getValue(element, ParserConstants.TITLE));
-          article.setExternal_url(getValue(element, ParserConstants.EXTERNAL_URL));
-          article.setId(getValue(element, ParserConstants.ID));
-          article.setDescription(getValue(element, ParserConstants.DESCRIPTION));
-          article.setCategories(getValues(element, ParserConstants.CATEGORY));
-          article.setDate(convertDate(getValue(element, ParserConstants.DATE)));
-          article.setImages(getAttributeValues(element, ParserConstants.IMAGE_MEDIA_CONTENT, "url"));
-          article.setEnclosure(getAttributeValue(element, ParserConstants.IMAGE_ENCLOSURE, "url"));
-          article.setAuthors(getValues(element, ParserConstants.DC_AUTHOR));
+          article.setTitle(getValue(element, XMLParserConstants.TITLE));
+          article.setExternal_url(getValue(element, XMLParserConstants.EXTERNAL_URL));
+          article.setId(getValue(element, XMLParserConstants.ID));
+          article.setDescription(getValue(element, XMLParserConstants.DESCRIPTION));
+          article.setCategories(getValues(element, XMLParserConstants.CATEGORY));
+          article.setDate(convertDate(getValue(element, XMLParserConstants.DATE)));
+          article.setImages(getAttributeValues(element, XMLParserConstants.IMAGE_MEDIA_CONTENT, "url"));
+          article.setEnclosure(getAttributeValue(element, XMLParserConstants.IMAGE_ENCLOSURE, "url"));
+          article.setAuthors(getValues(element, XMLParserConstants.DC_AUTHOR));
           article.setSource(sourceURL);
           result.add(article);
         }
       }
 
     } catch (ParserConfigurationException e) {
-      logger.error("DocumentBuilderFactory error!", e);
+      LOGGER.error("DocumentBuilderFactory error!", e);
     } catch (MalformedURLException e) {
-      logger.error("Invalid URL!", e);
+      LOGGER.error("Invalid URL!", e);
     } catch (SAXException e) {
-      logger.error("DocumentBuilder parsing error!", e);
+      LOGGER.error("DocumentBuilder parsing error!", e);
     } catch (IOException e) {
-      logger.error("InputStream error!", e);
+      LOGGER.error("InputStream error!", e);
     }
     return result;
   }
@@ -120,7 +120,7 @@ public class DomNewsParser implements Parser<NewsArticle> {
     try {
       temp = formatter.parse(date);
     } catch (ParseException e) {
-      logger.error("DateFormat parsing error!", e);
+      LOGGER.error("DateFormat parsing error!", e);
       return 0;
     }
     return temp.getTime() / 1000;

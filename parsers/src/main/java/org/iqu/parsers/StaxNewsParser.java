@@ -27,7 +27,7 @@ import org.iqu.parsers.entities.NewsArticle;
  *
  */
 public class StaxNewsParser implements Parser<NewsArticle> {
-  private static final Logger logger = Logger.getLogger(StaxNewsParser.class);
+  private static final Logger LOGGER = Logger.getLogger(StaxNewsParser.class);
 
   private XMLEventReader reader;
   private NewsArticle article;
@@ -55,11 +55,11 @@ public class StaxNewsParser implements Parser<NewsArticle> {
       }
       reader.close();
     } catch (XMLStreamException e) {
-      logger.error("XMLEventReader error!", e);
+      LOGGER.error("XMLEventReader error!", e);
     } catch (FactoryConfigurationError e) {
-      logger.error("XMLInputFactory error!", e);
+      LOGGER.error("XMLInputFactory error!", e);
     } catch (IOException e) {
-      logger.error("InputStream error!", e);
+      LOGGER.error("InputStream error!", e);
     }
     return result;
   }
@@ -67,42 +67,42 @@ public class StaxNewsParser implements Parser<NewsArticle> {
   private void processStartElement() {
     try {
       switch (event.asStartElement().getName().getLocalPart()) {
-      case ParserConstants.ITEM:
+      case XMLParserConstants.ITEM:
         article = new NewsArticle();
         break;
-      case ParserConstants.TITLE:
+      case XMLParserConstants.TITLE:
         article.setTitle(parseCharacters());
         break;
-      case ParserConstants.EXTERNAL_URL:
+      case XMLParserConstants.EXTERNAL_URL:
         article.setExternal_url(parseCharacters());
         break;
-      case ParserConstants.ID:
+      case XMLParserConstants.ID:
         article.setId(parseCharacters());
         break;
-      case ParserConstants.DESCRIPTION:
+      case XMLParserConstants.DESCRIPTION:
         article.setDescription(parseCharacters());
         break;
-      case ParserConstants.CATEGORY:
+      case XMLParserConstants.CATEGORY:
         article.getCategories().add(parseCharacters());
         break;
-      case ParserConstants.DATE:
-        DateFormat formatter = new SimpleDateFormat(ParserConstants.DATE_FORMAT);
+      case XMLParserConstants.DATE:
+        DateFormat formatter = new SimpleDateFormat(XMLParserConstants.DATE_FORMAT);
         Date date = formatter.parse(parseCharacters());
         article.setDate(date.getTime() / 1000);
         break;
-      case ParserConstants.IMAGE_MEDIA_CONTENT:
+      case XMLParserConstants.IMAGE_MEDIA_CONTENT:
         String imageURL = event.asStartElement().getAttributeByName(new QName("url")).getValue();
         article.getImages().add(imageURL);
         break;
-      case ParserConstants.AUTHOR:
+      case XMLParserConstants.AUTHOR:
         article.getAuthors().add(parseCharacters());
         break;
-      case ParserConstants.IMAGE_ENCLOSURE:
+      case XMLParserConstants.IMAGE_ENCLOSURE:
         String enclosureURL = event.asStartElement().getAttributeByName(new QName("url")).getValue();
         article.setEnclosure(enclosureURL);
       }
     } catch (ParseException e) {
-      logger.error("DateFormat parsing error!", e);
+      LOGGER.error("DateFormat parsing error!", e);
     }
   }
 
@@ -120,7 +120,7 @@ public class StaxNewsParser implements Parser<NewsArticle> {
         text += reader.nextEvent().asCharacters().getData();
       }
     } catch (XMLStreamException e) {
-      logger.error("XMLStreamReader error!", e);
+      LOGGER.error("XMLStreamReader error!", e);
     }
     return text;
   }
@@ -137,7 +137,7 @@ public class StaxNewsParser implements Parser<NewsArticle> {
         reader.nextEvent();
       }
     } catch (XMLStreamException e) {
-      logger.error("XMLStreamReader error!", e);
+      LOGGER.error("XMLStreamReader error!", e);
     }
   }
 
