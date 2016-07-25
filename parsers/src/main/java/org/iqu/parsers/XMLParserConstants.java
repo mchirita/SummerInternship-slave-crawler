@@ -5,7 +5,7 @@ package org.iqu.parsers;
  * 
  * @author Cristi Badoi
  */
-public class ParserConstants {
+public class XMLParserConstants {
   public static final String ITEM = "item";
   public static final String TITLE = "title";
   public static final String EXTERNAL_URL = "link";

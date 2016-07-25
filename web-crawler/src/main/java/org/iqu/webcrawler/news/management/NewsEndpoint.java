@@ -10,10 +10,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.iqu.crawler.entities.Source;
 import org.iqu.webcrawler.entities.Author;
 import org.iqu.webcrawler.entities.Categories;
 import org.iqu.webcrawler.entities.ErrorMessage;
-import org.iqu.webcrawler.entities.Source;
 
 @Path("/")
 public class NewsEndpoint {
