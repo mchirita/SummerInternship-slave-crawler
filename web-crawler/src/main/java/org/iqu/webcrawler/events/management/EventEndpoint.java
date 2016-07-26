@@ -20,6 +20,12 @@ import org.iqu.webcrawler.entities.Sources;
 import org.iqu.webcrawler.entities.Type;
 import org.iqu.webcrawler.entities.Types;
 
+/**
+ * Class that holds the services for events end-point.
+ * 
+ * @author Razvan Rosu
+ *
+ */
 @Path("/")
 public class EventEndpoint {
 
@@ -65,7 +71,7 @@ public class EventEndpoint {
     Events eevents = new Events(events);
 
     if (startDate == null) {
-      String response = "{\"error\" : \"Requested location not available\"}";
+      ErrorMessage errorMessage = new ErrorMessage("Could not find location, please try again later.");
       return Response.status(200).entity(eevents).build();
     } else {
       return Response.ok().build();
@@ -94,8 +100,8 @@ public class EventEndpoint {
       return Response.status(status).entity(sources).build();
     } else {
       status = 404;
-      response = "\"error\" : \"Could not fetch sources, please try again later.\"";
-      return Response.status(status).entity(response).build();
+      ErrorMessage errorMessage = new ErrorMessage("Could not fetch sources, please try again later.");
+      return Response.status(status).entity(errorMessage).build();
     }
   }
 

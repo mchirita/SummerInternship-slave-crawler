@@ -12,15 +12,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Type {
 
 	private String type;
-	private Set<String> subtypes = new HashSet<String>();
+	private Set<String> subTypes = new HashSet<String>();
 
-	public Type(String nameOfType, Set<String> subtypes) {
+	public Type(String type, Set<String> subTypes) {
 		super();
-		this.type = nameOfType;
-		this.subtypes = subtypes;
+		this.type = type;
+		this.subTypes = subTypes;
 	}
 
-	public String getNameOfType() {
+	public String getType() {
 		return type;
 	}
 
@@ -29,11 +29,11 @@ public class Type {
 	}
 
 	public Set<String> getSubTypes() {
-		return subtypes;
+		return subTypes;
 	}
 
-	public void setSubTypes(Set<String> subtypes) {
-		this.subtypes = subtypes;
+	public void setSubTypes(Set<String> subTypes) {
+		this.subTypes = subTypes;
 	}
 
 }

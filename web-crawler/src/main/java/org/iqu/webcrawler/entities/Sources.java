@@ -69,4 +69,9 @@ public class Sources {
     return sources.size();
   }
 
+	public void add(Source source) {
+		sources.add(source);
+
+	}
+
 }
