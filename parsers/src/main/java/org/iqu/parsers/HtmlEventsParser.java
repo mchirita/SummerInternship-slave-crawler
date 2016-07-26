@@ -72,8 +72,10 @@ public class HtmlEventsParser implements Parser<Event> {
   }
 
   private void readSourceInfo(Document doc) {
-    // TODO: Read information about the source.
-
+    source = new Source();
+    source.setDisplayName(doc.title());
+    source.setDescription(doc.getElementsByAttributeValue("name", "description").attr("content"));
+    source.setImage(doc.getElementsByAttributeValue("sizes", "180x180").attr("href"));
   }
 
   private void readItems(List<Event> events, Document doc) {
@@ -131,6 +133,12 @@ public class HtmlEventsParser implements Parser<Event> {
       return dF.parse(date).getTime();
     }
     return 0;
+  }
+
+  public static void main(String[] args) {
+    HtmlEventsParser parser = new HtmlEventsParser();
+    System.out.println(parser.readFeed("http://metropotam.ro/evenimente/", "UTF-8"));
+    System.out.println(parser.getSource());
   }
 
 }
