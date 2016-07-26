@@ -136,6 +136,9 @@ public class EventDTO {
         + image_id + ", external_url = " + external_url + "]";
   }
 
+  /**
+   * Based solely on external_url field.
+   */
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -144,6 +147,9 @@ public class EventDTO {
     return result;
   }
 
+  /**
+   * Based solely on external_url field.
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj)

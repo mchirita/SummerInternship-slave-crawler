@@ -61,6 +61,9 @@ public class SourceDTO {
         + "]";
   }
 
+  /**
+   * Based solely on displayName field.
+   */
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -69,6 +72,9 @@ public class SourceDTO {
     return result;
   }
 
+  /**
+   * Based solely on displayName field.
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
