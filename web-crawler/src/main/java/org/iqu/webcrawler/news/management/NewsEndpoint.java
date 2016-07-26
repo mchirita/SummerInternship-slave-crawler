@@ -8,12 +8,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.iqu.parsers.entities.Source;
 import org.iqu.webcrawler.entities.Authors;
 import org.iqu.webcrawler.entities.Categories;
 import org.iqu.webcrawler.entities.ErrorMessage;
 import org.iqu.webcrawler.entities.News;
 import org.iqu.webcrawler.entities.SingleNews;
+import org.iqu.webcrawler.entities.Source;
 import org.iqu.webcrawler.entities.Sources;
 
 @Path("/")
