@@ -34,6 +34,7 @@ public class News {
 
   public void add(NewsArticle singleNews) {
     news.add(singleNews);
+
   }
 
 }

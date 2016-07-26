@@ -88,7 +88,8 @@ public class EventEndpoint {
     int status;
     String response = "";
     status = 0;
-    Source source = new Source("1", "BNR Brasov", "This is the official BNR site");
+    Source source = new Source("1", "BNR Brasov", "This is the official BNR site",
+        "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg");
 
     Sources sources = new Sources();
     sources.addSource(source);
