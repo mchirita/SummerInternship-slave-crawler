@@ -8,126 +8,154 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Event {
 
-	private String title;
-	private String subtitle;
-	private long startDate;
-	private long endDate;
-	private String id;
-	private String description;
-	private String[] authors;
-	private String categories;
-	private String source;
-	private String body;
-	private String image_id;
-	private String thumbnail_id;
-	private String external_url;
+  private String startDate;
+  private String endDate;
+  private String id;
+  private String title;
+  private String subtitle;
+  private String description;
+  private String[] type;
+  private String[] subtypes;
+  private String source;
+  private String body;
+  private String image_id;
+  private String thumbnail_id;
+  private String external_url;
+  private String author;
 
-	public Event() {
-		// TODO Auto-generated constructor stub
-	}
+  public Event() {
+    // TODO Auto-generated constructor stub
+  }
 
-	public String getTitle() {
-		return title;
-	}
+  public Event(String startDate, String endDate, String id, String title, String subtitle, String description,
+      String[] type, String[] subtypes, String source, String body, String image_id, String thumbnail_id,
+      String external_url, String author) {
+    super();
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.id = id;
+    this.title = title;
+    this.subtitle = subtitle;
+    this.description = description;
+    this.type = type;
+    this.subtypes = subtypes;
+    this.source = source;
+    this.body = body;
+    this.image_id = image_id;
+    this.thumbnail_id = thumbnail_id;
+    this.external_url = external_url;
+    this.author = author;
+  }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+  public String getStartDate() {
+    return startDate;
+  }
 
-	public String getSubtitle() {
-		return subtitle;
-	}
+  public void setStartDate(String startDate) {
+    this.startDate = startDate;
+  }
 
-	public void setSubtitle(String subtitle) {
-		this.subtitle = subtitle;
-	}
+  public String getEndDate() {
+    return endDate;
+  }
 
-	public long getStartDate() {
-		return startDate;
-	}
+  public void setEndDate(String endDate) {
+    this.endDate = endDate;
+  }
 
-	public void setStartDate(long startDate) {
-		this.startDate = startDate;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public long getEndDate() {
-		return endDate;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setEndDate(long endDate) {
-		this.endDate = endDate;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public String getSubtitle() {
+    return subtitle;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public void setSubtitle(String subtitle) {
+    this.subtitle = subtitle;
+  }
 
-	public void setDescription(String desription) {
-		this.description = desription;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public String[] getAuthors() {
-		return authors;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setAuthors(String[] authors) {
-		this.authors = authors;
-	}
+  public String[] getType() {
+    return type;
+  }
 
-	public String getCategories() {
-		return categories;
-	}
+  public void setType(String[] type) {
+    this.type = type;
+  }
 
-	public void setCategories(String categories) {
-		this.categories = categories;
-	}
+  public String[] getSubtypes() {
+    return subtypes;
+  }
 
-	public String getSource() {
-		return source;
-	}
+  public void setSubtypes(String[] subtypes) {
+    this.subtypes = subtypes;
+  }
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+  public String getSource() {
+    return source;
+  }
 
-	public String getBody() {
-		return body;
-	}
+  public void setSource(String source) {
+    this.source = source;
+  }
 
-	public void setBody(String body) {
-		this.body = body;
-	}
+  public String getBody() {
+    return body;
+  }
 
-	public String getImage_id() {
-		return image_id;
-	}
+  public void setBody(String body) {
+    this.body = body;
+  }
 
-	public void setImage_id(String image_id) {
-		this.image_id = image_id;
-	}
+  public String getImage_id() {
+    return image_id;
+  }
 
-	public String getThumbnail_id() {
-		return thumbnail_id;
-	}
+  public void setImage_id(String image_id) {
+    this.image_id = image_id;
+  }
 
-	public void setThumbnail_id(String thumbnail_id) {
-		this.thumbnail_id = thumbnail_id;
-	}
+  public String getThumbnail_id() {
+    return thumbnail_id;
+  }
 
-	public String getExternal_url() {
-		return external_url;
-	}
+  public void setThumbnail_id(String thumbnail_id) {
+    this.thumbnail_id = thumbnail_id;
+  }
 
-	public void setExternal_url(String external_url) {
-		this.external_url = external_url;
-	}
+  public String getExternal_url() {
+    return external_url;
+  }
 
+  public void setExternal_url(String external_url) {
+    this.external_url = external_url;
+  }
+
+  public String getAuthor() {
+    return author;
+  }
+
+  public void setAuthor(String author) {
+    this.author = author;
+  }
 }
