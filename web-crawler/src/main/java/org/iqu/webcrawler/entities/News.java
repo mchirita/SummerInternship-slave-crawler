@@ -8,32 +8,30 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.iqu.parsers.entities.NewsArticle;
-
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class News {
-  private Set<NewsArticle> news = new HashSet<NewsArticle>();
+  private Set<SingleNews> news = new HashSet<SingleNews>();
 
   public News() {
   }
 
-  public News(Set<NewsArticle> news) {
+  public News(Set<SingleNews> news) {
     super();
     this.news = news;
   }
 
   @XmlElement
-  public Set<NewsArticle> getNews() {
+  public Set<SingleNews> getNews() {
     return news;
   }
 
-  public void setNews(Set<NewsArticle> news) {
+  public void setNews(Set<SingleNews> news) {
     this.news = news;
   }
 
-  public void add(NewsArticle singleNews) {
-    news.add(singleNews);
+  public void add(SingleNews singleNews1) {
+    news.add(singleNews1);
 
   }
 
