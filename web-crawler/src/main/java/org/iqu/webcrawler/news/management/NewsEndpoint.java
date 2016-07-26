@@ -11,6 +11,8 @@ import org.apache.log4j.Logger;
 import org.iqu.webcrawler.entities.Authors;
 import org.iqu.webcrawler.entities.Categories;
 import org.iqu.webcrawler.entities.ErrorMessage;
+import org.iqu.webcrawler.entities.News;
+import org.iqu.webcrawler.entities.SingleNews;
 import org.iqu.webcrawler.entities.Source;
 import org.iqu.webcrawler.entities.Sources;
 
@@ -80,21 +82,19 @@ public class NewsEndpoint {
 			@QueryParam("sourceId") String sourceId, @QueryParam("author") String author,
 			@QueryParam("location") String location) {
 
-		String response = "";
-		int status = 200;
+		News news = new News();
+		SingleNews singleNews1 = new SingleNews();
+		singleNews1.setDescription("abcdef");
+		singleNews1.setSource("www.google.com");
+		singleNews1.setDate("12345");
+		news.add(singleNews1);
 
-		try {
-			long startDateLong = Long.parseLong(startDate);
-
-			// TODO: implement actual filtering of data
-
-		} catch (NumberFormatException e) {
-			ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-			status = 400;
-			return Response.status(400).entity(errorMessage).build();
+		if (startDate == null) {
+			ErrorMessage errorMessage = new ErrorMessage("Could not find location, please try again later.");
+			return Response.status(200).entity(news).build();
+		} else {
+			return Response.ok().build();
 		}
-
-		return Response.status(status).entity(response).build();
 	}
 
 	/**
