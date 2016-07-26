@@ -14,11 +14,11 @@ import org.iqu.crawler.configuration.entities.SourceConfig;
  */
 public interface ConfigChangeListener {
 
-	/**
-	 * Perform operations when the specific properties change
-	 * 
-	 * @param properties
-	 *          the changed properties
-	 */
-	public void onConfigChange(List<SourceConfig> properties);
+  /**
+   * Perform operations when the specific properties change
+   * 
+   * @param properties
+   *          the changed properties
+   */
+  public void onConfigChange(List<SourceConfig> properties);
 }

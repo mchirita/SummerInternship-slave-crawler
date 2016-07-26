@@ -5,68 +5,54 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Entity that represents an event.
+ * News - Entity that represents a news.
  * 
- * @author iQuest
+ * @author Alex Dragomir
  *
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
+public class SingleNews {
 
-public class Event {
-  private String startDate;
-  private String endDate;
+  private String date;
   private String id;
   private String title;
   private String subtitle;
   private String description;
-  private String[] type;
-  private String[] subtypes;
+  private String[] authors;
+  private String[] categories;
   private String source;
   private String body;
   private String image_id;
   private String thumbnail_id;
   private String external_url;
-  private String author;
 
-  public Event() {
-    // TODO Auto-generated constructor stub
+  public SingleNews() {
   }
 
-  public Event(String startDate, String endDate, String id, String title, String subtitle, String description,
-      String[] type, String[] subtypes, String source, String body, String image_id, String thumbnail_id,
-      String external_url, String author) {
+  public SingleNews(String date, String id, String title, String subtitle, String description, String[] authors,
+      String[] categories, String source, String body, String image_id, String thumbnail_id, String external_url) {
     super();
-    this.startDate = startDate;
-    this.endDate = endDate;
+    this.date = date;
     this.id = id;
     this.title = title;
     this.subtitle = subtitle;
     this.description = description;
-    this.type = type;
-    this.subtypes = subtypes;
+    this.authors = authors;
+    this.categories = categories;
     this.source = source;
     this.body = body;
     this.image_id = image_id;
     this.thumbnail_id = thumbnail_id;
     this.external_url = external_url;
-    this.author = author;
   }
 
-  public String getStartDate() {
-    return startDate;
+  public String getDate() {
+    return date;
   }
 
-  public void setStartDate(String startDate) {
-    this.startDate = startDate;
-  }
-
-  public String getEndDate() {
-    return endDate;
-  }
-
-  public void setEndDate(String endDate) {
-    this.endDate = endDate;
+  public void setDate(String date) {
+    this.date = date;
   }
 
   public String getId() {
@@ -101,20 +87,20 @@ public class Event {
     this.description = description;
   }
 
-  public String[] getType() {
-    return type;
+  public String[] getAuthors() {
+    return authors;
   }
 
-  public void setType(String[] type) {
-    this.type = type;
+  public void setAuthors(String[] authors) {
+    this.authors = authors;
   }
 
-  public String[] getSubtypes() {
-    return subtypes;
+  public String[] getCategories() {
+    return categories;
   }
 
-  public void setSubtypes(String[] subtypes) {
-    this.subtypes = subtypes;
+  public void setCategories(String[] categories) {
+    this.categories = categories;
   }
 
   public String getSource() {
@@ -157,11 +143,4 @@ public class Event {
     this.external_url = external_url;
   }
 
-  public String getAuthor() {
-    return author;
-  }
-
-  public void setAuthor(String author) {
-    this.author = author;
-  }
 }

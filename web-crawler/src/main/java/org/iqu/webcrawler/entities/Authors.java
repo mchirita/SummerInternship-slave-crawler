@@ -18,60 +18,60 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Authors {
 
-	private Set<String> authors = new HashSet<String>();
+  private Set<String> authors = new HashSet<String>();
 
-	public Authors() {
+  public Authors() {
 
-	}
+  }
 
-	public Authors(Set<String> authors) {
-		super();
-		this.authors = authors;
-	}
+  public Authors(Set<String> authors) {
+    super();
+    this.authors = authors;
+  }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((authors == null) ? 0 : authors.hashCode());
-		return result;
-	}
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((authors == null) ? 0 : authors.hashCode());
+    return result;
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Authors other = (Authors) obj;
-		if (authors == null) {
-			if (other.authors != null)
-				return false;
-		} else if (!authors.equals(other.authors))
-			return false;
-		return true;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Authors other = (Authors) obj;
+    if (authors == null) {
+      if (other.authors != null)
+        return false;
+    } else if (!authors.equals(other.authors))
+      return false;
+    return true;
+  }
 
-	@XmlElement
-	public Set<String> getAuthors() {
-		return authors;
-	}
+  @XmlElement
+  public Set<String> getAuthors() {
+    return authors;
+  }
 
-	public void setAuthors(Set<String> authors) {
-		this.authors = authors;
-	}
+  public void setAuthors(Set<String> authors) {
+    this.authors = authors;
+  }
 
-	public boolean addAuthor(String name) {
-		return this.authors.add(name);
-	}
+  public boolean addAuthor(String name) {
+    return this.authors.add(name);
+  }
 
-	public boolean isEmpty() {
-		return this.authors.isEmpty();
-	}
+  public boolean isEmpty() {
+    return this.authors.isEmpty();
+  }
 
-	public int size() {
-		return authors.size();
-	}
+  public int size() {
+    return authors.size();
+  }
 }

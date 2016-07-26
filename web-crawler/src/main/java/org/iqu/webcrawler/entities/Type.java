@@ -11,29 +11,29 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Type {
 
-	private String type;
-	private Set<String> subtypes = new HashSet<String>();
+  private String type;
+  private Set<String> subTypes = new HashSet<String>();
 
-	public Type(String nameOfType, Set<String> subtypes) {
-		super();
-		this.type = nameOfType;
-		this.subtypes = subtypes;
-	}
+  public Type(String type, Set<String> subTypes) {
+    super();
+    this.type = type;
+    this.subTypes = subTypes;
+  }
 
-	public String getNameOfType() {
-		return type;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public void setNameOfType(String nameOfType) {
-		this.type = nameOfType;
-	}
+  public void setNameOfType(String nameOfType) {
+    this.type = nameOfType;
+  }
 
-	public Set<String> getSubTypes() {
-		return subtypes;
-	}
+  public Set<String> getSubTypes() {
+    return subTypes;
+  }
 
-	public void setSubTypes(Set<String> subtypes) {
-		this.subtypes = subtypes;
-	}
+  public void setSubTypes(Set<String> subTypes) {
+    this.subTypes = subTypes;
+  }
 
 }

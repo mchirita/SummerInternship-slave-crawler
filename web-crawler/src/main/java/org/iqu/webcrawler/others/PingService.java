@@ -13,11 +13,11 @@ import javax.ws.rs.core.Response;
 @Path("/ping")
 public class PingService {
 
-	@HEAD
-	public Response ping() {
+  @HEAD
+  public Response ping() {
 
-		return Response.status(200).build();
+    return Response.status(200).build();
 
-	}
+  }
 
 }

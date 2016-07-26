@@ -18,33 +18,33 @@ import org.iqu.crawler.configuration.entities.SourceConfig;
  */
 public class CrawlerConfigChangeHandler implements ConfigChangeHandler {
 
-	private Set<ConfigChangeListener> listeners = new HashSet<ConfigChangeListener>();
+  private Set<ConfigChangeListener> listeners = new HashSet<ConfigChangeListener>();
 
-	public CrawlerConfigChangeHandler() {
-	}
+  public CrawlerConfigChangeHandler() {
+  }
 
-	@Override
-	public void addListener(ConfigChangeListener listener) {
-		listeners.add(listener);
-	}
+  @Override
+  public void addListener(ConfigChangeListener listener) {
+    listeners.add(listener);
+  }
 
-	@Override
-	public void remove(ConfigChangeListener listener) {
-		listeners.remove(listener);
+  @Override
+  public void remove(ConfigChangeListener listener) {
+    listeners.remove(listener);
 
-	}
+  }
 
-	@Override
-	public void removeAll() {
-		listeners.clear();
-	}
+  @Override
+  public void removeAll() {
+    listeners.clear();
+  }
 
-	@Override
-	public void notify(List<SourceConfig> properties) {
-		for (ConfigChangeListener listener : listeners) {
-			listener.onConfigChange(properties);
-		}
+  @Override
+  public void notify(List<SourceConfig> properties) {
+    for (ConfigChangeListener listener : listeners) {
+      listener.onConfigChange(properties);
+    }
 
-	}
+  }
 
 }
