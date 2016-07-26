@@ -14,13 +14,13 @@ public class Events {
 
   private Set<Event> events = new HashSet<Event>();
 
+  public Events() {
+
+  }
+
   public Events(Set<Event> events) {
     super();
     this.events = events;
-  }
-
-  public Events() {
-    // TODO Auto-generated constructor stub
   }
 
   public void addEvent(Event event) {
@@ -38,6 +38,10 @@ public class Events {
 
   public void setEvents(Set<Event> events) {
     this.events = events;
+  }
+
+  public void add(Event event) {
+    events.add(event);
   }
 
 }
