@@ -11,11 +11,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.iqu.parsers.entities.Event;
-import org.iqu.parsers.entities.Source;
 import org.iqu.webcrawler.entities.Authors;
 import org.iqu.webcrawler.entities.ErrorMessage;
+import org.iqu.webcrawler.entities.Event;
 import org.iqu.webcrawler.entities.Events;
+import org.iqu.webcrawler.entities.Source;
 import org.iqu.webcrawler.entities.Sources;
 import org.iqu.webcrawler.entities.Type;
 import org.iqu.webcrawler.entities.Types;

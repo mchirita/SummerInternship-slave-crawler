@@ -3,8 +3,6 @@ package org.iqu.webcrawler.entities;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.iqu.parsers.entities.Event;
-
 public class Events {
 
   private Set<Event> events = new HashSet<Event>();
