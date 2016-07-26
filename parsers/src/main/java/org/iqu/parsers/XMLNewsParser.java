@@ -76,7 +76,7 @@ public class XMLNewsParser implements Parser<NewsArticleDTO> {
         NewsArticleDTO article = new NewsArticleDTO();
         article.setTitle(getValue(element, XMLParserConstants.TITLE));
         article.setExternal_url(getValue(element, XMLParserConstants.EXTERNAL_URL));
-        article.setId(getValue(element, XMLParserConstants.GUID));
+        article.setGuid(getValue(element, XMLParserConstants.GUID));
         article.setDescription(getValue(element, XMLParserConstants.DESCRIPTION));
         article.setCategories(getValues(element, XMLParserConstants.CATEGORY));
         article.setDate(convertDate(getValue(element, XMLParserConstants.DATE)));
