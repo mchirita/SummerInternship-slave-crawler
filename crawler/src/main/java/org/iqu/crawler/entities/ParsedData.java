@@ -6,6 +6,11 @@ import org.iqu.parsers.entities.Event;
 import org.iqu.parsers.entities.NewsArticle;
 import org.iqu.parsers.entities.Source;
 
+/**
+ * Wrapper class for information provided by a parser.
+ * 
+ * @author Cristi Badoi
+ */
 public class ParsedData {
 
   private List<NewsArticle> news;
