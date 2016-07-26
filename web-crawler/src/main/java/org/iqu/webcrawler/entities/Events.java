@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.iqu.parsers.entities.Event;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Events {
