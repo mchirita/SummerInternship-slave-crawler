@@ -8,87 +8,64 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iqu.persistence.entities.Author;
-import org.iqu.persistence.entities.Category;
-import org.iqu.persistence.entities.News;
+import org.iqu.persistence.entities.NewsArticle;
 import org.iqu.persistence.entities.Source;
 
 public class NewsDAOImpl implements NewsDAO {
 
 	private Connection connection;
-	private Statement statement;
 	private PreparedStatement preparedStatement;
-	private String query;
+	private StringBuilder query = new StringBuilder();
 	private List<Integer> ids = new ArrayList<Integer>();
-	ResultSet generatedKeys = null;
+	private ResultSet generatedKeys = null;
+	private Source source = null;
 
 	public NewsDAOImpl() {
 
 	}
 
-	private void connectToDatabase() throws SQLException {
-
-		if (connection == null) {
-			connection = DAOFactoryImp.createConnection();
-			statement = connection.createStatement();
-		}
-	}
-
 	@Override
-	public void create(News entity) {
+	public void create(NewsArticle entity) {
 		try {
 			connectToDatabase();
-			addSource(entity);
 			addNews(entity);
+			createRelations(entity);
 
-			for (Author author : entity.getAuthors()) {
-				addAuthor(author);
-			}
-			addNewsAndAuthorRelations(entity);
-
-			for (Category category : entity.getCategories()) {
-				addCategory(category);
-			}
-			addNewsAndCategoryRelations(entity);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void addNewsAndCategoryRelations(News entity) {
-		query = "insert into News_has_Category(NewsID, CategoryID) values(?,?)";
+	@Override
+	public void addSource(Source source) {
+		this.source = source;
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(Tables.SOURCES);
+		query.append("(DisplayName, Description) ");
+		query.append("values(?,?)");
 		try {
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setInt(1, entity.getId());
-			for (Integer id : ids) {
-				preparedStatement.setInt(2, id);
-				preparedStatement.executeUpdate();
-			}
-		} catch (SQLException e) {
-			ids.clear();
-		}
-		ids.clear();
-
-	}
-
-	private void addCategory(Category category) {
-		query = "insert into Category(CategoryName) values(?)";
-		try {
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setString(1, category.getName());
+			connectToDatabase();
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setString(1, source.getDisplayName());
+			preparedStatement.setString(2, source.getDescription());
 			preparedStatement.executeUpdate();
 			generatedKeys = preparedStatement.getGeneratedKeys();
 			if (generatedKeys.next()) {
-				ids.add(generatedKeys.getInt(1));
+				source.setId(generatedKeys.getInt(1));
 			}
 		} catch (SQLException e) {
-			query = "select CategoryID from Category where CategoryName = ?";
+			query.setLength(0);
+			query.append("SELECT SourceID from ");
+			query.append(Tables.SOURCES);
+			query.append(" where DisplayName = ?, Description = ?");
 			try {
-				preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				preparedStatement.setString(1, category.getName());
+				preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+				preparedStatement.setString(1, source.getDisplayName());
+				preparedStatement.setString(2, source.getDescription());
 				ResultSet result = preparedStatement.executeQuery();
 				if (result.next()) {
-					ids.add(result.getInt(1));
+					source.setId(result.getInt(1));
 				}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
@@ -96,135 +73,67 @@ public class NewsDAOImpl implements NewsDAO {
 		}
 	}
 
-	private void addNewsAndAuthorRelations(News entity) {
-		query = "insert into News_has_Authors(NewsID, AuthorID) values(?,?)";
+	@Override
+	public void update(NewsArticle entity) {
 		try {
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setInt(1, entity.getId());
-			for (Integer id : ids) {
-				preparedStatement.setInt(2, id);
-				preparedStatement.executeUpdate();
-			}
-		} catch (SQLException e) {
-			ids.clear();
-		}
-		ids.clear();
-	}
+			entity.setId(getNewsId(entity));
 
-	private void addAuthor(Author author) {
-		query = "insert into Authors(AuthorName) values(?)";
-		try {
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setString(1, author.getName());
-			preparedStatement.executeUpdate();
-			generatedKeys = preparedStatement.getGeneratedKeys();
-			if (generatedKeys.next()) {
-				ids.add(generatedKeys.getInt(1));
-			}
-		} catch (SQLException e) {
-			query = "select AuthorID from Authors where AuthorName = ?";
-			try {
-				preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				preparedStatement.setString(1, author.getName());
-				ResultSet result = preparedStatement.executeQuery();
-				if (result.next()) {
-					ids.add(result.getInt(1));
-				}
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		}
-	}
-
-	private void addNews(News entity) {
-		query = "insert into News(Date, Title, Subtitle, Description, Body, SourceID) values(?,?,?,?,?,?)";
-		try {
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setInt(1, entity.getDate());
+			query.setLength(0);
+			query.append("UPDATE ");
+			query.append(Tables.NEWS);
+			query.append(" SET Date = ?, Title = ?, Subtitle = ?, Description = ?, Body = ? WHERE GUID = ?");
+			preparedStatement = connection.prepareStatement(query.toString());
+			preparedStatement.setLong(1, entity.getDate());
 			preparedStatement.setString(2, entity.getTitle());
 			preparedStatement.setString(3, entity.getSubtitle());
 			preparedStatement.setString(4, entity.getDescription());
 			preparedStatement.setString(5, entity.getBody());
-			preparedStatement.setInt(6, entity.getSource().getId());
+			preparedStatement.setString(6, entity.getGuid());
 			preparedStatement.executeUpdate();
-			generatedKeys = preparedStatement.getGeneratedKeys();
-			if (generatedKeys.next()) {
-				entity.setId(generatedKeys.getInt(1));
-			}
-		} catch (SQLException e) {
-			query = "select NewsID from News where Date = ?";
-			try {
-				preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				preparedStatement.setInt(1, entity.getDate());
-				ResultSet result = preparedStatement.executeQuery();
-				if (result.next()) {
-					entity.setId(result.getInt(1));
-				}
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		}
-	}
 
-	private void addSource(News entity) {
-		query = "insert into Sources(DisplayName, Description) values(?,?)";
-		try {
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setString(1, entity.getSource().getDisplayName());
-			preparedStatement.setString(2, entity.getSource().getDescription());
-			preparedStatement.executeUpdate();
-			generatedKeys = preparedStatement.getGeneratedKeys();
-			if (generatedKeys.next()) {
-				entity.getSource().setId(generatedKeys.getInt(1));
-			}
-		} catch (SQLException e) {
-			query = "select SourceID from Sources where DisplayName = ? and Description = ?";
-			try {
-				preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				preparedStatement.setString(1, entity.getSource().getDisplayName());
-				preparedStatement.setString(2, entity.getSource().getDescription());
-				ResultSet result = preparedStatement.executeQuery();
-				if (result.next()) {
-					entity.getSource().setId(result.getInt(1));
-				}
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		}
-	}
+			updateRelations(entity);
 
-	@Override
-	public void update(News entity) {
-		// TODO Auto-generated method stub
+			updateAuthors();
+			updateImages();
+			updateCategories();
+			updateSources();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 	}
 
 	@Override
-	public News find(News entity) {
-		// TODO Auto-generated method stub
+	public NewsArticle find(NewsArticle entity) {
+		// TODO add filter
 		return null;
 	}
 
 	@Override
-	public List<News> findAll() {
-		List<News> listOfNews = new ArrayList<News>();
-		News news = null;
+	public List<NewsArticle> findAll() {
+		List<NewsArticle> listOfNews = new ArrayList<NewsArticle>();
+		NewsArticle newsArticle = null;
 		try {
 			connectToDatabase();
-			query = "Select * from News";
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			query.setLength(0);
+			query.append("SELECT * FROM ");
+			query.append(Tables.NEWS);
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
-				news = new News();
-				news.setId(result.getInt(1));
-				news.setDate(result.getInt(2));
-				news.setTitle(result.getString(3));
-				news.setSubtitle(result.getString(4));
-				news.setDescription(result.getString(5));
-				Source source = findById(result);
-				news.setSource(source);
-				news.setBody(result.getString(6));
-				listOfNews.add(news);
+				newsArticle = new NewsArticle();
+				newsArticle.setGuid(result.getString(1));
+				newsArticle.setDate(result.getLong(2));
+				newsArticle.setTitle(result.getString(3));
+				newsArticle.setSubtitle(result.getString(4));
+				newsArticle.setDescription(result.getString(5));
+				// TODO add authors, images and categories to the news entity
+				int id = result.getInt(6);
+				Source source = findById(id);
+				newsArticle.setSource(source.getDisplayName());
+				newsArticle.setBody(result.getString(7));
+				listOfNews.add(newsArticle);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -232,39 +141,43 @@ public class NewsDAOImpl implements NewsDAO {
 		return listOfNews;
 	}
 
-	private Source findById(ResultSet result) throws SQLException {
-		String sourceQuery = "Select * from Sources where SourceId=?";
-		preparedStatement = connection.prepareStatement(sourceQuery, Statement.RETURN_GENERATED_KEYS);
-		preparedStatement.setInt(1, result.getInt(6));
-		ResultSet sourceResult = preparedStatement.executeQuery();
-		Source source = new Source();
-		if (sourceResult.next()) {
-			source.setId(sourceResult.getInt(1));
-			source.setDisplayName(sourceResult.getString(2));
-			source.setDescription(sourceResult.getString(3));
+	@Override
+	public void delete(NewsArticle entity) {
+		try {
+			entity.setId(getNewsId(entity));
+			query.setLength(0);
+			query.append("DELETE FROM ");
+			query.append(Tables.NEWS);
+			query.append(" WHERE NewsID = ?");
+			connectToDatabase();
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setLong(1, entity.getId());
+			preparedStatement.executeUpdate();
+
+			updateAuthors();
+			updateCategories();
+			updateImages();
+			updateSources();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		return source;
-	}
-
-	@Override
-	public void delete(News entity) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public List<Author> retrieveAuthors() {
-		List<Author> authors = new ArrayList<Author>();
-		Author author = null;
+	public List<String> retrieveAuthors() {
+		List<String> authors = new ArrayList<String>();
+		String author = null;
 		try {
 			connectToDatabase();
-			query = "Select * from Authors";
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			query.setLength(0);
+			query.append("SELECT * FROM ");
+			query.append(Tables.AUTHORS);
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
-				author = new Author();
-				author.setAuthorID(result.getInt(1));
-				author.setName(result.getString(2));
+				author = new String();
+				author = result.getString(2);
 				authors.add(author);
 			}
 		} catch (SQLException e) {
@@ -279,8 +192,10 @@ public class NewsDAOImpl implements NewsDAO {
 		Source source = null;
 		try {
 			connectToDatabase();
-			query = "Select * from Sources";
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			query.setLength(0);
+			query.append("SELECT * FROM ");
+			query.append(Tables.SOURCES);
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
 				source = new Source();
@@ -296,18 +211,19 @@ public class NewsDAOImpl implements NewsDAO {
 	}
 
 	@Override
-	public List<Category> retrieveCategories() {
-		List<Category> categories = new ArrayList<Category>();
-		Category category = null;
+	public List<String> retrieveCategories() {
+		List<String> categories = new ArrayList<String>();
+		String category = null;
 		try {
 			connectToDatabase();
-			query = "Select * from Category";
-			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			query.setLength(0);
+			query.append("SELECT * FROM ");
+			query.append(Tables.CATEGORIES);
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
-				category = new Category();
-				category.setId(result.getInt(1));
-				category.setName(result.getString(2));
+				category = new String();
+				category = result.getString(2);
 				categories.add(category);
 			}
 		} catch (SQLException e) {
@@ -317,24 +233,40 @@ public class NewsDAOImpl implements NewsDAO {
 	}
 
 	@Override
-	public List<News> findAllBySource(Source source) {
+	public List<NewsArticle> findAllBySource(Source source) {
+		NewsArticle newsArticle = new NewsArticle();
+		List<NewsArticle> result = new ArrayList<NewsArticle>();
+
 		try {
 			connectToDatabase();
-			String query = "Select * from News where SourceID = ?";
-			News news = new News();
-			List<News> result = new ArrayList<News>();
-			preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setString(1, source.getId());
-			ResultSet rs = preparedStatement.executeQuery(query);
+			query.setLength(0);
+			query.append("SELECT SourceID FROM ");
+			query.append(Tables.SOURCES);
+			query.append(" where DisplayName = ? and Description = ?");
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setString(1, source.getDisplayName());
+			preparedStatement.setString(2, source.getDescription());
+			ResultSet res = preparedStatement.executeQuery();
+			if (res.next()) {
+				source.setId(res.getInt(1));
+			}
+
+			query.setLength(0);
+			query.append("SELECT * FROM ");
+			query.append(Tables.NEWS);
+			query.append(" where SourceID = ?");
+			preparedStatement = connection.prepareStatement(query.toString());
+			preparedStatement.setInt(1, source.getId());
+			ResultSet rs = preparedStatement.executeQuery(query.toString());
 			while (rs.next()) {
-				news.setId(rs.getString("NewsID"));
-				news.setDate(rs.getInt("Date"));
-				news.setTitle(rs.getString("Title"));
-				news.setSubtitle(rs.getString("Subtitle"));
-				news.setDescription(rs.getString("Description"));
-				news.setSource(source);
-				news.setBody(rs.getString("Body"));
-				result.add(news);
+				newsArticle.setGuid(rs.getString("NewsID"));
+				newsArticle.setDate(rs.getInt("Date"));
+				newsArticle.setTitle(rs.getString("Title"));
+				newsArticle.setSubtitle(rs.getString("Subtitle"));
+				newsArticle.setDescription(rs.getString("Description"));
+				newsArticle.setSource(source.getDisplayName());
+				newsArticle.setBody(rs.getString("Body"));
+				result.add(newsArticle);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -343,4 +275,332 @@ public class NewsDAOImpl implements NewsDAO {
 		return result;
 	}
 
+	private void connectToDatabase() throws SQLException {
+
+		if (connection == null) {
+			connection = DAOFactoryImp.createConnection();
+		}
+	}
+
+	private void addNews(NewsArticle entity) {
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(Tables.NEWS);
+		query.append("(GUID, Date, Title, Subtitle, Description, Body, SourceID, Thumbnail_id, ExternalURL) ");
+		query.append("values(?,?,?,?,?,?,?,?,?)");
+		try {
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setString(1, entity.getGuid());
+			preparedStatement.setLong(2, entity.getDate());
+			preparedStatement.setString(3, entity.getTitle());
+			preparedStatement.setString(4, entity.getSubtitle());
+			preparedStatement.setString(5, entity.getDescription());
+			preparedStatement.setString(6, entity.getBody());
+			preparedStatement.setInt(7, source.getId());
+			preparedStatement.setString(8, entity.getThumbnail_id());
+			preparedStatement.setString(9, entity.getExternal_url());
+			preparedStatement.executeUpdate();
+			generatedKeys = preparedStatement.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				entity.setId(generatedKeys.getInt(1));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void addNewsAndImageRelations(NewsArticle entity) {
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(Tables.NEWS_HAS_IMAGES);
+		query.append("(NewsID, ImageID) ");
+		query.append("values(?,?)");
+		try {
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setLong(1, entity.getId());
+			for (Integer id : ids) {
+				preparedStatement.setInt(2, id);
+				preparedStatement.executeUpdate();
+			}
+		} catch (SQLException e) {
+			ids.clear();
+		}
+		ids.clear();
+
+	}
+
+	private void addImage(String image) {
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(Tables.IMAGES);
+		query.append("(URL) ");
+		query.append("values(?)");
+		try {
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setString(1, image);
+			preparedStatement.executeUpdate();
+			generatedKeys = preparedStatement.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				ids.add(generatedKeys.getInt(1));
+			}
+		} catch (SQLException e) {
+			query.setLength(0);
+			query.append("SELECT ImageID FROM ");
+			query.append(Tables.IMAGES);
+			query.append(" WHERE URL = ?");
+			try {
+				preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+				preparedStatement.setString(1, image);
+				ResultSet result = preparedStatement.executeQuery();
+				if (result.next()) {
+					ids.add(result.getInt(1));
+				}
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+
+	}
+
+	private void addNewsAndCategoryRelations(NewsArticle entity) {
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(Tables.NEWS_HAS_CATEGORIES);
+		query.append("(NewsID, CategoryID) ");
+		query.append("values(?,?)");
+		try {
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setLong(1, entity.getId());
+			for (Integer id : ids) {
+				preparedStatement.setInt(2, id);
+				preparedStatement.executeUpdate();
+			}
+		} catch (SQLException e) {
+			ids.clear();
+		}
+		ids.clear();
+
+	}
+
+	private void addCategory(String category) {
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(Tables.CATEGORIES);
+		query.append("(CategoryName) ");
+		query.append("values(?)");
+		try {
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setString(1, category);
+			preparedStatement.executeUpdate();
+			generatedKeys = preparedStatement.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				ids.add(generatedKeys.getInt(1));
+			}
+		} catch (SQLException e) {
+			query.setLength(0);
+			query.append("SELECT CategoryID FROM ");
+			query.append(Tables.CATEGORIES);
+			query.append(" where CategoryName = ?");
+			try {
+				preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+				preparedStatement.setString(1, category);
+				ResultSet result = preparedStatement.executeQuery();
+				if (result.next()) {
+					ids.add(result.getInt(1));
+				}
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+
+	private void addNewsAndAuthorRelations(NewsArticle entity) {
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(Tables.NEWS_HAS_AUTHORS);
+		query.append("(NewsID, AuthorID) ");
+		query.append("values(?,?)");
+		try {
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setLong(1, entity.getId());
+			for (Integer id : ids) {
+				preparedStatement.setInt(2, id);
+				preparedStatement.executeUpdate();
+			}
+		} catch (SQLException e) {
+			ids.clear();
+		}
+		ids.clear();
+	}
+
+	private void addAuthor(String author) {
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(Tables.AUTHORS);
+		query.append("(AuthorName) ");
+		query.append("values(?)");
+		try {
+			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setString(1, author);
+			preparedStatement.executeUpdate();
+			generatedKeys = preparedStatement.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				ids.add(generatedKeys.getInt(1));
+			}
+		} catch (SQLException e) {
+			query.setLength(0);
+			query.append("SELECT AuthorID FROM ");
+			query.append(Tables.AUTHORS);
+			query.append(" where AuthorName = ?");
+			try {
+				preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+				preparedStatement.setString(1, author);
+				ResultSet result = preparedStatement.executeQuery();
+				if (result.next()) {
+					ids.add(result.getInt(1));
+				}
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+
+	private void createRelations(NewsArticle entity) {
+		for (String author : entity.getAuthors()) {
+			addAuthor(author);
+		}
+		addNewsAndAuthorRelations(entity);
+
+		for (String category : entity.getCategories()) {
+			addCategory(category);
+		}
+		addNewsAndCategoryRelations(entity);
+
+		for (String image : entity.getImages()) {
+			addImage(image);
+		}
+		addNewsAndImageRelations(entity);
+	}
+
+	private void updateRelations(NewsArticle entity) throws SQLException {
+		query.setLength(0);
+		query.append("DELETE FROM ");
+		query.append(Tables.NEWS_HAS_AUTHORS);
+		query.append(" where NewsID = ?");
+		preparedStatement = connection.prepareStatement(query.toString());
+		preparedStatement.setLong(1, entity.getId());
+		preparedStatement.executeUpdate();
+
+		query.setLength(0);
+		query.append("DELETE FROM ");
+		query.append(Tables.NEWS_HAS_CATEGORIES);
+		query.append(" where NewsID = ?");
+		preparedStatement = connection.prepareStatement(query.toString());
+		preparedStatement.setLong(1, entity.getId());
+		preparedStatement.executeUpdate();
+
+		query.setLength(0);
+		query.append("DELETE FROM ");
+		query.append(Tables.NEWS_HAS_IMAGES);
+		query.append(" where NewsID = ?");
+		preparedStatement = connection.prepareStatement(query.toString());
+		preparedStatement.setLong(1, entity.getId());
+		preparedStatement.executeUpdate();
+
+		createRelations(entity);
+	}
+
+	private void updateAuthors() throws SQLException {
+		query.setLength(0);
+		query.append("DELETE FROM ");
+		query.append(Tables.AUTHORS);
+		query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
+		query.append(Tables.NEWS_HAS_AUTHORS);
+		query.append(" WHERE ");
+		query.append(Tables.AUTHORS);
+		query.append(".AuthorID=");
+		query.append(Tables.NEWS_HAS_AUTHORS);
+		query.append(".AuthorID)");
+		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement.executeUpdate();
+	}
+
+	private void updateCategories() throws SQLException {
+		query.setLength(0);
+		query.append("DELETE FROM ");
+		query.append(Tables.CATEGORIES);
+		query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
+		query.append(Tables.NEWS_HAS_CATEGORIES);
+		query.append(" WHERE ");
+		query.append(Tables.CATEGORIES);
+		query.append(".CategoryID=");
+		query.append(Tables.NEWS_HAS_CATEGORIES);
+		query.append(".CategoryID)");
+		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement.executeUpdate();
+	}
+
+	private void updateImages() throws SQLException {
+		query.setLength(0);
+		query.append("DELETE FROM ");
+		query.append(Tables.IMAGES);
+		query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
+		query.append(Tables.NEWS_HAS_IMAGES);
+		query.append(" WHERE ");
+		query.append(Tables.IMAGES);
+		query.append(".ImageID=");
+		query.append(Tables.NEWS_HAS_IMAGES);
+		query.append(".ImageID)");
+		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement.executeUpdate();
+	}
+
+	private void updateSources() throws SQLException {
+		query.setLength(0);
+		query.append("DELETE FROM ");
+		query.append(Tables.SOURCES);
+		query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
+		query.append(Tables.NEWS);
+		query.append(" WHERE ");
+		query.append(Tables.SOURCES);
+		query.append(".SourceID=");
+		query.append(Tables.NEWS);
+		query.append(".SourceID)");
+		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement.executeUpdate();
+	}
+
+	private Source findById(int id) throws SQLException {
+		query.setLength(0);
+		query.append("SELECT * FROM ");
+		query.append(Tables.SOURCES);
+		query.append(" WHERE SourceID = ?");
+		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement.setInt(1, id);
+		ResultSet sourceResult = preparedStatement.executeQuery();
+		Source source = new Source();
+		if (sourceResult.next()) {
+			source.setId(sourceResult.getInt(1));
+			source.setDisplayName(sourceResult.getString(2));
+			source.setDescription(sourceResult.getString(3));
+		}
+		return source;
+	}
+
+	private long getNewsId(NewsArticle entity) throws SQLException {
+		connectToDatabase();
+		long newsId = 0;
+		query.setLength(0);
+		query.append("SELECT NewsID FROM ");
+		query.append(Tables.NEWS);
+		query.append(" WHERE GUID = ?");
+		preparedStatement = connection.prepareStatement(query.toString());
+		preparedStatement.setString(1, entity.getGuid());
+		ResultSet res = preparedStatement.executeQuery();
+		if (res.next()) {
+			newsId = res.getLong(1);
+		}
+
+		return newsId;
+	}
 }

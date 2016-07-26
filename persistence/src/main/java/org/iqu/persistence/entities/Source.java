@@ -4,11 +4,13 @@ public class Source {
 	private int sourceId;
 	private String displayName;
 	private String description;
+	private String image;
 
-	public Source(int sourceId, String displayName, String description) {
+	public Source(int sourceId, String displayName, String description, String image) {
 		this.sourceId = sourceId;
 		this.displayName = displayName;
 		this.description = description;
+		this.image = image;
 	}
 
 	public Source() {
@@ -39,12 +41,22 @@ public class Source {
 		this.description = description;
 	}
 
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
+		result = prime * result + ((image == null) ? 0 : image.hashCode());
+		result = prime * result + sourceId;
 		return result;
 	}
 
@@ -66,6 +78,13 @@ public class Source {
 			if (other.displayName != null)
 				return false;
 		} else if (!displayName.equals(other.displayName))
+			return false;
+		if (image == null) {
+			if (other.image != null)
+				return false;
+		} else if (!image.equals(other.image))
+			return false;
+		if (sourceId != other.sourceId)
 			return false;
 		return true;
 	}

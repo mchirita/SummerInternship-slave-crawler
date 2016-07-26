@@ -2,10 +2,9 @@ package org.iqu.persistence.service;
 
 import java.util.List;
 
-import org.iqu.persistence.entities.Category;
-import org.iqu.persistence.entities.News;
+import org.iqu.persistence.entities.NewsArticle;
 
-public interface NewsDAO extends DaoService<News> {
+public interface NewsDAO extends DaoService<NewsArticle> {
 
-	public List<Category> retrieveCategories();
+	public List<String> retrieveCategories();
 }

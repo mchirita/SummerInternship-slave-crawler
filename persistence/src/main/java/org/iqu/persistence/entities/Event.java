@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Event {
-	
-	private String date;
+
+	private long date;
 	private String id;
 	private String title;
 	private String subtitle;
@@ -18,11 +18,11 @@ public class Event {
 	private String thumbnail_id;
 	private String external_url;
 
-	public String getDate() {
+	public long getDate() {
 		return date;
 	}
 
-	public void setDate(String date) {
+	public void setDate(long date) {
 		this.date = date;
 	}
 
