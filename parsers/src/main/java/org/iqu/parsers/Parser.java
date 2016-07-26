@@ -2,7 +2,7 @@ package org.iqu.parsers;
 
 import java.util.List;
 
-import org.iqu.parsers.entities.Source;
+import org.iqu.parsers.entities.SourceDTO;
 
 /**
  * Defines an information parser.
@@ -28,6 +28,6 @@ public interface Parser<T> {
    * 
    * @return object containing details of last read source
    */
-  public Source getSource();
+  public SourceDTO getSource();
 
 }

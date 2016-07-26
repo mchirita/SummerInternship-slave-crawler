@@ -8,9 +8,11 @@ import java.util.List;
  * 
  * @author Cristi Badoi
  */
-public class NewsArticle {
+public class NewsArticleDTO {
+
   private long date;
-  private String id;
+  private long id;
+  private String guid;
   private String title;
   private String subtitle;
   private String description;
@@ -23,18 +25,10 @@ public class NewsArticle {
   private String external_url;
   private String enclosure;
 
-  public NewsArticle() {
+  public NewsArticleDTO() {
     authors = new ArrayList<String>();
     categories = new ArrayList<String>();
     images = new ArrayList<String>();
-    id = "";
-    title = "";
-    subtitle = "";
-    description = "";
-    source = "";
-    body = "";
-    thumbnail_id = "";
-    external_url = "";
   }
 
   public long getDate() {
@@ -45,12 +39,20 @@ public class NewsArticle {
     this.date = date;
   }
 
-  public String getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(long id) {
     this.id = id;
+  }
+
+  public String getGuid() {
+    return guid;
+  }
+
+  public void setGuid(String guid) {
+    this.guid = guid;
   }
 
   public String getTitle() {
@@ -143,24 +145,25 @@ public class NewsArticle {
 
   @Override
   public String toString() {
-    return "NewsArticle [date=" + date + ", id=" + id + ", title=" + title + ", subtitle=" + subtitle + ", description="
-        + description + ", authors=" + authors + ", categories=" + categories + ", source=" + source + ", body=" + body
-        + ", images=" + images + ", thumbnail_id=" + thumbnail_id + ", external_url=" + external_url + "]";
+    return "NewsArticleDTO [date=" + date + ", id=" + id + ", guid=" + guid + ", title=" + title + ", subtitle="
+        + subtitle + ", description=" + description + ", authors=" + authors + ", categories=" + categories
+        + ", source=" + source + ", body=" + body + ", images=" + images + ", thumbnail_id=" + thumbnail_id
+        + ", external_url=" + external_url + ", enclosure=" + enclosure + "]";
   }
 
   /**
-   * Based solely on the id field;
+   * Based solely on the guid field;
    */
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((guid == null) ? 0 : guid.hashCode());
     return result;
   }
 
   /**
-   * Based solely on the id field;
+   * Based solely on the guid field;
    */
   @Override
   public boolean equals(Object obj) {
@@ -170,11 +173,11 @@ public class NewsArticle {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    NewsArticle other = (NewsArticle) obj;
-    if (id == null) {
-      if (other.id != null)
+    NewsArticleDTO other = (NewsArticleDTO) obj;
+    if (guid == null) {
+      if (other.guid != null)
         return false;
-    } else if (!id.equals(other.id))
+    } else if (!guid.equals(other.guid))
       return false;
     return true;
   }

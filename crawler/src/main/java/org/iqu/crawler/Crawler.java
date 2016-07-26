@@ -6,8 +6,8 @@ import org.iqu.crawler.configuration.entities.SourceConfig;
 import org.iqu.crawler.entities.DataType;
 import org.iqu.crawler.entities.ParsedData;
 import org.iqu.parsers.Parser;
-import org.iqu.parsers.entities.Event;
-import org.iqu.parsers.entities.NewsArticle;
+import org.iqu.parsers.entities.EventDTO;
+import org.iqu.parsers.entities.NewsArticleDTO;
 
 /**
  * Parses online news and event information and forwards it.
@@ -35,13 +35,13 @@ public class Crawler {
       try {
 
         if (sourceConfig.getDataType() == DataType.NEWS) {
-          Parser<NewsArticle> parser = (Parser<NewsArticle>) Class.forName(sourceConfig.getParserName()).newInstance();
+          Parser<NewsArticleDTO> parser = (Parser<NewsArticleDTO>) Class.forName(sourceConfig.getParserName()).newInstance();
           parsedData.setNews(parser.readFeed(sourceConfig.getSource(), "UTF-8"));
           parsedData.setSource(parser.getSource());
 
         } else if (sourceConfig.getDataType() == DataType.EVENTS) {
 
-          Parser<Event> parser = (Parser<Event>) Class.forName(sourceConfig.getParserName()).newInstance();
+          Parser<EventDTO> parser = (Parser<EventDTO>) Class.forName(sourceConfig.getParserName()).newInstance();
           parsedData.setEvents(parser.readFeed(sourceConfig.getSource(), "UTF-8"));
           parsedData.setSource(parser.getSource());
 
