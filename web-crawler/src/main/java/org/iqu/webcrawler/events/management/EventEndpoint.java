@@ -20,6 +20,12 @@ import org.iqu.webcrawler.entities.Sources;
 import org.iqu.webcrawler.entities.Type;
 import org.iqu.webcrawler.entities.Types;
 
+/**
+ * Class that holds the services for events end-point.
+ * 
+ * @author Razvan Rosu
+ *
+ */
 @Path("/")
 public class EventEndpoint {
 
