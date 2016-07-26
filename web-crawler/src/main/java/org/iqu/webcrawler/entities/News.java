@@ -30,8 +30,9 @@ public class News {
     this.news = news;
   }
 
-  public void add(SingleNews singleNews) {
-    news.add(singleNews);
+  public void add(SingleNews singleNews1) {
+    news.add(singleNews1);
+
   }
 
 }

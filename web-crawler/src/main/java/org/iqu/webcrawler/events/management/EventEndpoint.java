@@ -11,11 +11,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.iqu.parsers.entities.Event;
-import org.iqu.parsers.entities.Source;
 import org.iqu.webcrawler.entities.Authors;
 import org.iqu.webcrawler.entities.ErrorMessage;
+import org.iqu.webcrawler.entities.Event;
 import org.iqu.webcrawler.entities.Events;
+import org.iqu.webcrawler.entities.Source;
 import org.iqu.webcrawler.entities.Sources;
 import org.iqu.webcrawler.entities.Type;
 import org.iqu.webcrawler.entities.Types;
@@ -63,16 +63,15 @@ public class EventEndpoint {
       @QueryParam("type") String type, @QueryParam("subType") String subType, @QueryParam("sourceId") String sourceId,
       @QueryParam("author") String author, @QueryParam("location") String location) {
 
-    Set<Event> events = new HashSet<Event>();
     Event event1 = new Event();
     event1.setDescription("abcdef");
     event1.setSource("www.google.com");
-    events.add(event1);
-    Events eevents = new Events(events);
+    Events events = new Events();
+    events.addEvent(event1);
 
     if (startDate == null) {
       ErrorMessage errorMessage = new ErrorMessage("Could not find location, please try again later.");
-      return Response.status(200).entity(eevents).build();
+      return Response.status(200).entity(events).build();
     } else {
       return Response.ok().build();
     }
