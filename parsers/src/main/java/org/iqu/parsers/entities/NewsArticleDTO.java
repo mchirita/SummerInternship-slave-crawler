@@ -8,9 +8,11 @@ import java.util.List;
  * 
  * @author Cristi Badoi
  */
-public class NewsArticle {
+public class NewsArticleDTO {
+
   private long date;
   private String id;
+  private String guid;
   private String title;
   private String subtitle;
   private String description;
@@ -23,18 +25,10 @@ public class NewsArticle {
   private String external_url;
   private String enclosure;
 
-  public NewsArticle() {
+  public NewsArticleDTO() {
     authors = new ArrayList<String>();
     categories = new ArrayList<String>();
     images = new ArrayList<String>();
-    id = "";
-    title = "";
-    subtitle = "";
-    description = "";
-    source = "";
-    body = "";
-    thumbnail_id = "";
-    external_url = "";
   }
 
   public long getDate() {
@@ -51,6 +45,14 @@ public class NewsArticle {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getGuid() {
+    return guid;
+  }
+
+  public void setGuid(String guid) {
+    this.guid = guid;
   }
 
   public String getTitle() {
@@ -170,7 +172,7 @@ public class NewsArticle {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    NewsArticle other = (NewsArticle) obj;
+    NewsArticleDTO other = (NewsArticleDTO) obj;
     if (id == null) {
       if (other.id != null)
         return false;

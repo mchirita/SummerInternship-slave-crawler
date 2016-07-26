@@ -1,6 +1,12 @@
 package org.iqu.parsers.entities;
 
-public class Event {
+/**
+ * Class defining an event.
+ * 
+ * @author Razvan Rosu
+ *
+ */
+public class EventDTO {
 
   private String title;
   private String subtitle;
@@ -16,8 +22,7 @@ public class Event {
   private String thumbnail_id;
   private String external_url;
 
-  public Event() {
-    // TODO Auto-generated constructor stub
+  public EventDTO() {
   }
 
   public String getTitle() {

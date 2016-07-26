@@ -2,9 +2,9 @@ package org.iqu.crawler.entities;
 
 import java.util.List;
 
-import org.iqu.parsers.entities.Event;
-import org.iqu.parsers.entities.NewsArticle;
-import org.iqu.parsers.entities.Source;
+import org.iqu.parsers.entities.EventDTO;
+import org.iqu.parsers.entities.NewsArticleDTO;
+import org.iqu.parsers.entities.SourceDTO;
 
 /**
  * Wrapper class for information provided by a parser.
@@ -13,31 +13,31 @@ import org.iqu.parsers.entities.Source;
  */
 public class ParsedData {
 
-  private List<NewsArticle> news;
-  private List<Event> events;
-  private Source source;
+  private List<NewsArticleDTO> news;
+  private List<EventDTO> events;
+  private SourceDTO source;
 
-  public List<NewsArticle> getNews() {
+  public List<NewsArticleDTO> getNews() {
     return news;
   }
 
-  public void setNews(List<NewsArticle> news) {
+  public void setNews(List<NewsArticleDTO> news) {
     this.news = news;
   }
 
-  public List<Event> getEvents() {
+  public List<EventDTO> getEvents() {
     return events;
   }
 
-  public void setEvents(List<Event> events) {
+  public void setEvents(List<EventDTO> events) {
     this.events = events;
   }
 
-  public Source getSource() {
+  public SourceDTO getSource() {
     return source;
   }
 
-  public void setSource(Source source) {
+  public void setSource(SourceDTO source) {
     this.source = source;
   }
 

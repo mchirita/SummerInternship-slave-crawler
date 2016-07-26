@@ -16,8 +16,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.iqu.parsers.entities.NewsArticle;
-import org.iqu.parsers.entities.Source;
+import org.iqu.parsers.entities.NewsArticleDTO;
+import org.iqu.parsers.entities.SourceDTO;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,20 +31,20 @@ import org.xml.sax.SAXException;
  * @author Cristi Badoi
  *
  */
-public class XMLNewsParser implements Parser<NewsArticle> {
+public class XMLNewsParser implements Parser<NewsArticleDTO> {
 
   private static final Logger LOGGER = Logger.getLogger(XMLNewsParser.class);
 
-  private Source source;
+  private SourceDTO source;
 
   @Override
-  public Source getSource() {
+  public SourceDTO getSource() {
     return source;
   }
 
   @Override
-  public List<NewsArticle> readFeed(String sourceURL, String encoding) {
-    List<NewsArticle> result = new ArrayList<NewsArticle>();
+  public List<NewsArticleDTO> readFeed(String sourceURL, String encoding) {
+    List<NewsArticleDTO> result = new ArrayList<NewsArticleDTO>();
     try {
       DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       Document document = builder
@@ -66,17 +66,17 @@ public class XMLNewsParser implements Parser<NewsArticle> {
     return result;
   }
 
-  private void readItems(String sourceURL, List<NewsArticle> result, Document document) {
+  private void readItems(String sourceURL, List<NewsArticleDTO> result, Document document) {
     NodeList nList = document.getDocumentElement().getElementsByTagName(XMLParserConstants.ITEM);
 
     for (int i = 0; i < nList.getLength(); i++) {
       Node node = nList.item(i);
       if (node.getNodeType() == Node.ELEMENT_NODE) {
         Element element = (Element) node;
-        NewsArticle article = new NewsArticle();
+        NewsArticleDTO article = new NewsArticleDTO();
         article.setTitle(getValue(element, XMLParserConstants.TITLE));
         article.setExternal_url(getValue(element, XMLParserConstants.EXTERNAL_URL));
-        article.setId(getValue(element, XMLParserConstants.ID));
+        article.setId(getValue(element, XMLParserConstants.GUID));
         article.setDescription(getValue(element, XMLParserConstants.DESCRIPTION));
         article.setCategories(getValues(element, XMLParserConstants.CATEGORY));
         article.setDate(convertDate(getValue(element, XMLParserConstants.DATE)));
@@ -84,13 +84,15 @@ public class XMLNewsParser implements Parser<NewsArticle> {
         article.setEnclosure(getAttributeValue(element, XMLParserConstants.IMAGE_ENCLOSURE, XMLParserConstants.URL));
         article.setAuthors(getValues(element, XMLParserConstants.DC_AUTHOR));
         article.setSource(sourceURL);
-        result.add(article);
+        if (validate(article)) {
+          result.add(article);
+        }
       }
     }
   }
 
   private void readSourceInfo(Document document) {
-    source = new Source();
+    source = new SourceDTO();
     Node sourceTitle = document.getDocumentElement().getElementsByTagName(XMLParserConstants.TITLE).item(0);
     source.setDisplayName(sourceTitle.getTextContent());
     Node sourceDescription = document.getDocumentElement().getElementsByTagName(XMLParserConstants.DESCRIPTION).item(0);
@@ -150,6 +152,14 @@ public class XMLNewsParser implements Parser<NewsArticle> {
       return 0;
     }
     return temp.getTime() / 1000;
+  }
+
+  private boolean validate(NewsArticleDTO article) {
+    boolean result = true;
+    if (article.getGuid() == null || article.getTitle() == null || article.getExternal_url() == null) {
+      result = false;
+    }
+    return result;
   }
 
 }
