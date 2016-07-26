@@ -11,27 +11,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class News {
-	private Set<SingleNews> news = new HashSet<SingleNews>();
+  private Set<SingleNews> news = new HashSet<SingleNews>();
 
-	public News() {
-	}
+  public News() {
+  }
 
-	public News(Set<SingleNews> news) {
-		super();
-		this.news = news;
-	}
+  public News(Set<SingleNews> news) {
+    super();
+    this.news = news;
+  }
 
-	@XmlElement
-	public Set<SingleNews> getNews() {
-		return news;
-	}
+  @XmlElement
+  public Set<SingleNews> getNews() {
+    return news;
+  }
 
-	public void setNews(Set<SingleNews> news) {
-		this.news = news;
-	}
+  public void setNews(Set<SingleNews> news) {
+    this.news = news;
+  }
 
-	public void add(SingleNews singleNews) {
-		news.add(singleNews);
-	}
+  public void add(SingleNews singleNews) {
+    news.add(singleNews);
+  }
 
 }

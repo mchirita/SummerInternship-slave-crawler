@@ -17,10 +17,10 @@ import javax.ws.rs.core.Response;
 @Path("/images/{imageId}")
 public class RetrieveImageService {
 
-	@GET
-	public Response retrieveImage(@PathParam("imageId") String imageId) {
+  @GET
+  public Response retrieveImage(@PathParam("imageId") String imageId) {
 
-		return Response.ok().build();
-	}
+    return Response.ok().build();
+  }
 
 }

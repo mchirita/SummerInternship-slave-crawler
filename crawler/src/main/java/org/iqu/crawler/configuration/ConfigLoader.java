@@ -14,11 +14,11 @@ import org.iqu.crawler.configuration.entities.SourceConfig;
  */
 public interface ConfigLoader extends Runnable {
 
-	/**
-	 * Loads the properties from a configuration file
-	 */
-	public void loadProperties();
+  /**
+   * Loads the properties from a configuration file
+   */
+  public void loadProperties();
 
-	public List<SourceConfig> getProperties();
+  public List<SourceConfig> getProperties();
 
 }
