@@ -135,10 +135,4 @@ public class HtmlEventsParser implements Parser<Event> {
     return 0;
   }
 
-  public static void main(String[] args) {
-    HtmlEventsParser parser = new HtmlEventsParser();
-    System.out.println(parser.readFeed("http://metropotam.ro/evenimente/", "UTF-8"));
-    System.out.println(parser.getSource());
-  }
-
 }
