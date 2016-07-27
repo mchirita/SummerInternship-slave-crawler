@@ -67,7 +67,6 @@ public class EventEndpoint {
     event1.setSource("www.google.com");
     Events events = new Events();
     events.addEvent(event1);
-
     if (startDate == null) {
       ErrorMessage errorMessage = new ErrorMessage("Start Date Not Found.");
       LOGGER.error(errorMessage.getMessage());
