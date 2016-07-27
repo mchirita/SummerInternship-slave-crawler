@@ -42,11 +42,11 @@ public class Test {
 		newsArticle.setExternal_url("sdgasdf");
 
 		NewsDAO news = factory.getNewsDAO();
-		news.addSource(source);
+		// news.addSource(source);
 		// news.delete(newsArticle);
-		news.create(newsArticle);
+		// news.create(newsArticle);
 		// news.update(newsArticle);
-
+		System.out.println(news.findAll());
 	}
 
 }

@@ -123,16 +123,21 @@ public class NewsDAOImpl implements NewsDAO {
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
 				newsArticle = new NewsArticle();
-				newsArticle.setGuid(result.getString(1));
-				newsArticle.setDate(result.getLong(2));
-				newsArticle.setTitle(result.getString(3));
-				newsArticle.setSubtitle(result.getString(4));
-				newsArticle.setDescription(result.getString(5));
-				// TODO add authors, images and categories to the news entity
-				int id = result.getInt(6);
-				Source source = findById(id);
+				newsArticle.setGuid(result.getString("GUID"));
+				long newsId = getNewsId(newsArticle);
+				newsArticle.setDate(result.getLong("Date"));
+				newsArticle.setTitle(result.getString("Title"));
+				newsArticle.setSubtitle(result.getString("Subtitle"));
+				newsArticle.setDescription(result.getString("Description"));
+				newsArticle.setAuthors(findAuthorsByNewsId(newsId));
+				newsArticle.setCategories(findCategoriesByNewsId(newsId));
+				newsArticle.setImages(findImagesByNewsId(newsId));
+				newsArticle.setBody(result.getString("Body"));
+				int id = result.getInt("SourceID");
+				Source source = findSourceById(id);
 				newsArticle.setSource(source.getDisplayName());
-				newsArticle.setBody(result.getString(7));
+				newsArticle.setThumbnail_id(result.getString("Thumbnail_id"));
+				newsArticle.setExternal_url(result.getString("ExternalURL"));
 				listOfNews.add(newsArticle);
 			}
 		} catch (SQLException e) {
@@ -273,6 +278,105 @@ public class NewsDAOImpl implements NewsDAO {
 		}
 
 		return result;
+	}
+
+	private List<String> findImagesByNewsId(long newsId) {
+		List<String> images = new ArrayList<String>();
+		String image = null;
+		try {
+			query.setLength(0);
+			query.append("SELECT URL FROM ");
+			query.append(Tables.IMAGES);
+			query.append(" JOIN ");
+			query.append(Tables.NEWS_HAS_IMAGES);
+			query.append(" ON ");
+			query.append(Tables.IMAGES);
+			query.append(".ImageID = ");
+			query.append(Tables.NEWS_HAS_IMAGES);
+			query.append(".ImageID");
+			query.append(" WHERE ");
+			query.append(Tables.NEWS_HAS_IMAGES);
+			query.append(".NewsId = ?");
+			preparedStatement = connection.prepareStatement(query.toString());
+			preparedStatement.setLong(1, newsId);
+			ResultSet result = preparedStatement.executeQuery();
+			while (result.next()) {
+				image = new String();
+				image = result.getString("URL");
+				images.add(image);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return images;
+	}
+
+	private List<String> findCategoriesByNewsId(long newsId) {
+		List<String> categories = new ArrayList<String>();
+		String category = null;
+		try {
+			query.setLength(0);
+			query.append("SELECT CategoryName FROM ");
+			query.append(Tables.CATEGORIES);
+			query.append(" JOIN ");
+			query.append(Tables.NEWS_HAS_CATEGORIES);
+			query.append(" ON ");
+			query.append(Tables.CATEGORIES);
+			query.append(".CategoryID = ");
+			query.append(Tables.NEWS_HAS_CATEGORIES);
+			query.append(".CategoryID");
+			query.append(" WHERE ");
+			query.append(Tables.NEWS_HAS_CATEGORIES);
+			query.append(".NewsId = ?");
+			preparedStatement = connection.prepareStatement(query.toString());
+			preparedStatement.setLong(1, newsId);
+			ResultSet result = preparedStatement.executeQuery();
+			while (result.next()) {
+				category = new String();
+				category = result.getString("CategoryName");
+				categories.add(category);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return categories;
+	}
+
+	private List<String> findAuthorsByNewsId(long newsId) {
+		List<String> authors = new ArrayList<String>();
+		String author = null;
+		try {
+			query.setLength(0);
+			query.append("SELECT AuthorName FROM ");
+			query.append(Tables.AUTHORS);
+			query.append(" JOIN ");
+			query.append(Tables.NEWS_HAS_AUTHORS);
+			query.append(" ON ");
+			query.append(Tables.AUTHORS);
+			query.append(".AuthorID = ");
+			query.append(Tables.NEWS_HAS_AUTHORS);
+			query.append(".AuthorID");
+			query.append(" WHERE ");
+			query.append(Tables.NEWS_HAS_AUTHORS);
+			query.append(".NewsId = ?");
+			preparedStatement = connection.prepareStatement(query.toString());
+			preparedStatement.setLong(1, newsId);
+			ResultSet result = preparedStatement.executeQuery();
+			while (result.next()) {
+				author = new String();
+				author = result.getString("AuthorName");
+				authors.add(author);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return authors;
 	}
 
 	private void connectToDatabase() throws SQLException {
@@ -570,7 +674,7 @@ public class NewsDAOImpl implements NewsDAO {
 		preparedStatement.executeUpdate();
 	}
 
-	private Source findById(int id) throws SQLException {
+	private Source findSourceById(int id) throws SQLException {
 		query.setLength(0);
 		query.append("SELECT * FROM ");
 		query.append(Tables.SOURCES);
