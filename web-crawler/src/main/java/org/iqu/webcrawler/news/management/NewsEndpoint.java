@@ -90,11 +90,11 @@ public class NewsEndpoint {
     news.add(singleNews1);
 
     if (startDate == null) {
-      ErrorMessage errorMessage = new ErrorMessage("Could not find location, please try again later.");
+      ErrorMessage errorMessage = new ErrorMessage("Start Date Not Found.");
       LOGGER.error(errorMessage.getMessage());
-      return Response.status(Status.OK).entity(news).build();
+      return Response.status(Status.BAD_REQUEST).entity(errorMessage).build();
     } else {
-      return Response.ok(Status.OK).build();
+      return Response.ok(Status.OK).entity(news).build();
     }
   }
 

@@ -69,11 +69,11 @@ public class EventEndpoint {
     events.addEvent(event1);
 
     if (startDate == null) {
-      ErrorMessage errorMessage = new ErrorMessage("Could not find location, please try again later.");
+      ErrorMessage errorMessage = new ErrorMessage("Start Date Not Found.");
       LOGGER.error(errorMessage.getMessage());
-      return Response.status(Status.NOT_FOUND).entity(events).build();
+      return Response.status(Status.BAD_REQUEST).entity(errorMessage).build();
     } else {
-      return Response.ok().build();
+      return Response.ok().entity(events).build();
     }
   }
   // TO DO : implement filter of data, Search in DB
