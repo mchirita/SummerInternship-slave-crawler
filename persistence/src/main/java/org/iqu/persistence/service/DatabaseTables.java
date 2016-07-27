@@ -11,8 +11,8 @@ public class DatabaseTables {
   public static final String NEWS_HAS_IMAGES = "News_has_Images";
   public static final String EVENTS = "Events";
   public static final String TYPES = "Types";
-  public static final String SUBTYPES = "Subtypes";
+  public static final String SUBTYPES = "Subtype";
   public static final String EVENTS_HAS_AUTHORS = "Events_has_Authors";
   public static final String EVENTS_HAS_IMAGES = "Events_has_Images";
-  public static final String TYPES_HAS_SUBTYPES = "Types_has_Subtypes";
+  public static final String TYPES_HAS_SUBTYPES = "Types_has_Subtype";
 }

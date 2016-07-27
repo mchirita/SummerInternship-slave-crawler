@@ -29,7 +29,6 @@ public class EventDAOImpl implements EventDAO {
     try {
       connectToDatabase();
       addTypes(entity);
-      addSubtypes(entity);
       addEvent(entity);
       createRelations(entity);
     } catch (SQLException e) {
@@ -37,17 +36,11 @@ public class EventDAOImpl implements EventDAO {
     }
   }
 
-  private void addSubtypes(EventDTO entity) {
-    for (String subtype : entity.getSubtypes()) {
-      addSubtype(subtype);
-    }
-
-  }
-
   private void addSubtype(String subtype) {
     query.setLength(0);
-    query.append("INSER INTO ");
+    query.append("INSERT INTO ");
     query.append(DatabaseTables.SUBTYPES);
+    query.append("(SubtypeName)");
     query.append(" values(?)");
     try {
       preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
@@ -59,7 +52,7 @@ public class EventDAOImpl implements EventDAO {
       }
     } catch (SQLException e) {
       query.setLength(0);
-      query.append("SELECT SubtypeID ");
+      query.append("SELECT SubtypeID FROM ");
       query.append(DatabaseTables.SUBTYPES);
       query.append(" WHERE SubtypeName = ?");
       try {
@@ -95,7 +88,7 @@ public class EventDAOImpl implements EventDAO {
 
   private void addTypeAndSubtypeRelations(Type type) {
     query.setLength(0);
-    query.append("INSERT INTO");
+    query.append("INSERT INTO ");
     query.append(DatabaseTables.TYPES_HAS_SUBTYPES);
     query.append("(TypeID, SubtypeID) values(?,?)");
     try {
@@ -113,12 +106,12 @@ public class EventDAOImpl implements EventDAO {
 
   private void addTypes(EventDTO entity) {
     query.setLength(0);
-    query.append("INSERT into ");
+    query.append("INSERT INTO ");
     query.append(DatabaseTables.TYPES);
     query.append("(TypeName) ");
     query.append("values(?)");
     try {
-      preparedStatement = connection.prepareStatement(query.toString());
+      preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
       preparedStatement.setString(1, entity.getType());
       preparedStatement.executeUpdate();
       generatedKeys = preparedStatement.getGeneratedKeys();
@@ -271,7 +264,7 @@ public class EventDAOImpl implements EventDAO {
     query.append(DatabaseTables.EVENTS);
     query.append(
         "(StartDate, EndDate, Title, Subtitle, Description, SourceID, TypeID, Body, Thumbnail_id, ExternalURL) ");
-    query.append("values(?,?,?,?,?,?,?,?,?)");
+    query.append("values(?,?,?,?,?,?,?,?,?,?)");
     preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
     preparedStatement.setLong(1, entity.getStartDate());
     preparedStatement.setLong(2, entity.getEndDate());
@@ -359,6 +352,7 @@ public class EventDAOImpl implements EventDAO {
     query.setLength(0);
     query.append("INSERT INTO ");
     query.append(DatabaseTables.IMAGES);
+    query.append("(URL)");
     query.append(" values(?)");
     try {
       preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
@@ -409,6 +403,7 @@ public class EventDAOImpl implements EventDAO {
     query.setLength(0);
     query.append("INSERT INTO ");
     query.append(DatabaseTables.AUTHORS);
+    query.append("(AuthorName)");
     query.append(" values(?)");
     try {
       preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
