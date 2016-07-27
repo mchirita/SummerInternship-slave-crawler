@@ -9,48 +9,48 @@ import org.iqu.persistence.entities.Source;
 
 public class EntityManagerImp implements EntityManager {
 
-	private List<NewsArticleDTO> databaseNews;
-	private List<EventDTO> databaseEvents;
-	private NewsDAO newsDataAccess = DAOFactory.getNewsDAO();
-	private EventDAO eventsDataAccess = DAOFactory.getEventDAO();
+  private List<NewsArticleDTO> databaseNews;
+  private List<EventDTO> databaseEvents;
+  private NewsDAO newsDataAccess = DAOFactory.getNewsDAO();
+  private EventDAO eventsDataAccess = DAOFactory.getEventDAO();
 
-	@Override
-	public void retrieveData(ParsedDataDTO parsedData) {
-		Source source = parsedData.getSource();
-		if (parsedData.getNews() == null) {
-			eventsDataAccess.addSource(source);
-			retrieveEvents(parsedData.getEvents(), source);
-		} else {
-			newsDataAccess.addSource(source);
-			retrieveNews(parsedData.getNews(), source);
-		}
-	}
+  @Override
+  public void retrieveData(ParsedDataDTO parsedData) {
+    Source source = parsedData.getSource();
+    if (parsedData.getNews() == null) {
+      eventsDataAccess.addSource(source);
+      retrieveEvents(parsedData.getEvents(), source);
+    } else {
+      newsDataAccess.addSource(source);
+      retrieveNews(parsedData.getNews(), source);
+    }
+  }
 
-	private void retrieveNews(List<NewsArticleDTO> crawlerNews, Source source) {
-		databaseNews = newsDataAccess.findAllBySource(source);
+  private void retrieveNews(List<NewsArticleDTO> crawlerNews, Source source) {
+    databaseNews = newsDataAccess.findAllBySource(source);
 
-		for (NewsArticleDTO newsArticle : crawlerNews) {
-			if (databaseNews.contains(newsArticle)) {
-				if (newsArticle.getDate() > databaseNews.get(databaseNews.indexOf(newsArticle)).getDate()) {
-					newsDataAccess.update(newsArticle);
-				}
-			} else {
-				newsDataAccess.create(newsArticle);
-			}
-		}
-	}
+    for (NewsArticleDTO newsArticle : crawlerNews) {
+      if (databaseNews.contains(newsArticle)) {
+        if (newsArticle.getDate() > databaseNews.get(databaseNews.indexOf(newsArticle)).getDate()) {
+          newsDataAccess.update(newsArticle);
+        }
+      } else {
+        newsDataAccess.create(newsArticle);
+      }
+    }
+  }
 
-	private void retrieveEvents(List<EventDTO> crawlerEvents, Source source) {
-		databaseEvents = eventsDataAccess.findAll();
+  private void retrieveEvents(List<EventDTO> crawlerEvents, Source source) {
+    databaseEvents = eventsDataAccess.findAll();
 
-		for (EventDTO event : crawlerEvents) {
-			if (databaseEvents.contains(event)) {
-				eventsDataAccess.update(event);
-			} else {
-				eventsDataAccess.create(event);
-			}
-		}
+    for (EventDTO event : crawlerEvents) {
+      if (databaseEvents.contains(event)) {
+        eventsDataAccess.update(event);
+      } else {
+        eventsDataAccess.create(event);
+      }
+    }
 
-	}
+  }
 
 }

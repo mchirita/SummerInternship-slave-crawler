@@ -7,5 +7,5 @@ import org.iqu.persistence.entities.Type;
 
 public interface EventDAO extends DaoService<EventDTO> {
 
-	public List<Type> retrieveTypesAndSubtypes();
+  public List<Type> retrieveTypesAndSubtypes();
 }
