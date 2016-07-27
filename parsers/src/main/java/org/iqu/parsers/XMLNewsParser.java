@@ -94,13 +94,21 @@ public class XMLNewsParser implements Parser<NewsArticleModel> {
   private void readSourceInfo(Document document) {
     source = new SourceModel();
     Node sourceTitle = document.getDocumentElement().getElementsByTagName(XMLParserConstants.TITLE).item(0);
-    source.setDisplayName(sourceTitle.getTextContent());
     Node sourceDescription = document.getDocumentElement().getElementsByTagName(XMLParserConstants.DESCRIPTION).item(0);
-    source.setDescription(sourceDescription.getTextContent());
     Element imageNode = (Element) document.getDocumentElement().getElementsByTagName(XMLParserConstants.SOURCE_IMAGE)
         .item(0);
-    Node imageUrl = imageNode.getElementsByTagName(XMLParserConstants.URL).item(0);
-    source.setImage(imageUrl.getTextContent());
+    if (sourceTitle != null) {
+      source.setDisplayName(sourceTitle.getTextContent());
+    }
+    if (sourceDescription != null) {
+      source.setDescription(sourceDescription.getTextContent());
+    }
+    if (imageNode != null) {
+      Node imageUrl = imageNode.getElementsByTagName(XMLParserConstants.URL).item(0);
+      if (imageUrl != null) {
+        source.setImage(imageUrl.getTextContent());
+      }
+    }
   }
 
   private String getValue(Element element, String tagName) {

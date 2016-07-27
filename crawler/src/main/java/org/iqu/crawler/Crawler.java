@@ -53,7 +53,7 @@ public class Crawler {
           Parser<EventModel> parser = (Parser<EventModel>) Class.forName(sourceConfig.getParserName()).newInstance();
           parsedData.setEvents(parser.readFeed(sourceConfig.getSource(), "UTF-8"));
           parsedData.setSource(parser.getSource());
-          manager.retrieveData(converter.convertParsedData(parsedData));
+          // manager.retrieveData(converter.convertParsedData(parsedData));
 
         } else {
           LOGGER.info("Unable to handle " + sourceConfig.getDataType() + " data type.");

@@ -61,11 +61,10 @@ public class NewsDAOImpl implements NewsDAO {
       query.setLength(0);
       query.append("SELECT SourceID from ");
       query.append(DatabaseTables.SOURCES);
-      query.append(" where DisplayName = ?, Description = ?");
+      query.append(" where DisplayName = ?");
       try {
         preparedStatement = connection.prepareStatement(query.toString());
         preparedStatement.setString(1, source.getDisplayName());
-        preparedStatement.setString(2, source.getDescription());
         ResultSet result = preparedStatement.executeQuery();
         if (result.next()) {
           source.setId(result.getInt(1));

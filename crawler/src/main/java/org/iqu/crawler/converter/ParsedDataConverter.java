@@ -16,8 +16,12 @@ public class ParsedDataConverter {
 
   public ParsedDataDTO convertParsedData(ParsedDataModel model) {
     ParsedDataDTO result = new ParsedDataDTO();
-    result.setNews(convertNews(model.getNews()));
-    result.setEvents(convertEvents(model.getEvents()));
+    if (model.getNews() != null) {
+      result.setNews(convertNews(model.getNews()));
+    }
+    if (model.getEvents() != null) {
+      result.setEvents(convertEvents(model.getEvents()));
+    }
     result.setSource(convertSource(model.getSource()));
     return result;
   }
