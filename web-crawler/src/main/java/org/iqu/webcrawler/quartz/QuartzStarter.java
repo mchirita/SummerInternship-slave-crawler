@@ -33,8 +33,20 @@ public class QuartzStarter implements ServletContextListener {
 
   @Override
   public void contextInitialized(ServletContextEvent arg0) {
-    try {
+    appInit();
+  }
 
+  @Override
+  public void contextDestroyed(ServletContextEvent arg0) {
+    try {
+      scheduler.shutdown();
+    } catch (SchedulerException e) {
+      LOGGER.error("Scheduler error!", e);
+    }
+  }
+
+  private void appInit() {
+    try {
       Crawler crawler = new Crawler(new CrawlerConfiguration());
 
       scheduler = new StdSchedulerFactory().getScheduler();
@@ -46,17 +58,6 @@ public class QuartzStarter implements ServletContextListener {
 
       scheduler.scheduleJob(job, trigger);
       scheduler.start();
-
-    } catch (SchedulerException e) {
-      LOGGER.error("Scheduler error!", e);
-    }
-  }
-
-  @Override
-  public void contextDestroyed(ServletContextEvent arg0) {
-    try {
-
-      scheduler.shutdown();
 
     } catch (SchedulerException e) {
       LOGGER.error("Scheduler error!", e);
