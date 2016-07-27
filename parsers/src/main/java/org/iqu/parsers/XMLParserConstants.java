@@ -9,7 +9,7 @@ public class XMLParserConstants {
   public static final String ITEM = "item";
   public static final String TITLE = "title";
   public static final String EXTERNAL_URL = "link";
-  public static final String ID = "guid";
+  public static final String GUID = "guid";
   public static final String DESCRIPTION = "description";
   public static final String CATEGORY = "category";
   public static final String DATE = "pubDate";

@@ -1,12 +1,18 @@
 package org.iqu.parsers.entities;
 
-public class Event {
+/**
+ * Class defining an event.
+ * 
+ * @author Razvan Rosu
+ *
+ */
+public class EventDTO {
 
   private String title;
   private String subtitle;
   private long startDate;
   private long endDate;
-  private String id;
+  private long id;
   private String description;
   private String[] authors;
   private String categories;
@@ -16,8 +22,7 @@ public class Event {
   private String thumbnail_id;
   private String external_url;
 
-  public Event() {
-    // TODO Auto-generated constructor stub
+  public EventDTO() {
   }
 
   public String getTitle() {
@@ -52,11 +57,11 @@ public class Event {
     this.endDate = endDate;
   }
 
-  public String getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(long id) {
     this.id = id;
   }
 
@@ -129,6 +134,37 @@ public class Event {
     return "Event [title = " + title + ", startDate = " + startDate + ", endDate=" + endDate + ", id = " + id
         + ", desription = " + description + ", categories = " + categories + ", source = " + source + ", image_id = "
         + image_id + ", external_url = " + external_url + "]";
+  }
+
+  /**
+   * Based solely on external_url field.
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((external_url == null) ? 0 : external_url.hashCode());
+    return result;
+  }
+
+  /**
+   * Based solely on external_url field.
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    EventDTO other = (EventDTO) obj;
+    if (external_url == null) {
+      if (other.external_url != null)
+        return false;
+    } else if (!external_url.equals(other.external_url))
+      return false;
+    return true;
   }
 
 }
