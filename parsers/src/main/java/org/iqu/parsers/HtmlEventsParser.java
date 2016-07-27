@@ -5,7 +5,6 @@ import static org.iqu.parsers.HtmlParserConstants.DATE;
 import static org.iqu.parsers.HtmlParserConstants.DESCRIPTION;
 import static org.iqu.parsers.HtmlParserConstants.EVENTGROUP;
 import static org.iqu.parsers.HtmlParserConstants.EVENTLIST;
-import static org.iqu.parsers.HtmlParserConstants.ID;
 import static org.iqu.parsers.HtmlParserConstants.IMG;
 import static org.iqu.parsers.HtmlParserConstants.IMGSRC;
 import static org.iqu.parsers.HtmlParserConstants.TIME;
@@ -21,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.iqu.parsers.entities.Event;
-import org.iqu.parsers.entities.Source;
+import org.iqu.parsers.entities.EventDTO;
+import org.iqu.parsers.entities.SourceDTO;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -35,25 +34,25 @@ import org.jsoup.select.Elements;
  * @author Razvan Rosu
  *
  */
-public class HtmlEventsParser implements Parser<Event> {
+public class HtmlEventsParser implements Parser<EventDTO> {
 
-  private Event event;
+  private EventDTO event;
   private static final Logger LOGGER = Logger.getLogger(HtmlEventsParser.class);
   private static String pattern = "yyyy-MM-dd'T'HH:mm:ss'+'hh:mm";
   private static DateFormat dF = new SimpleDateFormat(pattern);
   private String categories = "";
   private String sourceURL;
-  private Source source;
+  private SourceDTO source;
 
   @Override
-  public Source getSource() {
+  public SourceDTO getSource() {
     return source;
   }
 
   @Override
-  public List<Event> readFeed(String sourceURL, String encoding) {
+  public List<EventDTO> readFeed(String sourceURL, String encoding) {
 
-    List<Event> events = new ArrayList<Event>();
+    List<EventDTO> events = new ArrayList<EventDTO>();
     this.sourceURL = sourceURL;
     Document doc = null;
     try {
@@ -72,13 +71,13 @@ public class HtmlEventsParser implements Parser<Event> {
   }
 
   private void readSourceInfo(Document doc) {
-    source = new Source();
+    source = new SourceDTO();
     source.setDisplayName(doc.title());
     source.setDescription(doc.getElementsByAttributeValue("name", "description").attr("content"));
     source.setImage(doc.getElementsByAttributeValue("sizes", "180x180").attr("href"));
   }
 
-  private void readItems(List<Event> events, Document doc) {
+  private void readItems(List<EventDTO> events, Document doc) {
     Elements item = doc.getElementsByClass(EVENTGROUP);
 
     for (Element element : item) {
@@ -89,7 +88,7 @@ public class HtmlEventsParser implements Parser<Event> {
     }
   }
 
-  private void takeEvents(String eventsURL, List<Event> events) {
+  private void takeEvents(String eventsURL, List<EventDTO> events) {
     Document doc = null;
     try {
       Connection connection = Jsoup.connect(eventsURL);
@@ -104,7 +103,7 @@ public class HtmlEventsParser implements Parser<Event> {
     categories = doc.body().id();
     Elements item = doc.getElementsByClass(EVENTLIST);
     for (Element element : item) {
-      event = new Event();
+      event = new EventDTO();
       try {
         getTags(element);
         events.add(event);
@@ -120,7 +119,6 @@ public class HtmlEventsParser implements Parser<Event> {
     event.setImage_id(element.getElementsByTag(IMG).attr(IMGSRC));
     event.setExternal_url(element.getElementsByTag("a").attr(URL));
     event.setDescription(element.getElementsByClass(DESCRIPTION).html());
-    event.setId(element.getElementsByClass(EVENTLIST).attr(ID) + "-" + categories);
     event.setStartDate(convertDate(element.getElementsByTag(TIME).attr(DATE)));
     event.setSource(sourceURL);
     event.setCategories(categories);

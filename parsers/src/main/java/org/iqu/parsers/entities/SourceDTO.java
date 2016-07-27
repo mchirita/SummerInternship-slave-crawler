@@ -6,16 +6,17 @@ package org.iqu.parsers.entities;
  * @author Mitroi Stefan, Cristi Badoi
  *
  */
-public class Source {
-  private String id;
+public class SourceDTO {
+
+  private long id;
   private String displayName;
   private String description;
   private String image;
 
-  public Source() {
+  public SourceDTO() {
   }
 
-  public Source(String id, String displayName, String description, String image) {
+  public SourceDTO(long id, String displayName, String description, String image) {
     this.id = id;
     this.displayName = displayName;
     this.description = description;
@@ -30,11 +31,11 @@ public class Source {
     this.image = image;
   }
 
-  public String getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(long id) {
     this.id = id;
   }
 
@@ -60,17 +61,20 @@ public class Source {
         + "]";
   }
 
+  /**
+   * Based solely on displayName field.
+   */
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((description == null) ? 0 : description.hashCode());
     result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((image == null) ? 0 : image.hashCode());
     return result;
   }
 
+  /**
+   * Based solely on displayName field.
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
@@ -79,26 +83,11 @@ public class Source {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Source other = (Source) obj;
-    if (description == null) {
-      if (other.description != null)
-        return false;
-    } else if (!description.equals(other.description))
-      return false;
+    SourceDTO other = (SourceDTO) obj;
     if (displayName == null) {
       if (other.displayName != null)
         return false;
     } else if (!displayName.equals(other.displayName))
-      return false;
-    if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
-      return false;
-    if (image == null) {
-      if (other.image != null)
-        return false;
-    } else if (!image.equals(other.image))
       return false;
     return true;
   }
