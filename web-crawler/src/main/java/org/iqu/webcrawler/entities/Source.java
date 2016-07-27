@@ -55,12 +55,6 @@ public class Source {
   }
 
   @Override
-  public String toString() {
-    return "Source [id=" + id + ", displayName=" + displayName + ", description=" + description + ", image=" + image
-        + "]";
-  }
-
-  @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
