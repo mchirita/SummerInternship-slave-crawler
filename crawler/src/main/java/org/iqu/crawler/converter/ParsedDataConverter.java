@@ -12,6 +12,13 @@ import org.iqu.persistence.entities.NewsArticleDTO;
 import org.iqu.persistence.entities.ParsedDataDTO;
 import org.iqu.persistence.entities.SourceDTO;
 
+/**
+ * Converts model data received from a parser into DTO data to be forwarded to
+ * the persistence module.
+ * 
+ * @author Cristi Badoi
+ *
+ */
 public class ParsedDataConverter {
 
   public ParsedDataDTO convertParsedData(ParsedDataModel model) {

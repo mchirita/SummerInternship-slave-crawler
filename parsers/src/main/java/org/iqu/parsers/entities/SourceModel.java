@@ -1,7 +1,7 @@
 package org.iqu.parsers.entities;
 
 /**
- * Holds information about a news source.
+ * Class defining a news source.
  * 
  * @author Mitroi Stefan, Cristi Badoi
  *

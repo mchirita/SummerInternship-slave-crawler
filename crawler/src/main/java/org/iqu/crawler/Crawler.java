@@ -13,7 +13,7 @@ import org.iqu.persistence.service.EntityManager;
 import org.iqu.persistence.service.EntityManagerImp;
 
 /**
- * Parses online news and event information and forwards it.
+ * Parses online news and events information and forwards it in DTO format.
  * 
  * @author Cristi Badoi
  */
