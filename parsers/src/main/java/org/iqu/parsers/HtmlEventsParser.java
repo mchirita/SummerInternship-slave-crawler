@@ -31,7 +31,7 @@ import org.jsoup.select.Elements;
 /**
  * Class that implements a parser that makes an entity from html tags.
  * 
- * @author Razvan Rosu
+ * @author Razvan Rosu, Cristi Badoi
  *
  */
 public class HtmlEventsParser implements Parser<EventModel> {
@@ -40,7 +40,7 @@ public class HtmlEventsParser implements Parser<EventModel> {
   private static final Logger LOGGER = Logger.getLogger(HtmlEventsParser.class);
   private static String pattern = "yyyy-MM-dd'T'HH:mm:ss'+'hh:mm";
   private static DateFormat dF = new SimpleDateFormat(pattern);
-  private String categories = "";
+  private String eventType;
   private String sourceURL;
   private SourceModel source;
 
@@ -100,7 +100,7 @@ public class HtmlEventsParser implements Parser<EventModel> {
     } catch (IOException e) {
       LOGGER.error("InputStream error!", e);
     }
-    categories = doc.body().id();
+    eventType = doc.body().id();
     Elements item = doc.getElementsByClass(EVENTLIST);
     for (Element element : item) {
       event = new EventModel();
@@ -116,12 +116,12 @@ public class HtmlEventsParser implements Parser<EventModel> {
 
   private void getTags(Element element) throws ParseException {
     event.setTitle(element.getElementsByTag(A).attr(TITLE));
-    event.setImage_id(element.getElementsByTag(IMG).attr(IMGSRC));
+    event.getImages().add(element.getElementsByTag(IMG).attr(IMGSRC));
     event.setExternal_url(element.getElementsByTag("a").attr(URL));
     event.setDescription(element.getElementsByClass(DESCRIPTION).html());
     event.setStartDate(convertDate(element.getElementsByTag(TIME).attr(DATE)));
     event.setSource(sourceURL);
-    event.setCategories(categories);
+    event.setType(eventType);
     event.setEndDate(
         convertDate(element.getElementsByAttributeValue("itemprop", "endDate").attr(HtmlParserConstants.DATE)));
   }

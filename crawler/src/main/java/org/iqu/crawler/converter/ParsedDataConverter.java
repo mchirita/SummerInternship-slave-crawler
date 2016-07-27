@@ -1,11 +1,16 @@
 package org.iqu.crawler.converter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.iqu.crawler.entities.ParsedDataModel;
 import org.iqu.parsers.entities.EventModel;
 import org.iqu.parsers.entities.NewsArticleModel;
 import org.iqu.parsers.entities.SourceModel;
+import org.iqu.persistence.entities.EventDTO;
+import org.iqu.persistence.entities.NewsArticleDTO;
+import org.iqu.persistence.entities.ParsedDataDTO;
+import org.iqu.persistence.entities.SourceDTO;
 
 public class ParsedDataConverter {
 
@@ -18,23 +23,24 @@ public class ParsedDataConverter {
   }
 
   public List<NewsArticleDTO> convertNews(List<NewsArticleModel> model) {
-    List<NewsArticleDTO> result = new List<NewsArticleDTO>();
+    List<NewsArticleDTO> result = new ArrayList<NewsArticleDTO>();
     for (NewsArticleModel article : model) {
       result.add(convertNewsArticle(article));
     }
+    return result;
   }
 
   public List<EventDTO> convertEvents(List<EventModel> model) {
-    List<EventDTO> result = new List<EventDTO>();
+    List<EventDTO> result = new ArrayList<EventDTO>();
     for (EventModel event : model) {
       result.add(convertEvent(event));
     }
+    return result;
   }
 
   public NewsArticleDTO convertNewsArticle(NewsArticleModel model) {
     NewsArticleDTO result = new NewsArticleDTO();
     result.setDate(model.getDate());
-    result.setId(model.getId());
     result.setGuid(model.getGuid());
     result.setTitle(model.getTitle());
     result.setSubtitle(model.getSubtitle());
@@ -56,13 +62,13 @@ public class ParsedDataConverter {
     result.setSubtitle(model.getSubtitle());
     result.setStartDate(model.getStartDate());
     result.setEndDate(model.getEndDate());
-    result.setId(model.getId());
     result.setDescription(model.getDescription());
     result.setAuthors(model.getAuthors());
-    result.setCategories(model.getCategories());
+    result.setType(model.getType());
+    result.setSubtypes(model.getSubtypes());
     result.setSource(model.getSource());
     result.setBody(model.getBody());
-    result.setImage_id(model.getImage_id());
+    result.setImages(model.getImages());
     result.setThumbnail_id(model.getThumbnail_id());
     result.setExternal_url(model.getExternal_url());
     return result;
@@ -70,7 +76,6 @@ public class ParsedDataConverter {
 
   public SourceDTO convertSource(SourceModel model) {
     SourceDTO result = new SourceDTO();
-    result.setId(model.getId());
     result.setDisplayName(model.getDisplayName());
     result.setDescription(model.getDescription());
     result.setImage(model.getImage());

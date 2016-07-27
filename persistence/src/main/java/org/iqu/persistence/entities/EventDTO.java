@@ -1,14 +1,14 @@
-package org.iqu.parsers.entities;
+package org.iqu.persistence.entities;
 
 import java.util.List;
 
 /**
- * Class defining an event.
+ * Data transfer class representing an event.
  * 
- * @author Razvan Rosu, Cristi Badoi
+ * @author Beniamin Savu
  *
  */
-public class EventModel {
+public class EventDTO {
 
   private String title;
   private String subtitle;
@@ -139,7 +139,7 @@ public class EventModel {
 
   @Override
   public String toString() {
-    return "EventModel [title=" + title + ", subtitle=" + subtitle + ", startDate=" + startDate + ", endDate=" + endDate
+    return "EventDTO [title=" + title + ", subtitle=" + subtitle + ", startDate=" + startDate + ", endDate=" + endDate
         + ", id=" + id + ", description=" + description + ", authors=" + authors + ", type=" + type + ", subtypes="
         + subtypes + ", source=" + source + ", body=" + body + ", images=" + images + ", thumbnail_id=" + thumbnail_id
         + ", external_url=" + external_url + "]";
@@ -167,7 +167,7 @@ public class EventModel {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    EventModel other = (EventModel) obj;
+    EventDTO other = (EventDTO) obj;
     if (external_url == null) {
       if (other.external_url != null)
         return false;
