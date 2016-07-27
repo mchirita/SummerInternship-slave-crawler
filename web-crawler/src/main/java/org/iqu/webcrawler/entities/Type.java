@@ -7,17 +7,23 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Implements a type of event
+ * 
+ * @author Razvan Rosu
+ *
+ */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Type {
 
   private String type;
-  private Set<String> subTypes = new HashSet<String>();
+  private Set<String> subtypes = new HashSet<String>();
 
   public Type(String type, Set<String> subTypes) {
     super();
     this.type = type;
-    this.subTypes = subTypes;
+    this.subtypes = subTypes;
   }
 
   public String getType() {
@@ -29,11 +35,11 @@ public class Type {
   }
 
   public Set<String> getSubTypes() {
-    return subTypes;
+    return subtypes;
   }
 
   public void setSubTypes(Set<String> subTypes) {
-    this.subTypes = subTypes;
+    this.subtypes = subTypes;
   }
 
 }

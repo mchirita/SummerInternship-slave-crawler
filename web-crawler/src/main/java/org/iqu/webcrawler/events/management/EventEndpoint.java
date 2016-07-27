@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 import org.iqu.webcrawler.entities.Authors;
@@ -46,14 +47,12 @@ public class EventEndpoint {
     authors.addAuthor("Peter Parker");
     authors.addAuthor("Ville Valo");
 
-    int status = 0;
     if (authors.size() > 0) {
-      status = 200;
-      return Response.status(status).entity(authors).build();
+      return Response.status(Status.OK).entity(authors).build();
     }
-    status = 404;
     ErrorMessage errorMessage = new ErrorMessage("Could not find authors, please try again later.");
-    return Response.status(status).entity(errorMessage).build();
+    LOGGER.error(errorMessage.getMessage());
+    return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
   }
 
   @Path("/")
@@ -70,10 +69,11 @@ public class EventEndpoint {
     events.addEvent(event1);
 
     if (startDate == null) {
-      ErrorMessage errorMessage = new ErrorMessage("Could not find location, please try again later.");
-      return Response.status(200).entity(events).build();
+      ErrorMessage errorMessage = new ErrorMessage("Start Date Not Found.");
+      LOGGER.error(errorMessage.getMessage());
+      return Response.status(Status.BAD_REQUEST).entity(errorMessage).build();
     } else {
-      return Response.ok().build();
+      return Response.ok().entity(events).build();
     }
   }
   // TO DO : implement filter of data, Search in DB
@@ -85,9 +85,6 @@ public class EventEndpoint {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response retrieveSource() {
-    int status;
-    String response = "";
-    status = 0;
     Source source = new Source("1", "BNR Brasov", "This is the official BNR site",
         "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg");
 
@@ -95,12 +92,12 @@ public class EventEndpoint {
     sources.addSource(source);
 
     if (!sources.isEmpty()) {
-      status = 200;
-      return Response.status(status).entity(sources).build();
+
+      return Response.ok().entity(sources).build();
     } else {
-      status = 404;
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch sources, please try again later.");
-      return Response.status(status).entity(errorMessage).build();
+      LOGGER.error(errorMessage.getMessage());
+      return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
     }
   }
 
@@ -123,9 +120,10 @@ public class EventEndpoint {
 
     if (types.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-      return Response.status(404).entity(errorMessage).build();
+      LOGGER.error(errorMessage.getMessage());
+      return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
     }
-    return Response.status(200).entity(types).build();
+    return Response.ok().entity(types).build();
   }
 
 }
