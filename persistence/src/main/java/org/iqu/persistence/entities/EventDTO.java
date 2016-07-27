@@ -1,5 +1,7 @@
 package org.iqu.persistence.entities;
 
+import java.util.List;
+
 public class EventDTO {
 
 	private String title;
@@ -8,16 +10,14 @@ public class EventDTO {
 	private long endDate;
 	private long id;
 	private String description;
-	private String[] authors;
-	private String categories;
+	private List<String> authors;
+	private String type;
+	private List<String> subtypes;
 	private String source;
 	private String body;
-	private String image_id;
+	private List<String> images;
 	private String thumbnail_id;
 	private String external_url;
-
-	public EventDTO() {
-	}
 
 	public String getTitle() {
 		return title;
@@ -63,24 +63,32 @@ public class EventDTO {
 		return description;
 	}
 
-	public void setDescription(String desription) {
-		this.description = desription;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	public String[] getAuthors() {
+	public List<String> getAuthors() {
 		return authors;
 	}
 
-	public void setAuthors(String[] authors) {
+	public void setAuthors(List<String> authors) {
 		this.authors = authors;
 	}
 
-	public String getCategories() {
-		return categories;
+	public String getType() {
+		return type;
 	}
 
-	public void setCategories(String categories) {
-		this.categories = categories;
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public List<String> getSubtypes() {
+		return subtypes;
+	}
+
+	public void setSubtypes(List<String> subtypes) {
+		this.subtypes = subtypes;
 	}
 
 	public String getSource() {
@@ -99,12 +107,12 @@ public class EventDTO {
 		this.body = body;
 	}
 
-	public String getImage_id() {
-		return image_id;
+	public List<String> getImages() {
+		return images;
 	}
 
-	public void setImage_id(String image_id) {
-		this.image_id = image_id;
+	public void setImages(List<String> images) {
+		this.images = images;
 	}
 
 	public String getThumbnail_id() {
@@ -125,9 +133,10 @@ public class EventDTO {
 
 	@Override
 	public String toString() {
-		return "Event [title = " + title + ", startDate = " + startDate + ", endDate=" + endDate + ", id = " + id
-				+ ", desription = " + description + ", categories = " + categories + ", source = " + source + ", image_id = "
-				+ image_id + ", external_url = " + external_url + "]";
+		return "EventDTO [title=" + title + ", subtitle=" + subtitle + ", startDate=" + startDate + ", endDate=" + endDate
+				+ ", id=" + id + ", description=" + description + ", authors=" + authors + ", type=" + type + ", subtypes="
+				+ subtypes + ", source=" + source + ", body=" + body + ", images=" + images + ", thumbnail_id=" + thumbnail_id
+				+ ", external_url=" + external_url + "]";
 	}
 
 	/**

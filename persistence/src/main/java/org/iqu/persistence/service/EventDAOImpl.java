@@ -27,15 +27,26 @@ public class EventDAOImpl implements EventDAO {
 	public void create(EventDTO entity) {
 		try {
 			connectToDatabase();
-			addTypes();
+			addTypes(entity);
 			addEvent(entity);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void addTypes() {
+	private void addTypes(EventDTO entity) throws SQLException {
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(DatabaseTables.TYPES);
+		query.append("(TypeName) ");
+		query.append("values(?)");
+		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement.setString(1, entity.getType());
+		preparedStatement.executeUpdate();
+		generatedKeys = preparedStatement.getGeneratedKeys();
+		if (generatedKeys.next()) {
 
+		}
 	}
 
 	@Override
