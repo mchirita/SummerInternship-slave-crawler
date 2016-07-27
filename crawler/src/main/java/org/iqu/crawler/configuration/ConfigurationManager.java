@@ -30,7 +30,7 @@ public class ConfigurationManager {
   private ConfigurationManager() {
     notifier = new CrawlerConfigChangeHandler();
     loader = new CrawlerConfigLoader(notifier, PATH);
-    // loader.loadProperties();
+    loader.loadProperties();
     init();
   }
 
