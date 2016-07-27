@@ -6,6 +6,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 import org.iqu.webcrawler.entities.ErrorMessage;
@@ -32,14 +33,12 @@ public class RetrieveImageService {
     Image image = new Image();
     // ToDo select from db the proper image for the id imageId.
     image.setLink("my link");
-    int status = 0;
     if (image.getLink() != null) {
-      status = 200;
-      return Response.status(status).entity(image).build();
+      return Response.status(Status.OK).entity(image).build();
     }
-    status = 404;
     ErrorMessage errorMessage = new ErrorMessage("Image not found.");
-    return Response.status(status).entity(errorMessage).build();
+    LOGGER.error("Image not found!");
+    return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
   }
 
 }

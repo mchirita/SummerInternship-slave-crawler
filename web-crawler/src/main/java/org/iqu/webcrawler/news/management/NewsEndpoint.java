@@ -6,6 +6,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 import org.iqu.webcrawler.entities.Authors;
@@ -23,7 +24,7 @@ public class NewsEndpoint {
    * Service that will return all authors
    */
 
-  private Logger LOGGER = Logger.getLogger(NewsEndpoint.class);
+  private static final Logger LOGGER = Logger.getLogger(NewsEndpoint.class);
 
   @Path("/authors")
   @GET
@@ -38,14 +39,12 @@ public class NewsEndpoint {
     authors.addAuthor("Peter Parker");
     authors.addAuthor("Ville Valo");
 
-    int status = 0;
     if (authors.size() > 0) {
-      status = 200;
-      return Response.status(status).entity(authors).build();
+      return Response.status(Status.OK).entity(authors).build();
     }
-    status = 404;
     ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-    return Response.status(status).entity(errorMessage).build();
+    LOGGER.error(errorMessage.getMessage());
+    return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
   }
 
   /**
@@ -65,9 +64,10 @@ public class NewsEndpoint {
 
     if (categories.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-      return Response.status(404).entity(errorMessage).build();
+      LOGGER.error(errorMessage.getMessage());
+      return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
     }
-    return Response.status(200).entity(categories).build();
+    return Response.status(Status.OK).entity(categories).build();
   }
 
   /**
@@ -90,10 +90,11 @@ public class NewsEndpoint {
     news.add(singleNews1);
 
     if (startDate == null) {
-      ErrorMessage errorMessage = new ErrorMessage("Could not find location, please try again later.");
-      return Response.status(200).entity(news).build();
+      ErrorMessage errorMessage = new ErrorMessage("Start Date Not Found.");
+      LOGGER.error(errorMessage.getMessage());
+      return Response.status(Status.BAD_REQUEST).entity(errorMessage).build();
     } else {
-      return Response.ok().build();
+      return Response.ok(Status.OK).entity(news).build();
     }
   }
 
@@ -104,9 +105,6 @@ public class NewsEndpoint {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response retrieveSource() {
-    int status;
-    String response = "";
-    status = 0;
     Sources sources = new Sources();
 
     // ToDo get sources from db
@@ -118,13 +116,12 @@ public class NewsEndpoint {
         "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
 
     if (sources.isEmpty()) {
-      status = 404;
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch sources, please try again later.");
-      return Response.status(status).entity(errorMessage).build();
+      LOGGER.error(errorMessage.getMessage());
+      return Response.status(Status.OK).entity(errorMessage).build();
     }
 
-    status = 200;
-    return Response.status(status).entity(sources).build();
+    return Response.status(Status.OK).entity(sources).build();
 
   }
 
