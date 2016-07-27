@@ -2,7 +2,7 @@ package org.iqu.parsers;
 
 import java.util.List;
 
-import org.iqu.parsers.entities.SourceDTO;
+import org.iqu.parsers.entities.SourceModel;
 
 /**
  * Defines an information parser.
@@ -21,13 +21,13 @@ public interface Parser<T> {
    *          the encoding of the source material
    * @return parsed material as a List of objects
    */
-  public List<T> readFeed(String sourceURL, String encoding);
+  List<T> readFeed(String sourceURL, String encoding);
 
   /**
    * Provides a Source object containing the details of the last parsed source.
    * 
    * @return object containing details of last read source
    */
-  public SourceDTO getSource();
+  SourceModel getSource();
 
 }

@@ -91,7 +91,7 @@ public class SourceDTO {
 
   @Override
   public String toString() {
-    return "Source [sourceId=" + sourceId + ", displayName=" + displayName + ", description=" + description + "]";
+    return "SourceDTO [sourceId=" + sourceId + ", displayName=" + displayName + ", description=" + description + "]";
   }
 
 }

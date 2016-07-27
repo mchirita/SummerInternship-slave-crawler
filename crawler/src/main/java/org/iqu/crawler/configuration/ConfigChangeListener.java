@@ -20,5 +20,5 @@ public interface ConfigChangeListener {
    * @param properties
    *          the changed properties
    */
-  public void onConfigChange(List<SourceConfig> properties);
+  void onConfigChange(List<SourceConfig> properties);
 }

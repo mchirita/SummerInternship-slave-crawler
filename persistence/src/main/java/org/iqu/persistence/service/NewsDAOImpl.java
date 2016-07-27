@@ -65,7 +65,6 @@ public class NewsDAOImpl implements NewsDAO {
       try {
         preparedStatement = connection.prepareStatement(query.toString());
         preparedStatement.setString(1, source.getDisplayName());
-        preparedStatement.setString(2, source.getDescription());
         ResultSet result = preparedStatement.executeQuery();
         if (result.next()) {
           source.setId(result.getInt(1));

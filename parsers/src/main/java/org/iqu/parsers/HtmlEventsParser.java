@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.iqu.parsers.entities.EventDTO;
-import org.iqu.parsers.entities.SourceDTO;
+import org.iqu.parsers.entities.EventModel;
+import org.iqu.parsers.entities.SourceModel;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,28 +31,28 @@ import org.jsoup.select.Elements;
 /**
  * Class that implements a parser that makes an entity from html tags.
  * 
- * @author Razvan Rosu
+ * @author Razvan Rosu, Cristi Badoi
  *
  */
-public class HtmlEventsParser implements Parser<EventDTO> {
+public class HtmlEventsParser implements Parser<EventModel> {
 
-  private EventDTO event;
+  private EventModel event;
   private static final Logger LOGGER = Logger.getLogger(HtmlEventsParser.class);
   private static String pattern = "yyyy-MM-dd'T'HH:mm:ss'+'hh:mm";
   private static DateFormat dF = new SimpleDateFormat(pattern);
-  private String categories = "";
+  private String eventType;
   private String sourceURL;
-  private SourceDTO source;
+  private SourceModel source;
 
   @Override
-  public SourceDTO getSource() {
+  public SourceModel getSource() {
     return source;
   }
 
   @Override
-  public List<EventDTO> readFeed(String sourceURL, String encoding) {
+  public List<EventModel> readFeed(String sourceURL, String encoding) {
 
-    List<EventDTO> events = new ArrayList<EventDTO>();
+    List<EventModel> events = new ArrayList<EventModel>();
     this.sourceURL = sourceURL;
     Document doc = null;
     try {
@@ -71,13 +71,13 @@ public class HtmlEventsParser implements Parser<EventDTO> {
   }
 
   private void readSourceInfo(Document doc) {
-    source = new SourceDTO();
+    source = new SourceModel();
     source.setDisplayName(doc.title());
     source.setDescription(doc.getElementsByAttributeValue("name", "description").attr("content"));
     source.setImage(doc.getElementsByAttributeValue("sizes", "180x180").attr("href"));
   }
 
-  private void readItems(List<EventDTO> events, Document doc) {
+  private void readItems(List<EventModel> events, Document doc) {
     Elements item = doc.getElementsByClass(EVENTGROUP);
 
     for (Element element : item) {
@@ -88,7 +88,7 @@ public class HtmlEventsParser implements Parser<EventDTO> {
     }
   }
 
-  private void takeEvents(String eventsURL, List<EventDTO> events) {
+  private void takeEvents(String eventsURL, List<EventModel> events) {
     Document doc = null;
     try {
       Connection connection = Jsoup.connect(eventsURL);
@@ -100,10 +100,10 @@ public class HtmlEventsParser implements Parser<EventDTO> {
     } catch (IOException e) {
       LOGGER.error("InputStream error!", e);
     }
-    categories = doc.body().id();
+    eventType = doc.body().id();
     Elements item = doc.getElementsByClass(EVENTLIST);
     for (Element element : item) {
-      event = new EventDTO();
+      event = new EventModel();
       try {
         getTags(element);
         events.add(event);
@@ -116,12 +116,12 @@ public class HtmlEventsParser implements Parser<EventDTO> {
 
   private void getTags(Element element) throws ParseException {
     event.setTitle(element.getElementsByTag(A).attr(TITLE));
-    event.setImage_id(element.getElementsByTag(IMG).attr(IMGSRC));
+    event.getImages().add(element.getElementsByTag(IMG).attr(IMGSRC));
     event.setExternal_url(element.getElementsByTag("a").attr(URL));
     event.setDescription(element.getElementsByClass(DESCRIPTION).html());
     event.setStartDate(convertDate(element.getElementsByTag(TIME).attr(DATE)));
     event.setSource(sourceURL);
-    event.setCategories(categories);
+    event.setType(eventType);
     event.setEndDate(
         convertDate(element.getElementsByAttributeValue("itemprop", "endDate").attr(HtmlParserConstants.DATE)));
   }

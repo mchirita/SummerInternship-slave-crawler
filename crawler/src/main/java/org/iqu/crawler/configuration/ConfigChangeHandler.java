@@ -20,19 +20,19 @@ public interface ConfigChangeHandler {
    * @param listener
    *          element to be added
    */
-  public void addListener(ConfigChangeListener listener);
+  void addListener(ConfigChangeListener listener);
 
   /**
    * Remove the specific listener
    * 
    * @param listener
    */
-  public void remove(ConfigChangeListener listener);
+  void remove(ConfigChangeListener listener);
 
   /**
    * Removes all listeners
    */
-  public void removeAll();
+  void removeAll();
 
   /**
    * Notifies all listeners if the file has changed, sending the new properties
@@ -40,5 +40,5 @@ public interface ConfigChangeHandler {
    * @param properties
    *          the new properties
    */
-  public void notify(List<SourceConfig> properties);
+  void notify(List<SourceConfig> properties);
 }

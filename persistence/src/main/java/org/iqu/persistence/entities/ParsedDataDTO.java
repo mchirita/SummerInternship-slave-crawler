@@ -34,7 +34,7 @@ public class ParsedDataDTO {
 
   @Override
   public String toString() {
-    return "ParsedData [news=" + news + ", events=" + events + ", source=" + source + "]";
+    return "ParsedDataDTO [news=" + news + ", events=" + events + ", source=" + source + "]";
   }
 
   @Override
