@@ -1,19 +1,19 @@
 package org.iqu.persistence.entities;
 
-public class Source {
+public class SourceDTO {
   private int sourceId;
   private String displayName;
   private String description;
   private String image;
 
-  public Source(int sourceId, String displayName, String description, String image) {
+  public SourceDTO(int sourceId, String displayName, String description, String image) {
     this.sourceId = sourceId;
     this.displayName = displayName;
     this.description = description;
     this.image = image;
   }
 
-  public Source() {
+  public SourceDTO() {
 
   }
 
@@ -68,7 +68,7 @@ public class Source {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Source other = (Source) obj;
+    SourceDTO other = (SourceDTO) obj;
     if (description == null) {
       if (other.description != null)
         return false;

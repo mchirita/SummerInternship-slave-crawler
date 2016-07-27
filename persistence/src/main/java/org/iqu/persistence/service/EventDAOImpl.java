@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.iqu.persistence.entities.EventDTO;
-import org.iqu.persistence.entities.Source;
+import org.iqu.persistence.entities.SourceDTO;
 import org.iqu.persistence.entities.Type;
 
 public class EventDAOImpl implements EventDAO {
@@ -20,7 +20,8 @@ public class EventDAOImpl implements EventDAO {
   private StringBuilder query = new StringBuilder();
   private List<Integer> ids = new ArrayList<Integer>();
   private ResultSet generatedKeys = null;
-  private Source source = null;
+  private SourceDTO source = null;
+  private Type type = new Type();
   private static final Logger LOGGER = Logger.getLogger("EventDAOImpl.class");
 
   @Override
@@ -28,24 +29,119 @@ public class EventDAOImpl implements EventDAO {
     try {
       connectToDatabase();
       addTypes(entity);
+      addSubtypes(entity);
       addEvent(entity);
+      createRelations(entity);
     } catch (SQLException e) {
       e.printStackTrace();
     }
   }
 
-  private void addTypes(EventDTO entity) throws SQLException {
+  private void addSubtypes(EventDTO entity) {
+    for (String subtype : entity.getSubtypes()) {
+      addSubtype(subtype);
+    }
+
+  }
+
+  private void addSubtype(String subtype) {
+    query.setLength(0);
+    query.append("INSER INTO ");
+    query.append(DatabaseTables.SUBTYPES);
+    query.append(" values(?)");
+    try {
+      preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+      preparedStatement.setString(1, subtype);
+      preparedStatement.executeUpdate();
+      generatedKeys = preparedStatement.getGeneratedKeys();
+      if (generatedKeys.next()) {
+        ids.add(generatedKeys.getInt(1));
+      }
+    } catch (SQLException e) {
+      query.setLength(0);
+      query.append("SELECT SubtypeID ");
+      query.append(DatabaseTables.SUBTYPES);
+      query.append(" WHERE SubtypeName = ?");
+      try {
+        preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+        preparedStatement.setString(1, subtype);
+        ResultSet result = preparedStatement.executeQuery();
+        if (result.next()) {
+          ids.add(result.getInt(1));
+        }
+      } catch (SQLException e1) {
+        e1.printStackTrace();
+      }
+    }
+
+  }
+
+  private void createRelations(EventDTO entity) {
+    for (String author : entity.getAuthors()) {
+      addAuthor(author);
+    }
+    addEventAndAuthorRelations(entity);
+
+    for (String subtype : entity.getSubtypes()) {
+      addSubtype(subtype);
+    }
+    addTypeAndSubtypeRelations(type);
+
+    for (String image : entity.getImages()) {
+      addImage(image);
+    }
+    addEventAndImageRelations(entity);
+  }
+
+  private void addTypeAndSubtypeRelations(Type type) {
+    query.setLength(0);
+    query.append("INSERT INTO");
+    query.append(DatabaseTables.TYPES_HAS_SUBTYPES);
+    query.append("(TypeID, SubtypeID) values(?,?)");
+    try {
+      preparedStatement = connection.prepareStatement(query.toString());
+      preparedStatement.setLong(1, type.getId());
+      for (Integer id : ids) {
+        preparedStatement.setInt(2, id);
+        preparedStatement.executeUpdate();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    ids.clear();
+  }
+
+  private void addTypes(EventDTO entity) {
     query.setLength(0);
     query.append("INSERT into ");
     query.append(DatabaseTables.TYPES);
     query.append("(TypeName) ");
     query.append("values(?)");
-    preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
-    preparedStatement.setString(1, entity.getType());
-    preparedStatement.executeUpdate();
-    generatedKeys = preparedStatement.getGeneratedKeys();
-    if (generatedKeys.next()) {
-
+    try {
+      preparedStatement = connection.prepareStatement(query.toString());
+      preparedStatement.setString(1, entity.getType());
+      preparedStatement.executeUpdate();
+      generatedKeys = preparedStatement.getGeneratedKeys();
+      if (generatedKeys.next()) {
+        type.setId(generatedKeys.getLong(1));
+      }
+    } catch (SQLException e) {
+      LOGGER.info("Type already in database thus Retrieving the Type id", e);
+      query.setLength(0);
+      query.append("SELECT SourceID from ");
+      query.append(DatabaseTables.SOURCES);
+      query.append(" where DisplayName = ?, Description = ?");
+      try {
+        preparedStatement = connection.prepareStatement(query.toString());
+        preparedStatement.setString(1, source.getDisplayName());
+        preparedStatement.setString(2, source.getDescription());
+        ResultSet result = preparedStatement.executeQuery();
+        if (result.next()) {
+          type.setId(generatedKeys.getLong(1));
+        }
+      } catch (SQLException e1) {
+        LOGGER.error("Could not fetch the Type id", e1);
+      }
     }
   }
 
@@ -96,9 +192,9 @@ public class EventDAOImpl implements EventDAO {
   }
 
   @Override
-  public List<Source> retrieveSources() {
-    List<Source> sources = new ArrayList<Source>();
-    Source source = null;
+  public List<SourceDTO> retrieveSources() {
+    List<SourceDTO> sources = new ArrayList<SourceDTO>();
+    SourceDTO source = null;
     try {
       connectToDatabase();
       query.setLength(0);
@@ -107,7 +203,7 @@ public class EventDAOImpl implements EventDAO {
       preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
       ResultSet result = preparedStatement.executeQuery();
       while (result.next()) {
-        source = new Source();
+        source = new SourceDTO();
         source.setId(result.getInt(1));
         source.setDisplayName(result.getString(2));
         source.setDescription(result.getString(3));
@@ -126,7 +222,7 @@ public class EventDAOImpl implements EventDAO {
   }
 
   @Override
-  public List<EventDTO> findAllBySource(Source source) {
+  public List<EventDTO> findAllBySource(SourceDTO source) {
     EventDTO event = null;
     List<EventDTO> result = new ArrayList<EventDTO>();
 
@@ -169,29 +265,33 @@ public class EventDAOImpl implements EventDAO {
     return result;
   }
 
-  private void addEvent(EventDTO entity) {
+  private void addEvent(EventDTO entity) throws SQLException {
     query.setLength(0);
     query.append("INSERT into ");
     query.append(DatabaseTables.EVENTS);
-    query.append("(StartDate, EndDate, Title, Subtitle, Description, SourceID, TypeID, Thumbnail_id, ExternalURL) ");
+    query.append(
+        "(StartDate, EndDate, Title, Subtitle, Description, SourceID, TypeID, Body, Thumbnail_id, ExternalURL) ");
     query.append("values(?,?,?,?,?,?,?,?,?)");
-    try {
-      preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
-      preparedStatement.setLong(1, entity.getStartDate());
-      preparedStatement.setLong(2, entity.getEndDate());
-      preparedStatement.setString(3, entity.getTitle());
-      preparedStatement.setString(4, entity.getSubtitle());
-      preparedStatement.setString(5, entity.getDescription());
-      preparedStatement.setInt(6, source.getId());
-      preparedStatement.setInt(6, source.getId());
-      preparedStatement.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
+    preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+    preparedStatement.setLong(1, entity.getStartDate());
+    preparedStatement.setLong(2, entity.getEndDate());
+    preparedStatement.setString(3, entity.getTitle());
+    preparedStatement.setString(4, entity.getSubtitle());
+    preparedStatement.setString(5, entity.getDescription());
+    preparedStatement.setInt(6, source.getId());
+    preparedStatement.setLong(7, type.getId());
+    preparedStatement.setString(8, entity.getBody());
+    preparedStatement.setString(9, entity.getThumbnail_id());
+    preparedStatement.setString(10, entity.getExternal_url());
+    preparedStatement.executeUpdate();
+    generatedKeys = preparedStatement.getGeneratedKeys();
+    if (generatedKeys.next()) {
+      entity.setId(generatedKeys.getInt(1));
     }
   }
 
   @Override
-  public void addSource(Source source) {
+  public void addSource(SourceDTO source) {
     this.source = source;
     query.setLength(0);
     query.append("INSERT into ");
@@ -237,7 +337,10 @@ public class EventDAOImpl implements EventDAO {
   }
 
   private void addEventAndImageRelations(EventDTO entity) {
-    // query = "insert into Events_has_Images(EventID, ImageID) values(?,?)";
+    query.setLength(0);
+    query.append("INSERT INTO ");
+    query.append(DatabaseTables.EVENTS_HAS_IMAGES);
+    query.append("(EventID, ImageID) values(?,?)");
     try {
       preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
       preparedStatement.setLong(1, entity.getId());
@@ -246,14 +349,17 @@ public class EventDAOImpl implements EventDAO {
         preparedStatement.executeUpdate();
       }
     } catch (SQLException e) {
-      ids.clear();
+      e.printStackTrace();
     }
     ids.clear();
 
   }
 
   private void addImage(String image) {
-    // query = "insert into Images(URL) values(?)";
+    query.setLength(0);
+    query.append("INSERT INTO ");
+    query.append(DatabaseTables.IMAGES);
+    query.append(" values(?)");
     try {
       preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
       preparedStatement.setString(1, image);
@@ -263,9 +369,12 @@ public class EventDAOImpl implements EventDAO {
         ids.add(generatedKeys.getInt(1));
       }
     } catch (SQLException e) {
-      // query = "select ImageID from Images where URL = ?";
+      query.setLength(0);
+      query.append("SELECT ImageID FROM ");
+      query.append(DatabaseTables.IMAGES);
+      query.append(" WHERE URL = ?");
       try {
-        preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+        preparedStatement = connection.prepareStatement(query.toString());
         preparedStatement.setString(1, image);
         ResultSet result = preparedStatement.executeQuery();
         if (result.next()) {
@@ -279,22 +388,28 @@ public class EventDAOImpl implements EventDAO {
   }
 
   private void addEventAndAuthorRelations(EventDTO entity) {
-    // query = "insert into Events_has_Authors(EventID, AuthorID) values(?,?)";
+    query.setLength(0);
+    query.append("INSERT INTO ");
+    query.append(DatabaseTables.EVENTS_HAS_AUTHORS);
+    query.append(" values(?,?)");
     try {
-      preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+      preparedStatement = connection.prepareStatement(query.toString());
       preparedStatement.setLong(1, entity.getId());
       for (Integer id : ids) {
         preparedStatement.setInt(2, id);
         preparedStatement.executeUpdate();
       }
     } catch (SQLException e) {
-      ids.clear();
+
     }
     ids.clear();
   }
 
   private void addAuthor(String author) {
-    // query = "insert into Authors(AuthorName) values(?)";
+    query.setLength(0);
+    query.append("INSERT INTO ");
+    query.append(DatabaseTables.AUTHORS);
+    query.append(" values(?)");
     try {
       preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
       preparedStatement.setString(1, author);
@@ -304,9 +419,12 @@ public class EventDAOImpl implements EventDAO {
         ids.add(generatedKeys.getInt(1));
       }
     } catch (SQLException e) {
-      // query = "select AuthorID from Authors where AuthorName = ?";
+      query.setLength(0);
+      query.append("SELECT AuthorID FROM ");
+      query.append(DatabaseTables.AUTHORS);
+      query.append(" where AuthorName = ?");
       try {
-        preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+        preparedStatement = connection.prepareStatement(query.toString());
         preparedStatement.setString(1, author);
         ResultSet result = preparedStatement.executeQuery();
         if (result.next()) {

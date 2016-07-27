@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.iqu.persistence.entities.NewsArticleDTO;
-import org.iqu.persistence.entities.Source;
+import org.iqu.persistence.entities.SourceDTO;
 
 public class NewsDAOImpl implements NewsDAO {
 
@@ -19,7 +19,7 @@ public class NewsDAOImpl implements NewsDAO {
   private StringBuilder query = new StringBuilder();
   private List<Integer> ids = new ArrayList<Integer>();
   private ResultSet generatedKeys = null;
-  private Source source = null;
+  private SourceDTO source = null;
   private static final Logger LOGGER = Logger.getLogger("NewsDaoImpl.class");
 
   public NewsDAOImpl() {
@@ -39,7 +39,7 @@ public class NewsDAOImpl implements NewsDAO {
   }
 
   @Override
-  public void addSource(Source source) {
+  public void addSource(SourceDTO source) {
     this.source = source;
     query.setLength(0);
     query.append("INSERT into ");
@@ -137,7 +137,7 @@ public class NewsDAOImpl implements NewsDAO {
         newsArticle.setImages(findImagesByNewsId(newsId));
         newsArticle.setBody(result.getString("Body"));
         int id = result.getInt("SourceID");
-        Source source = findSourceById(id);
+        SourceDTO source = findSourceById(id);
         newsArticle.setSource(source.getDisplayName());
         newsArticle.setThumbnail_id(result.getString("Thumbnail_id"));
         newsArticle.setExternal_url(result.getString("ExternalURL"));
@@ -195,9 +195,9 @@ public class NewsDAOImpl implements NewsDAO {
   }
 
   @Override
-  public List<Source> retrieveSources() {
-    List<Source> sources = new ArrayList<Source>();
-    Source source = null;
+  public List<SourceDTO> retrieveSources() {
+    List<SourceDTO> sources = new ArrayList<SourceDTO>();
+    SourceDTO source = null;
     try {
       connectToDatabase();
       query.setLength(0);
@@ -206,7 +206,7 @@ public class NewsDAOImpl implements NewsDAO {
       preparedStatement = connection.prepareStatement(query.toString());
       ResultSet result = preparedStatement.executeQuery();
       while (result.next()) {
-        source = new Source();
+        source = new SourceDTO();
         source.setId(result.getInt(1));
         source.setDisplayName(result.getString(2));
         source.setDescription(result.getString(3));
@@ -241,7 +241,7 @@ public class NewsDAOImpl implements NewsDAO {
   }
 
   @Override
-  public List<NewsArticleDTO> findAllBySource(Source source) {
+  public List<NewsArticleDTO> findAllBySource(SourceDTO source) {
     NewsArticleDTO newsArticle = new NewsArticleDTO();
     List<NewsArticleDTO> result = new ArrayList<NewsArticleDTO>();
 
@@ -677,7 +677,7 @@ public class NewsDAOImpl implements NewsDAO {
     preparedStatement.executeUpdate();
   }
 
-  private Source findSourceById(int id) throws SQLException {
+  private SourceDTO findSourceById(int id) throws SQLException {
     query.setLength(0);
     query.append("SELECT * FROM ");
     query.append(DatabaseTables.SOURCES);
@@ -685,7 +685,7 @@ public class NewsDAOImpl implements NewsDAO {
     preparedStatement = connection.prepareStatement(query.toString());
     preparedStatement.setInt(1, id);
     ResultSet sourceResult = preparedStatement.executeQuery();
-    Source source = new Source();
+    SourceDTO source = new SourceDTO();
     if (sourceResult.next()) {
       source.setId(sourceResult.getInt(1));
       source.setDisplayName(sourceResult.getString(2));

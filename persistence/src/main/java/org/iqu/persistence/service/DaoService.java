@@ -2,7 +2,7 @@ package org.iqu.persistence.service;
 
 import java.util.List;
 
-import org.iqu.persistence.entities.Source;
+import org.iqu.persistence.entities.SourceDTO;
 
 public interface DaoService<E> {
 
@@ -18,9 +18,9 @@ public interface DaoService<E> {
 
   public List<String> retrieveAuthors();
 
-  public List<Source> retrieveSources();
+  public List<SourceDTO> retrieveSources();
 
-  public List<E> findAllBySource(Source source);
+  public List<E> findAllBySource(SourceDTO source);
 
-  public void addSource(Source source);
+  public void addSource(SourceDTO source);
 }

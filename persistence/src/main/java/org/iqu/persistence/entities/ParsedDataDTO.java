@@ -6,7 +6,7 @@ public class ParsedDataDTO {
 
   private List<NewsArticleDTO> news;
   private List<EventDTO> events;
-  private Source source;
+  private SourceDTO source;
 
   public List<NewsArticleDTO> getNews() {
     return news;
@@ -24,11 +24,11 @@ public class ParsedDataDTO {
     this.events = events;
   }
 
-  public Source getSource() {
+  public SourceDTO getSource() {
     return source;
   }
 
-  public void setSource(Source source) {
+  public void setSource(SourceDTO source) {
     this.source = source;
   }
 

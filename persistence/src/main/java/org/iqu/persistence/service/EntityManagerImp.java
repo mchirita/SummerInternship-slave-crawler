@@ -5,7 +5,7 @@ import java.util.List;
 import org.iqu.persistence.entities.EventDTO;
 import org.iqu.persistence.entities.NewsArticleDTO;
 import org.iqu.persistence.entities.ParsedDataDTO;
-import org.iqu.persistence.entities.Source;
+import org.iqu.persistence.entities.SourceDTO;
 
 public class EntityManagerImp implements EntityManager {
 
@@ -16,7 +16,7 @@ public class EntityManagerImp implements EntityManager {
 
   @Override
   public void retrieveData(ParsedDataDTO parsedData) {
-    Source source = parsedData.getSource();
+    SourceDTO source = parsedData.getSource();
     if (parsedData.getNews() == null) {
       eventsDataAccess.addSource(source);
       retrieveEvents(parsedData.getEvents(), source);
@@ -26,7 +26,7 @@ public class EntityManagerImp implements EntityManager {
     }
   }
 
-  private void retrieveNews(List<NewsArticleDTO> crawlerNews, Source source) {
+  private void retrieveNews(List<NewsArticleDTO> crawlerNews, SourceDTO source) {
     databaseNews = newsDataAccess.findAllBySource(source);
 
     for (NewsArticleDTO newsArticle : crawlerNews) {
@@ -40,7 +40,7 @@ public class EntityManagerImp implements EntityManager {
     }
   }
 
-  private void retrieveEvents(List<EventDTO> crawlerEvents, Source source) {
+  private void retrieveEvents(List<EventDTO> crawlerEvents, SourceDTO source) {
     databaseEvents = eventsDataAccess.findAll();
 
     for (EventDTO event : crawlerEvents) {
