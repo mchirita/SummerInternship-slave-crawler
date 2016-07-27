@@ -1,6 +1,6 @@
 package org.iqu.persistence.service;
 
-public class Tables {
+public class DatabaseTables {
 	public static final String NEWS = "News";
 	public static final String AUTHORS = "Authors";
 	public static final String CATEGORIES = "Category";

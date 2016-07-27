@@ -2,25 +2,25 @@ package org.iqu.persistence.entities;
 
 import java.util.List;
 
-public class ParsedData {
+public class ParsedDataDTO {
 
-	private List<NewsArticle> news;
-	private List<Event> events;
+	private List<NewsArticleDTO> news;
+	private List<EventDTO> events;
 	private Source source;
 
-	public List<NewsArticle> getNews() {
+	public List<NewsArticleDTO> getNews() {
 		return news;
 	}
 
-	public void setNews(List<NewsArticle> news) {
+	public void setNews(List<NewsArticleDTO> news) {
 		this.news = news;
 	}
 
-	public List<Event> getEvents() {
+	public List<EventDTO> getEvents() {
 		return events;
 	}
 
-	public void setEvents(List<Event> events) {
+	public void setEvents(List<EventDTO> events) {
 		this.events = events;
 	}
 
@@ -55,7 +55,7 @@ public class ParsedData {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ParsedData other = (ParsedData) obj;
+		ParsedDataDTO other = (ParsedDataDTO) obj;
 		if (events == null) {
 			if (other.events != null)
 				return false;

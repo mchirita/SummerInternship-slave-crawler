@@ -2,21 +2,20 @@ package org.iqu.persistence.service;
 
 import java.util.List;
 
-import org.iqu.persistence.entities.Event;
-import org.iqu.persistence.entities.NewsArticle;
-import org.iqu.persistence.entities.ParsedData;
+import org.iqu.persistence.entities.EventDTO;
+import org.iqu.persistence.entities.NewsArticleDTO;
+import org.iqu.persistence.entities.ParsedDataDTO;
 import org.iqu.persistence.entities.Source;
 
 public class EntityManagerImp implements EntityManager {
 
-	private DAOFactory factory = new DAOFactoryImp();
-	private List<NewsArticle> databaseNews;
-	private List<Event> databaseEvents;
-	private NewsDAO newsDataAccess = factory.getNewsDAO();
-	private EventDAO eventsDataAccess = factory.getEventDAO();
+	private List<NewsArticleDTO> databaseNews;
+	private List<EventDTO> databaseEvents;
+	private NewsDAO newsDataAccess = DAOFactory.getNewsDAO();
+	private EventDAO eventsDataAccess = DAOFactory.getEventDAO();
 
 	@Override
-	public void retrieveData(ParsedData parsedData) {
+	public void retrieveData(ParsedDataDTO parsedData) {
 		Source source = parsedData.getSource();
 		if (parsedData.getNews() == null) {
 			eventsDataAccess.addSource(source);
@@ -27,10 +26,10 @@ public class EntityManagerImp implements EntityManager {
 		}
 	}
 
-	private void retrieveNews(List<NewsArticle> crawlerNews, Source source) {
+	private void retrieveNews(List<NewsArticleDTO> crawlerNews, Source source) {
 		databaseNews = newsDataAccess.findAllBySource(source);
 
-		for (NewsArticle newsArticle : crawlerNews) {
+		for (NewsArticleDTO newsArticle : crawlerNews) {
 			if (databaseNews.contains(newsArticle)) {
 				if (newsArticle.getDate() > databaseNews.get(databaseNews.indexOf(newsArticle)).getDate()) {
 					newsDataAccess.update(newsArticle);
@@ -41,10 +40,10 @@ public class EntityManagerImp implements EntityManager {
 		}
 	}
 
-	private void retrieveEvents(List<Event> crawlerEvents, Source source) {
+	private void retrieveEvents(List<EventDTO> crawlerEvents, Source source) {
 		databaseEvents = eventsDataAccess.findAll();
 
-		for (Event event : crawlerEvents) {
+		for (EventDTO event : crawlerEvents) {
 			if (databaseEvents.contains(event)) {
 				eventsDataAccess.update(event);
 			} else {

@@ -8,7 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iqu.persistence.entities.Event;
+import org.apache.log4j.Logger;
+import org.iqu.persistence.entities.EventDTO;
 import org.iqu.persistence.entities.Source;
 import org.iqu.persistence.entities.Type;
 
@@ -20,32 +21,43 @@ public class EventDAOImpl implements EventDAO {
 	private List<Integer> ids = new ArrayList<Integer>();
 	private ResultSet generatedKeys = null;
 	private Source source = null;
+	private static final Logger LOGGER = Logger.getLogger("EventDAOImpl.class");
 
 	@Override
-	public void create(Event entity) {
+	public void create(EventDTO entity) {
+		try {
+			connectToDatabase();
+			addTypes();
+			addEvent(entity);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void addTypes() {
 
 	}
 
 	@Override
-	public void update(Event entity) {
+	public void update(EventDTO entity) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public Event find(Event entity) {
+	public EventDTO find(EventDTO entity) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Event> findAll() {
+	public List<EventDTO> findAll() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void delete(Event entity) {
+	public void delete(EventDTO entity) {
 		// TODO Auto-generated method stub
 
 	}
@@ -58,7 +70,7 @@ public class EventDAOImpl implements EventDAO {
 			connectToDatabase();
 			query.setLength(0);
 			query.append("SELECT * FROM ");
-			query.append(Tables.AUTHORS);
+			query.append(DatabaseTables.AUTHORS);
 			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
@@ -80,7 +92,7 @@ public class EventDAOImpl implements EventDAO {
 			connectToDatabase();
 			query.setLength(0);
 			query.append("SELECT * FROM ");
-			query.append(Tables.SOURCES);
+			query.append(DatabaseTables.SOURCES);
 			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
@@ -103,15 +115,15 @@ public class EventDAOImpl implements EventDAO {
 	}
 
 	@Override
-	public List<Event> findAllBySource(Source source) {
-		Event event = null;
-		List<Event> result = new ArrayList<Event>();
+	public List<EventDTO> findAllBySource(Source source) {
+		EventDTO event = null;
+		List<EventDTO> result = new ArrayList<EventDTO>();
 
 		try {
 			connectToDatabase();
 			query.setLength(0);
 			query.append("SELECT SourceID FROM ");
-			query.append(Tables.SOURCES);
+			query.append(DatabaseTables.SOURCES);
 			query.append(" where DisplayName = ? and Description = ?");
 			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, source.getDisplayName());
@@ -123,19 +135,19 @@ public class EventDAOImpl implements EventDAO {
 
 			query.setLength(0);
 			query.append("SELECT * FROM ");
-			query.append(Tables.EVENTS);
+			query.append(DatabaseTables.EVENTS);
 			query.append(" where SourceID = ?");
 			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setInt(1, source.getId());
 			ResultSet rs = preparedStatement.executeQuery(query.toString());
 			while (rs.next()) {
-				event = new Event();
-				event.setId(rs.getString("EventID"));
-				event.setDate(rs.getLong("Date"));
+				event = new EventDTO();
+				event.setStartDate(rs.getLong("StartDate"));
+				event.setEndDate(rs.getLong("EndDate"));
 				event.setTitle(rs.getString("Title"));
 				event.setSubtitle(rs.getString("Subtitle"));
 				event.setDescription(rs.getString("Description"));
-				event.setType("TypeID");
+
 				event.setSource(source.getDisplayName());
 				result.add(event);
 			}
@@ -146,18 +158,21 @@ public class EventDAOImpl implements EventDAO {
 		return result;
 	}
 
-	private void addEvent(Event entity) {
-		// query = "insert into Events(EventID, Date, Title, Subtitle, Description,
-		// TypeID, SourceID) values(?,?,?,?,?,?,?)";
+	private void addEvent(EventDTO entity) {
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(DatabaseTables.EVENTS);
+		query.append("(StartDate, EndDate, Title, Subtitle, Description, SourceID, TypeID, Thumbnail_id, ExternalURL) ");
+		query.append("values(?,?,?,?,?,?,?,?,?)");
 		try {
 			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setString(1, entity.getId());
-			preparedStatement.setLong(2, entity.getDate());
+			preparedStatement.setLong(1, entity.getStartDate());
+			preparedStatement.setLong(2, entity.getEndDate());
 			preparedStatement.setString(3, entity.getTitle());
 			preparedStatement.setString(4, entity.getSubtitle());
 			preparedStatement.setString(5, entity.getDescription());
-			preparedStatement.setString(6, entity.getBody());
-			preparedStatement.setInt(7, source.getId());
+			preparedStatement.setInt(6, source.getId());
+			preparedStatement.setInt(6, source.getId());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -167,7 +182,11 @@ public class EventDAOImpl implements EventDAO {
 	@Override
 	public void addSource(Source source) {
 		this.source = source;
-		// query = "insert into Sources(DisplayName, Description) values(?,?)";
+		query.setLength(0);
+		query.append("INSERT into ");
+		query.append(DatabaseTables.SOURCES);
+		query.append("(DisplayName, Description) ");
+		query.append("values(?,?)");
 		try {
 			connectToDatabase();
 			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
@@ -179,8 +198,11 @@ public class EventDAOImpl implements EventDAO {
 				source.setId(generatedKeys.getInt(1));
 			}
 		} catch (SQLException e) {
-			// query = "select SourceID from Sources where DisplayName = ? and
-			// Description = ?";
+			LOGGER.info("Source already in database thus Retrieving the Source id", e);
+			query.setLength(0);
+			query.append("SELECT SourceID from ");
+			query.append(DatabaseTables.SOURCES);
+			query.append(" where DisplayName = ?, Description = ?");
 			try {
 				preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 				preparedStatement.setString(1, source.getDisplayName());
@@ -190,7 +212,7 @@ public class EventDAOImpl implements EventDAO {
 					source.setId(result.getInt(1));
 				}
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				LOGGER.error("Could not fetch the Source id", e1);
 			}
 		}
 
@@ -199,15 +221,15 @@ public class EventDAOImpl implements EventDAO {
 	private void connectToDatabase() throws SQLException {
 
 		if (connection == null) {
-			connection = DAOFactoryImp.createConnection();
+			connection = DAOFactory.createConnection();
 		}
 	}
 
-	private void addEventAndImageRelations(Event entity) {
+	private void addEventAndImageRelations(EventDTO entity) {
 		// query = "insert into Events_has_Images(EventID, ImageID) values(?,?)";
 		try {
 			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setString(1, entity.getId());
+			preparedStatement.setLong(1, entity.getId());
 			for (Integer id : ids) {
 				preparedStatement.setInt(2, id);
 				preparedStatement.executeUpdate();
@@ -245,11 +267,11 @@ public class EventDAOImpl implements EventDAO {
 
 	}
 
-	private void addEventAndAuthorRelations(Event entity) {
+	private void addEventAndAuthorRelations(EventDTO entity) {
 		// query = "insert into Events_has_Authors(EventID, AuthorID) values(?,?)";
 		try {
 			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setString(1, entity.getId());
+			preparedStatement.setLong(1, entity.getId());
 			for (Integer id : ids) {
 				preparedStatement.setInt(2, id);
 				preparedStatement.executeUpdate();

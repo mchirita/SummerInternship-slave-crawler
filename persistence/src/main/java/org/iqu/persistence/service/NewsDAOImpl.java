@@ -8,7 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iqu.persistence.entities.NewsArticle;
+import org.apache.log4j.Logger;
+import org.iqu.persistence.entities.NewsArticleDTO;
 import org.iqu.persistence.entities.Source;
 
 public class NewsDAOImpl implements NewsDAO {
@@ -19,20 +20,21 @@ public class NewsDAOImpl implements NewsDAO {
 	private List<Integer> ids = new ArrayList<Integer>();
 	private ResultSet generatedKeys = null;
 	private Source source = null;
+	private static final Logger LOGGER = Logger.getLogger("NewsDaoImpl.class");
 
 	public NewsDAOImpl() {
 
 	}
 
 	@Override
-	public void create(NewsArticle entity) {
+	public void create(NewsArticleDTO entity) {
 		try {
 			connectToDatabase();
 			addNews(entity);
 			createRelations(entity);
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Could not insert news article into database", e);
 		}
 	}
 
@@ -41,7 +43,7 @@ public class NewsDAOImpl implements NewsDAO {
 		this.source = source;
 		query.setLength(0);
 		query.append("INSERT into ");
-		query.append(Tables.SOURCES);
+		query.append(DatabaseTables.SOURCES);
 		query.append("(DisplayName, Description) ");
 		query.append("values(?,?)");
 		try {
@@ -55,12 +57,13 @@ public class NewsDAOImpl implements NewsDAO {
 				source.setId(generatedKeys.getInt(1));
 			}
 		} catch (SQLException e) {
+			LOGGER.info("Source already in database thus Retrieving the Source id", e);
 			query.setLength(0);
 			query.append("SELECT SourceID from ");
-			query.append(Tables.SOURCES);
+			query.append(DatabaseTables.SOURCES);
 			query.append(" where DisplayName = ?, Description = ?");
 			try {
-				preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+				preparedStatement = connection.prepareStatement(query.toString());
 				preparedStatement.setString(1, source.getDisplayName());
 				preparedStatement.setString(2, source.getDescription());
 				ResultSet result = preparedStatement.executeQuery();
@@ -68,19 +71,19 @@ public class NewsDAOImpl implements NewsDAO {
 					source.setId(result.getInt(1));
 				}
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				LOGGER.error("Could not fetch the Source id", e1);
 			}
 		}
 	}
 
 	@Override
-	public void update(NewsArticle entity) {
+	public void update(NewsArticleDTO entity) {
 		try {
 			entity.setId(getNewsId(entity));
 
 			query.setLength(0);
 			query.append("UPDATE ");
-			query.append(Tables.NEWS);
+			query.append(DatabaseTables.NEWS);
 			query.append(" SET Date = ?, Title = ?, Subtitle = ?, Description = ?, Body = ? WHERE GUID = ?");
 			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setLong(1, entity.getDate());
@@ -99,30 +102,30 @@ public class NewsDAOImpl implements NewsDAO {
 			updateSources();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Could not update the news article", e);
 		}
 
 	}
 
 	@Override
-	public NewsArticle find(NewsArticle entity) {
+	public NewsArticleDTO find(NewsArticleDTO entity) {
 		// TODO add filter
 		return null;
 	}
 
 	@Override
-	public List<NewsArticle> findAll() {
-		List<NewsArticle> listOfNews = new ArrayList<NewsArticle>();
-		NewsArticle newsArticle = null;
+	public List<NewsArticleDTO> findAll() {
+		List<NewsArticleDTO> listOfNews = new ArrayList<NewsArticleDTO>();
+		NewsArticleDTO newsArticle = null;
 		try {
 			connectToDatabase();
 			query.setLength(0);
 			query.append("SELECT * FROM ");
-			query.append(Tables.NEWS);
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			query.append(DatabaseTables.NEWS);
+			preparedStatement = connection.prepareStatement(query.toString());
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
-				newsArticle = new NewsArticle();
+				newsArticle = new NewsArticleDTO();
 				newsArticle.setGuid(result.getString("GUID"));
 				long newsId = getNewsId(newsArticle);
 				newsArticle.setDate(result.getLong("Date"));
@@ -141,21 +144,21 @@ public class NewsDAOImpl implements NewsDAO {
 				listOfNews.add(newsArticle);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Could not update the news article", e);
 		}
 		return listOfNews;
 	}
 
 	@Override
-	public void delete(NewsArticle entity) {
+	public void delete(NewsArticleDTO entity) {
 		try {
 			entity.setId(getNewsId(entity));
 			query.setLength(0);
 			query.append("DELETE FROM ");
-			query.append(Tables.NEWS);
+			query.append(DatabaseTables.NEWS);
 			query.append(" WHERE NewsID = ?");
 			connectToDatabase();
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setLong(1, entity.getId());
 			preparedStatement.executeUpdate();
 
@@ -164,7 +167,7 @@ public class NewsDAOImpl implements NewsDAO {
 			updateImages();
 			updateSources();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Could not delete the news article", e);
 		}
 
 	}
@@ -177,8 +180,8 @@ public class NewsDAOImpl implements NewsDAO {
 			connectToDatabase();
 			query.setLength(0);
 			query.append("SELECT * FROM ");
-			query.append(Tables.AUTHORS);
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			query.append(DatabaseTables.AUTHORS);
+			preparedStatement = connection.prepareStatement(query.toString());
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
 				author = new String();
@@ -186,7 +189,7 @@ public class NewsDAOImpl implements NewsDAO {
 				authors.add(author);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Could not fetch authors from the database", e);
 		}
 		return authors;
 	}
@@ -199,8 +202,8 @@ public class NewsDAOImpl implements NewsDAO {
 			connectToDatabase();
 			query.setLength(0);
 			query.append("SELECT * FROM ");
-			query.append(Tables.SOURCES);
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			query.append(DatabaseTables.SOURCES);
+			preparedStatement = connection.prepareStatement(query.toString());
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
 				source = new Source();
@@ -210,7 +213,7 @@ public class NewsDAOImpl implements NewsDAO {
 				sources.add(source);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Could not fetch sources from the database", e);
 		}
 		return sources;
 	}
@@ -223,8 +226,8 @@ public class NewsDAOImpl implements NewsDAO {
 			connectToDatabase();
 			query.setLength(0);
 			query.append("SELECT * FROM ");
-			query.append(Tables.CATEGORIES);
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			query.append(DatabaseTables.CATEGORIES);
+			preparedStatement = connection.prepareStatement(query.toString());
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
 				category = new String();
@@ -232,23 +235,23 @@ public class NewsDAOImpl implements NewsDAO {
 				categories.add(category);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Could not fetch categories from the database", e);
 		}
 		return categories;
 	}
 
 	@Override
-	public List<NewsArticle> findAllBySource(Source source) {
-		NewsArticle newsArticle = new NewsArticle();
-		List<NewsArticle> result = new ArrayList<NewsArticle>();
+	public List<NewsArticleDTO> findAllBySource(Source source) {
+		NewsArticleDTO newsArticle = new NewsArticleDTO();
+		List<NewsArticleDTO> result = new ArrayList<NewsArticleDTO>();
 
 		try {
 			connectToDatabase();
 			query.setLength(0);
 			query.append("SELECT SourceID FROM ");
-			query.append(Tables.SOURCES);
+			query.append(DatabaseTables.SOURCES);
 			query.append(" where DisplayName = ? and Description = ?");
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setString(1, source.getDisplayName());
 			preparedStatement.setString(2, source.getDescription());
 			ResultSet res = preparedStatement.executeQuery();
@@ -258,7 +261,7 @@ public class NewsDAOImpl implements NewsDAO {
 
 			query.setLength(0);
 			query.append("SELECT * FROM ");
-			query.append(Tables.NEWS);
+			query.append(DatabaseTables.NEWS);
 			query.append(" where SourceID = ?");
 			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setInt(1, source.getId());
@@ -274,7 +277,7 @@ public class NewsDAOImpl implements NewsDAO {
 				result.add(newsArticle);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("Could not fetch news from the database", e);
 		}
 
 		return result;
@@ -286,16 +289,16 @@ public class NewsDAOImpl implements NewsDAO {
 		try {
 			query.setLength(0);
 			query.append("SELECT URL FROM ");
-			query.append(Tables.IMAGES);
+			query.append(DatabaseTables.IMAGES);
 			query.append(" JOIN ");
-			query.append(Tables.NEWS_HAS_IMAGES);
+			query.append(DatabaseTables.NEWS_HAS_IMAGES);
 			query.append(" ON ");
-			query.append(Tables.IMAGES);
+			query.append(DatabaseTables.IMAGES);
 			query.append(".ImageID = ");
-			query.append(Tables.NEWS_HAS_IMAGES);
+			query.append(DatabaseTables.NEWS_HAS_IMAGES);
 			query.append(".ImageID");
 			query.append(" WHERE ");
-			query.append(Tables.NEWS_HAS_IMAGES);
+			query.append(DatabaseTables.NEWS_HAS_IMAGES);
 			query.append(".NewsId = ?");
 			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setLong(1, newsId);
@@ -306,7 +309,6 @@ public class NewsDAOImpl implements NewsDAO {
 				images.add(image);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -319,16 +321,16 @@ public class NewsDAOImpl implements NewsDAO {
 		try {
 			query.setLength(0);
 			query.append("SELECT CategoryName FROM ");
-			query.append(Tables.CATEGORIES);
+			query.append(DatabaseTables.CATEGORIES);
 			query.append(" JOIN ");
-			query.append(Tables.NEWS_HAS_CATEGORIES);
+			query.append(DatabaseTables.NEWS_HAS_CATEGORIES);
 			query.append(" ON ");
-			query.append(Tables.CATEGORIES);
+			query.append(DatabaseTables.CATEGORIES);
 			query.append(".CategoryID = ");
-			query.append(Tables.NEWS_HAS_CATEGORIES);
+			query.append(DatabaseTables.NEWS_HAS_CATEGORIES);
 			query.append(".CategoryID");
 			query.append(" WHERE ");
-			query.append(Tables.NEWS_HAS_CATEGORIES);
+			query.append(DatabaseTables.NEWS_HAS_CATEGORIES);
 			query.append(".NewsId = ?");
 			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setLong(1, newsId);
@@ -352,16 +354,16 @@ public class NewsDAOImpl implements NewsDAO {
 		try {
 			query.setLength(0);
 			query.append("SELECT AuthorName FROM ");
-			query.append(Tables.AUTHORS);
+			query.append(DatabaseTables.AUTHORS);
 			query.append(" JOIN ");
-			query.append(Tables.NEWS_HAS_AUTHORS);
+			query.append(DatabaseTables.NEWS_HAS_AUTHORS);
 			query.append(" ON ");
-			query.append(Tables.AUTHORS);
+			query.append(DatabaseTables.AUTHORS);
 			query.append(".AuthorID = ");
-			query.append(Tables.NEWS_HAS_AUTHORS);
+			query.append(DatabaseTables.NEWS_HAS_AUTHORS);
 			query.append(".AuthorID");
 			query.append(" WHERE ");
-			query.append(Tables.NEWS_HAS_AUTHORS);
+			query.append(DatabaseTables.NEWS_HAS_AUTHORS);
 			query.append(".NewsId = ?");
 			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setLong(1, newsId);
@@ -382,52 +384,50 @@ public class NewsDAOImpl implements NewsDAO {
 	private void connectToDatabase() throws SQLException {
 
 		if (connection == null) {
-			connection = DAOFactoryImp.createConnection();
+			connection = DAOFactory.createConnection();
 		}
 	}
 
-	private void addNews(NewsArticle entity) {
+	private void addNews(NewsArticleDTO entity) throws SQLException {
 		query.setLength(0);
 		query.append("INSERT into ");
-		query.append(Tables.NEWS);
+		query.append(DatabaseTables.NEWS);
 		query.append("(GUID, Date, Title, Subtitle, Description, Body, SourceID, Thumbnail_id, ExternalURL) ");
 		query.append("values(?,?,?,?,?,?,?,?,?)");
-		try {
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setString(1, entity.getGuid());
-			preparedStatement.setLong(2, entity.getDate());
-			preparedStatement.setString(3, entity.getTitle());
-			preparedStatement.setString(4, entity.getSubtitle());
-			preparedStatement.setString(5, entity.getDescription());
-			preparedStatement.setString(6, entity.getBody());
-			preparedStatement.setInt(7, source.getId());
-			preparedStatement.setString(8, entity.getThumbnail_id());
-			preparedStatement.setString(9, entity.getExternal_url());
-			preparedStatement.executeUpdate();
-			generatedKeys = preparedStatement.getGeneratedKeys();
-			if (generatedKeys.next()) {
-				entity.setId(generatedKeys.getInt(1));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+
+		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement.setString(1, entity.getGuid());
+		preparedStatement.setLong(2, entity.getDate());
+		preparedStatement.setString(3, entity.getTitle());
+		preparedStatement.setString(4, entity.getSubtitle());
+		preparedStatement.setString(5, entity.getDescription());
+		preparedStatement.setString(6, entity.getBody());
+		preparedStatement.setInt(7, source.getId());
+		preparedStatement.setString(8, entity.getThumbnail_id());
+		preparedStatement.setString(9, entity.getExternal_url());
+		preparedStatement.executeUpdate();
+		generatedKeys = preparedStatement.getGeneratedKeys();
+		if (generatedKeys.next()) {
+			entity.setId(generatedKeys.getInt(1));
 		}
+
 	}
 
-	private void addNewsAndImageRelations(NewsArticle entity) {
+	private void addNewsAndImageRelations(NewsArticleDTO entity) {
 		query.setLength(0);
 		query.append("INSERT into ");
-		query.append(Tables.NEWS_HAS_IMAGES);
+		query.append(DatabaseTables.NEWS_HAS_IMAGES);
 		query.append("(NewsID, ImageID) ");
 		query.append("values(?,?)");
 		try {
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setLong(1, entity.getId());
 			for (Integer id : ids) {
 				preparedStatement.setInt(2, id);
 				preparedStatement.executeUpdate();
 			}
 		} catch (SQLException e) {
-			ids.clear();
+			LOGGER.info("Relations already exist", e);
 		}
 		ids.clear();
 
@@ -436,7 +436,7 @@ public class NewsDAOImpl implements NewsDAO {
 	private void addImage(String image) {
 		query.setLength(0);
 		query.append("INSERT into ");
-		query.append(Tables.IMAGES);
+		query.append(DatabaseTables.IMAGES);
 		query.append("(URL) ");
 		query.append("values(?)");
 		try {
@@ -448,39 +448,40 @@ public class NewsDAOImpl implements NewsDAO {
 				ids.add(generatedKeys.getInt(1));
 			}
 		} catch (SQLException e) {
+			LOGGER.info("Source already in database thus Retrieving the Image id", e);
 			query.setLength(0);
 			query.append("SELECT ImageID FROM ");
-			query.append(Tables.IMAGES);
+			query.append(DatabaseTables.IMAGES);
 			query.append(" WHERE URL = ?");
 			try {
-				preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+				preparedStatement = connection.prepareStatement(query.toString());
 				preparedStatement.setString(1, image);
 				ResultSet result = preparedStatement.executeQuery();
 				if (result.next()) {
 					ids.add(result.getInt(1));
 				}
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				LOGGER.error("Could not fetch the Image id", e1);
 			}
 		}
 
 	}
 
-	private void addNewsAndCategoryRelations(NewsArticle entity) {
+	private void addNewsAndCategoryRelations(NewsArticleDTO entity) {
 		query.setLength(0);
 		query.append("INSERT into ");
-		query.append(Tables.NEWS_HAS_CATEGORIES);
+		query.append(DatabaseTables.NEWS_HAS_CATEGORIES);
 		query.append("(NewsID, CategoryID) ");
 		query.append("values(?,?)");
 		try {
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setLong(1, entity.getId());
 			for (Integer id : ids) {
 				preparedStatement.setInt(2, id);
 				preparedStatement.executeUpdate();
 			}
 		} catch (SQLException e) {
-			ids.clear();
+			LOGGER.info("Relations already exist", e);
 		}
 		ids.clear();
 
@@ -489,7 +490,7 @@ public class NewsDAOImpl implements NewsDAO {
 	private void addCategory(String category) {
 		query.setLength(0);
 		query.append("INSERT into ");
-		query.append(Tables.CATEGORIES);
+		query.append(DatabaseTables.CATEGORIES);
 		query.append("(CategoryName) ");
 		query.append("values(?)");
 		try {
@@ -501,38 +502,39 @@ public class NewsDAOImpl implements NewsDAO {
 				ids.add(generatedKeys.getInt(1));
 			}
 		} catch (SQLException e) {
+			LOGGER.info("Source already in database thus Retrieving the Category id", e);
 			query.setLength(0);
 			query.append("SELECT CategoryID FROM ");
-			query.append(Tables.CATEGORIES);
+			query.append(DatabaseTables.CATEGORIES);
 			query.append(" where CategoryName = ?");
 			try {
-				preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+				preparedStatement = connection.prepareStatement(query.toString());
 				preparedStatement.setString(1, category);
 				ResultSet result = preparedStatement.executeQuery();
 				if (result.next()) {
 					ids.add(result.getInt(1));
 				}
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				LOGGER.error("Could not fetch the Category id", e1);
 			}
 		}
 	}
 
-	private void addNewsAndAuthorRelations(NewsArticle entity) {
+	private void addNewsAndAuthorRelations(NewsArticleDTO entity) {
 		query.setLength(0);
 		query.append("INSERT into ");
-		query.append(Tables.NEWS_HAS_AUTHORS);
+		query.append(DatabaseTables.NEWS_HAS_AUTHORS);
 		query.append("(NewsID, AuthorID) ");
 		query.append("values(?,?)");
 		try {
-			preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+			preparedStatement = connection.prepareStatement(query.toString());
 			preparedStatement.setLong(1, entity.getId());
 			for (Integer id : ids) {
 				preparedStatement.setInt(2, id);
 				preparedStatement.executeUpdate();
 			}
 		} catch (SQLException e) {
-			ids.clear();
+			LOGGER.info("Relations already exist", e);
 		}
 		ids.clear();
 	}
@@ -540,7 +542,7 @@ public class NewsDAOImpl implements NewsDAO {
 	private void addAuthor(String author) {
 		query.setLength(0);
 		query.append("INSERT into ");
-		query.append(Tables.AUTHORS);
+		query.append(DatabaseTables.AUTHORS);
 		query.append("(AuthorName) ");
 		query.append("values(?)");
 		try {
@@ -552,24 +554,25 @@ public class NewsDAOImpl implements NewsDAO {
 				ids.add(generatedKeys.getInt(1));
 			}
 		} catch (SQLException e) {
+			LOGGER.info("Source already in database thus Retrieving the Author id", e);
 			query.setLength(0);
 			query.append("SELECT AuthorID FROM ");
-			query.append(Tables.AUTHORS);
+			query.append(DatabaseTables.AUTHORS);
 			query.append(" where AuthorName = ?");
 			try {
-				preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+				preparedStatement = connection.prepareStatement(query.toString());
 				preparedStatement.setString(1, author);
 				ResultSet result = preparedStatement.executeQuery();
 				if (result.next()) {
 					ids.add(result.getInt(1));
 				}
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				LOGGER.error("Could not fetch the Author id", e1);
 			}
 		}
 	}
 
-	private void createRelations(NewsArticle entity) {
+	private void createRelations(NewsArticleDTO entity) {
 		for (String author : entity.getAuthors()) {
 			addAuthor(author);
 		}
@@ -586,10 +589,10 @@ public class NewsDAOImpl implements NewsDAO {
 		addNewsAndImageRelations(entity);
 	}
 
-	private void updateRelations(NewsArticle entity) throws SQLException {
+	private void updateRelations(NewsArticleDTO entity) throws SQLException {
 		query.setLength(0);
 		query.append("DELETE FROM ");
-		query.append(Tables.NEWS_HAS_AUTHORS);
+		query.append(DatabaseTables.NEWS_HAS_AUTHORS);
 		query.append(" where NewsID = ?");
 		preparedStatement = connection.prepareStatement(query.toString());
 		preparedStatement.setLong(1, entity.getId());
@@ -597,7 +600,7 @@ public class NewsDAOImpl implements NewsDAO {
 
 		query.setLength(0);
 		query.append("DELETE FROM ");
-		query.append(Tables.NEWS_HAS_CATEGORIES);
+		query.append(DatabaseTables.NEWS_HAS_CATEGORIES);
 		query.append(" where NewsID = ?");
 		preparedStatement = connection.prepareStatement(query.toString());
 		preparedStatement.setLong(1, entity.getId());
@@ -605,7 +608,7 @@ public class NewsDAOImpl implements NewsDAO {
 
 		query.setLength(0);
 		query.append("DELETE FROM ");
-		query.append(Tables.NEWS_HAS_IMAGES);
+		query.append(DatabaseTables.NEWS_HAS_IMAGES);
 		query.append(" where NewsID = ?");
 		preparedStatement = connection.prepareStatement(query.toString());
 		preparedStatement.setLong(1, entity.getId());
@@ -617,69 +620,69 @@ public class NewsDAOImpl implements NewsDAO {
 	private void updateAuthors() throws SQLException {
 		query.setLength(0);
 		query.append("DELETE FROM ");
-		query.append(Tables.AUTHORS);
+		query.append(DatabaseTables.AUTHORS);
 		query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
-		query.append(Tables.NEWS_HAS_AUTHORS);
+		query.append(DatabaseTables.NEWS_HAS_AUTHORS);
 		query.append(" WHERE ");
-		query.append(Tables.AUTHORS);
+		query.append(DatabaseTables.AUTHORS);
 		query.append(".AuthorID=");
-		query.append(Tables.NEWS_HAS_AUTHORS);
+		query.append(DatabaseTables.NEWS_HAS_AUTHORS);
 		query.append(".AuthorID)");
-		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement = connection.prepareStatement(query.toString());
 		preparedStatement.executeUpdate();
 	}
 
 	private void updateCategories() throws SQLException {
 		query.setLength(0);
 		query.append("DELETE FROM ");
-		query.append(Tables.CATEGORIES);
+		query.append(DatabaseTables.CATEGORIES);
 		query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
-		query.append(Tables.NEWS_HAS_CATEGORIES);
+		query.append(DatabaseTables.NEWS_HAS_CATEGORIES);
 		query.append(" WHERE ");
-		query.append(Tables.CATEGORIES);
+		query.append(DatabaseTables.CATEGORIES);
 		query.append(".CategoryID=");
-		query.append(Tables.NEWS_HAS_CATEGORIES);
+		query.append(DatabaseTables.NEWS_HAS_CATEGORIES);
 		query.append(".CategoryID)");
-		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement = connection.prepareStatement(query.toString());
 		preparedStatement.executeUpdate();
 	}
 
 	private void updateImages() throws SQLException {
 		query.setLength(0);
 		query.append("DELETE FROM ");
-		query.append(Tables.IMAGES);
+		query.append(DatabaseTables.IMAGES);
 		query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
-		query.append(Tables.NEWS_HAS_IMAGES);
+		query.append(DatabaseTables.NEWS_HAS_IMAGES);
 		query.append(" WHERE ");
-		query.append(Tables.IMAGES);
+		query.append(DatabaseTables.IMAGES);
 		query.append(".ImageID=");
-		query.append(Tables.NEWS_HAS_IMAGES);
+		query.append(DatabaseTables.NEWS_HAS_IMAGES);
 		query.append(".ImageID)");
-		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement = connection.prepareStatement(query.toString());
 		preparedStatement.executeUpdate();
 	}
 
 	private void updateSources() throws SQLException {
 		query.setLength(0);
 		query.append("DELETE FROM ");
-		query.append(Tables.SOURCES);
+		query.append(DatabaseTables.SOURCES);
 		query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
-		query.append(Tables.NEWS);
+		query.append(DatabaseTables.NEWS);
 		query.append(" WHERE ");
-		query.append(Tables.SOURCES);
+		query.append(DatabaseTables.SOURCES);
 		query.append(".SourceID=");
-		query.append(Tables.NEWS);
+		query.append(DatabaseTables.NEWS);
 		query.append(".SourceID)");
-		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement = connection.prepareStatement(query.toString());
 		preparedStatement.executeUpdate();
 	}
 
 	private Source findSourceById(int id) throws SQLException {
 		query.setLength(0);
 		query.append("SELECT * FROM ");
-		query.append(Tables.SOURCES);
+		query.append(DatabaseTables.SOURCES);
 		query.append(" WHERE SourceID = ?");
-		preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		preparedStatement = connection.prepareStatement(query.toString());
 		preparedStatement.setInt(1, id);
 		ResultSet sourceResult = preparedStatement.executeQuery();
 		Source source = new Source();
@@ -691,12 +694,12 @@ public class NewsDAOImpl implements NewsDAO {
 		return source;
 	}
 
-	private long getNewsId(NewsArticle entity) throws SQLException {
+	private long getNewsId(NewsArticleDTO entity) throws SQLException {
 		connectToDatabase();
 		long newsId = 0;
 		query.setLength(0);
 		query.append("SELECT NewsID FROM ");
-		query.append(Tables.NEWS);
+		query.append(DatabaseTables.NEWS);
 		query.append(" WHERE GUID = ?");
 		preparedStatement = connection.prepareStatement(query.toString());
 		preparedStatement.setString(1, entity.getGuid());

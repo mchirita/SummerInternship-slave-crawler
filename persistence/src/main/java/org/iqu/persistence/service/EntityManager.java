@@ -1,8 +1,8 @@
 package org.iqu.persistence.service;
 
-import org.iqu.persistence.entities.ParsedData;
+import org.iqu.persistence.entities.ParsedDataDTO;
 
 public interface EntityManager {
 
-	public void retrieveData(ParsedData parsedData);
+	public void retrieveData(ParsedDataDTO parsedData);
 }
