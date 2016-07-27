@@ -17,8 +17,8 @@ public interface ConfigLoader extends Runnable {
   /**
    * Loads the properties from a configuration file
    */
-  public void loadProperties();
+  void loadProperties();
 
-  public List<SourceConfig> getProperties();
+  List<SourceConfig> getProperties();
 
 }
