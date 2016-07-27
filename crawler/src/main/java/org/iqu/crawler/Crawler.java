@@ -3,11 +3,14 @@ package org.iqu.crawler;
 import org.apache.log4j.Logger;
 import org.iqu.crawler.configuration.CrawlerConfiguration;
 import org.iqu.crawler.configuration.entities.SourceConfig;
+import org.iqu.crawler.converter.ParsedDataConverter;
 import org.iqu.crawler.entities.DataType;
 import org.iqu.crawler.entities.ParsedDataModel;
 import org.iqu.parsers.Parser;
 import org.iqu.parsers.entities.EventModel;
 import org.iqu.parsers.entities.NewsArticleModel;
+import org.iqu.persistence.service.EntityManager;
+import org.iqu.persistence.service.EntityManagerImp;
 
 /**
  * Parses online news and event information and forwards it.
@@ -19,9 +22,13 @@ public class Crawler {
   private static final Logger LOGGER = Logger.getLogger(Crawler.class);
 
   private CrawlerConfiguration configuration;
+  private ParsedDataConverter converter;
+  private EntityManager manager;
 
   public Crawler(CrawlerConfiguration configuration) {
     this.configuration = configuration;
+    converter = new ParsedDataConverter();
+    manager = new EntityManagerImp();
   }
 
   /**
@@ -35,21 +42,22 @@ public class Crawler {
       try {
 
         if (sourceConfig.getDataType() == DataType.NEWS) {
-          Parser<NewsArticleModel> parser = (Parser<NewsArticleModel>) Class.forName(sourceConfig.getParserName()).newInstance();
+          Parser<NewsArticleModel> parser = (Parser<NewsArticleModel>) Class.forName(sourceConfig.getParserName())
+              .newInstance();
           parsedData.setNews(parser.readFeed(sourceConfig.getSource(), "UTF-8"));
           parsedData.setSource(parser.getSource());
+          manager.retrieveData(converter.convertParsedData(parsedData));
 
         } else if (sourceConfig.getDataType() == DataType.EVENTS) {
 
           Parser<EventModel> parser = (Parser<EventModel>) Class.forName(sourceConfig.getParserName()).newInstance();
           parsedData.setEvents(parser.readFeed(sourceConfig.getSource(), "UTF-8"));
           parsedData.setSource(parser.getSource());
+          manager.retrieveData(converter.convertParsedData(parsedData));
 
         } else {
           LOGGER.info("Unable to handle " + sourceConfig.getDataType() + " data type.");
         }
-
-        // TODO: forward the ParsedData object to the DAO Manager
 
       } catch (ClassNotFoundException e) {
         LOGGER.error("Can't find the parser class!", e);
