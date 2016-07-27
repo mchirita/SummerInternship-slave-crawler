@@ -65,8 +65,9 @@ public class Test {
     // System.out.println(news.findAll());
 
     EventDAO eventAcc = DAOFactory.getEventDAO();
-    eventAcc.addSource(source);
-    eventAcc.create(event);
+    // eventAcc.addSource(source);
+    // eventAcc.create(event);
+    eventAcc.update(event);
 
   }
 

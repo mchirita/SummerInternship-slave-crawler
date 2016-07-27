@@ -61,7 +61,7 @@ public class NewsDAOImpl implements NewsDAO {
       query.setLength(0);
       query.append("SELECT SourceID from ");
       query.append(DatabaseTables.SOURCES);
-      query.append(" where DisplayName = ?, Description = ?");
+      query.append(" where DisplayName = ?");
       try {
         preparedStatement = connection.prepareStatement(query.toString());
         preparedStatement.setString(1, source.getDisplayName());
@@ -84,14 +84,18 @@ public class NewsDAOImpl implements NewsDAO {
       query.setLength(0);
       query.append("UPDATE ");
       query.append(DatabaseTables.NEWS);
-      query.append(" SET Date = ?, Title = ?, Subtitle = ?, Description = ?, Body = ? WHERE GUID = ?");
+      query.append(
+          " SET GUID = ?, Date = ?, Title = ?, Subtitle = ?, Description = ?, Body = ?, Thumbnail_id = ?, ExternalURL = ? WHERE NewsID = ?");
       preparedStatement = connection.prepareStatement(query.toString());
-      preparedStatement.setLong(1, entity.getDate());
-      preparedStatement.setString(2, entity.getTitle());
-      preparedStatement.setString(3, entity.getSubtitle());
-      preparedStatement.setString(4, entity.getDescription());
-      preparedStatement.setString(5, entity.getBody());
-      preparedStatement.setString(6, entity.getGuid());
+      preparedStatement.setString(1, entity.getGuid());
+      preparedStatement.setLong(2, entity.getDate());
+      preparedStatement.setString(3, entity.getTitle());
+      preparedStatement.setString(4, entity.getSubtitle());
+      preparedStatement.setString(5, entity.getDescription());
+      preparedStatement.setString(6, entity.getBody());
+      preparedStatement.setString(7, entity.getThumbnail_id());
+      preparedStatement.setString(8, entity.getExternal_url());
+      preparedStatement.setLong(9, entity.getId());
       preparedStatement.executeUpdate();
 
       updateRelations(entity);

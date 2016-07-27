@@ -140,8 +140,79 @@ public class EventDAOImpl implements EventDAO {
 
   @Override
   public void update(EventDTO entity) {
-    // TODO Auto-generated method stub
+    try {
+      entity.setId(getEventId(entity));
+      addTypes(entity);
+      query.setLength(0);
+      query.append("UPDATE ");
+      query.append(DatabaseTables.EVENTS);
+      query.append(
+          " SET StartDate = ?, EndDate = ?, Title = ?, Subtitle = ?, Description = ?, TypeID = ?, Body = ?, Thumbnail_id = ?, ExternalURL = ? WHERE EventID = ?");
+      preparedStatement = connection.prepareStatement(query.toString());
+      preparedStatement.setLong(1, entity.getStartDate());
+      preparedStatement.setLong(2, entity.getEndDate());
+      preparedStatement.setString(3, entity.getTitle());
+      preparedStatement.setString(4, entity.getSubtitle());
+      preparedStatement.setString(5, entity.getDescription());
+      preparedStatement.setLong(6, type.getId());
+      preparedStatement.setString(7, entity.getBody());
+      preparedStatement.setString(8, entity.getThumbnail_id());
+      preparedStatement.setString(9, entity.getExternal_url());
+      preparedStatement.setLong(10, entity.getId());
+      preparedStatement.executeUpdate();
 
+      updateRelations(entity);
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+  }
+
+  private void updateRelations(EventDTO entity) throws SQLException {
+    query.setLength(0);
+    query.append("DELETE FROM ");
+    query.append(DatabaseTables.EVENTS_HAS_AUTHORS);
+    query.append(" where EventID = ?");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.setLong(1, entity.getId());
+    preparedStatement.executeUpdate();
+
+    query.setLength(0);
+    query.append("DELETE FROM ");
+    query.append(DatabaseTables.EVENTS_HAS_IMAGES);
+    query.append(" where EventID = ?");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.setLong(1, entity.getId());
+    preparedStatement.executeUpdate();
+
+    query.setLength(0);
+    query.append("DELETE FROM ");
+    query.append(DatabaseTables.TYPES_HAS_SUBTYPES);
+    query.append(" where TypeID = ?");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.setLong(1, type.getId());
+    preparedStatement.executeUpdate();
+
+    createRelations(entity);
+
+  }
+
+  private long getEventId(EventDTO entity) throws SQLException {
+    connectToDatabase();
+    long eventId = 0;
+    query.setLength(0);
+    query.append("SELECT EventID FROM ");
+    query.append(DatabaseTables.NEWS);
+    query.append(" WHERE ExternalURL = ?");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.setString(1, entity.getExternal_url());
+    ResultSet res = preparedStatement.executeQuery();
+    if (res.next()) {
+      eventId = res.getLong(1);
+    }
+
+    return eventId;
   }
 
   @Override
