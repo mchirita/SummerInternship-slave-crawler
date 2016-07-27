@@ -6,17 +6,17 @@ package org.iqu.parsers.entities;
  * @author Mitroi Stefan, Cristi Badoi
  *
  */
-public class SourceDTO {
+public class SourceModel {
 
   private long id;
   private String displayName;
   private String description;
   private String image;
 
-  public SourceDTO() {
+  public SourceModel() {
   }
 
-  public SourceDTO(long id, String displayName, String description, String image) {
+  public SourceModel(long id, String displayName, String description, String image) {
     this.id = id;
     this.displayName = displayName;
     this.description = description;
@@ -83,7 +83,7 @@ public class SourceDTO {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    SourceDTO other = (SourceDTO) obj;
+    SourceModel other = (SourceModel) obj;
     if (displayName == null) {
       if (other.displayName != null)
         return false;

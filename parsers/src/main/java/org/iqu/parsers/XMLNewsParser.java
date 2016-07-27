@@ -16,8 +16,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.iqu.parsers.entities.NewsArticleDTO;
-import org.iqu.parsers.entities.SourceDTO;
+import org.iqu.parsers.entities.NewsArticleModel;
+import org.iqu.parsers.entities.SourceModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,20 +31,20 @@ import org.xml.sax.SAXException;
  * @author Cristi Badoi
  *
  */
-public class XMLNewsParser implements Parser<NewsArticleDTO> {
+public class XMLNewsParser implements Parser<NewsArticleModel> {
 
   private static final Logger LOGGER = Logger.getLogger(XMLNewsParser.class);
 
-  private SourceDTO source;
+  private SourceModel source;
 
   @Override
-  public SourceDTO getSource() {
+  public SourceModel getSource() {
     return source;
   }
 
   @Override
-  public List<NewsArticleDTO> readFeed(String sourceURL, String encoding) {
-    List<NewsArticleDTO> result = new ArrayList<NewsArticleDTO>();
+  public List<NewsArticleModel> readFeed(String sourceURL, String encoding) {
+    List<NewsArticleModel> result = new ArrayList<NewsArticleModel>();
     try {
       DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       Document document = builder
@@ -66,14 +66,14 @@ public class XMLNewsParser implements Parser<NewsArticleDTO> {
     return result;
   }
 
-  private void readItems(String sourceURL, List<NewsArticleDTO> result, Document document) {
+  private void readItems(String sourceURL, List<NewsArticleModel> result, Document document) {
     NodeList nList = document.getDocumentElement().getElementsByTagName(XMLParserConstants.ITEM);
 
     for (int i = 0; i < nList.getLength(); i++) {
       Node node = nList.item(i);
       if (node.getNodeType() == Node.ELEMENT_NODE) {
         Element element = (Element) node;
-        NewsArticleDTO article = new NewsArticleDTO();
+        NewsArticleModel article = new NewsArticleModel();
         article.setTitle(getValue(element, XMLParserConstants.TITLE));
         article.setExternal_url(getValue(element, XMLParserConstants.EXTERNAL_URL));
         article.setGuid(getValue(element, XMLParserConstants.GUID));
@@ -92,7 +92,7 @@ public class XMLNewsParser implements Parser<NewsArticleDTO> {
   }
 
   private void readSourceInfo(Document document) {
-    source = new SourceDTO();
+    source = new SourceModel();
     Node sourceTitle = document.getDocumentElement().getElementsByTagName(XMLParserConstants.TITLE).item(0);
     source.setDisplayName(sourceTitle.getTextContent());
     Node sourceDescription = document.getDocumentElement().getElementsByTagName(XMLParserConstants.DESCRIPTION).item(0);
@@ -154,7 +154,7 @@ public class XMLNewsParser implements Parser<NewsArticleDTO> {
     return temp.getTime() / 1000;
   }
 
-  private boolean validate(NewsArticleDTO article) {
+  private boolean validate(NewsArticleModel article) {
     boolean result = true;
     if (article.getGuid() == null || article.getTitle() == null || article.getExternal_url() == null) {
       result = false;

@@ -6,7 +6,7 @@ package org.iqu.parsers.entities;
  * @author Razvan Rosu
  *
  */
-public class EventDTO {
+public class EventModel {
 
   private String title;
   private String subtitle;
@@ -22,7 +22,7 @@ public class EventDTO {
   private String thumbnail_id;
   private String external_url;
 
-  public EventDTO() {
+  public EventModel() {
   }
 
   public String getTitle() {
@@ -158,7 +158,7 @@ public class EventDTO {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    EventDTO other = (EventDTO) obj;
+    EventModel other = (EventModel) obj;
     if (external_url == null) {
       if (other.external_url != null)
         return false;
