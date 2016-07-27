@@ -43,7 +43,7 @@ public class NewsEndpoint {
       return Response.status(Status.OK).entity(authors).build();
     }
     ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-    LOGGER.error(errorMessage);
+    LOGGER.error(errorMessage.getMessage());
     return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
   }
 
@@ -64,7 +64,7 @@ public class NewsEndpoint {
 
     if (categories.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage.getMessage());
       return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
     }
     return Response.status(Status.OK).entity(categories).build();
@@ -91,7 +91,7 @@ public class NewsEndpoint {
 
     if (startDate == null) {
       ErrorMessage errorMessage = new ErrorMessage("Could not find location, please try again later.");
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage.getMessage());
       return Response.status(Status.OK).entity(news).build();
     } else {
       return Response.ok(Status.OK).build();
@@ -117,6 +117,7 @@ public class NewsEndpoint {
 
     if (sources.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch sources, please try again later.");
+      LOGGER.error(errorMessage.getMessage());
       return Response.status(Status.OK).entity(errorMessage).build();
     }
 

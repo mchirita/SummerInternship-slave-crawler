@@ -51,7 +51,7 @@ public class EventEndpoint {
       return Response.status(Status.OK).entity(authors).build();
     }
     ErrorMessage errorMessage = new ErrorMessage("Could not find authors, please try again later.");
-    LOGGER.error(errorMessage);
+    LOGGER.error(errorMessage.getMessage());
     return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
   }
 
@@ -70,7 +70,7 @@ public class EventEndpoint {
 
     if (startDate == null) {
       ErrorMessage errorMessage = new ErrorMessage("Could not find location, please try again later.");
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage.getMessage());
       return Response.status(Status.NOT_FOUND).entity(events).build();
     } else {
       return Response.ok().build();
@@ -96,7 +96,7 @@ public class EventEndpoint {
       return Response.ok().entity(sources).build();
     } else {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch sources, please try again later.");
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage.getMessage());
       return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
     }
   }
@@ -120,7 +120,7 @@ public class EventEndpoint {
 
     if (types.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
-      LOGGER.error(errorMessage);
+      LOGGER.error(errorMessage.getMessage());
       return Response.status(Status.NOT_FOUND).entity(errorMessage).build();
     }
     return Response.ok().entity(types).build();
