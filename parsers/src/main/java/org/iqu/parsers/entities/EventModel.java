@@ -1,5 +1,6 @@
 package org.iqu.parsers.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +25,12 @@ public class EventModel {
   private List<String> images;
   private String thumbnail_id;
   private String external_url;
+
+  public EventModel() {
+    authors = new ArrayList<String>();
+    subtypes = new ArrayList<String>();
+    images = new ArrayList<String>();
+  }
 
   public String getTitle() {
     return title;

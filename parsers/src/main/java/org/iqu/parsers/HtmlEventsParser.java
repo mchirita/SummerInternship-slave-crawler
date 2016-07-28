@@ -130,7 +130,7 @@ public class HtmlEventsParser implements Parser<EventModel> {
 
   private long convertDate(String date) throws ParseException {
     if (date.length() > 0) {
-      return dF.parse(date).getTime();
+      return dF.parse(date).getTime() / 1000;
     }
     return 0;
   }
