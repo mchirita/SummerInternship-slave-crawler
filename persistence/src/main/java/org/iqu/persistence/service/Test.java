@@ -15,7 +15,7 @@ public class Test {
     source.setDisplayName("some name");
 
     List<String> authors = new ArrayList<String>();
-    authors.add("asdas");
+    authors.add("poc poc");
     authors.add("fasdfsdfother name");
 
     // List<String> categories = new ArrayList<String>();
@@ -24,10 +24,10 @@ public class Test {
 
     List<String> subtypes = new ArrayList<String>();
     subtypes.add("rock");
-    subtypes.add("rap");
+    subtypes.add("classic");
 
     List<String> images = new ArrayList<String>();
-    images.add("agksldgsgsdhgsdh");
+    images.add("agks");
     images.add("whtewjr");
 
     /*
@@ -45,7 +45,7 @@ public class Test {
     EventDTO event = new EventDTO();
     event.setStartDate(1235);
     event.setEndDate(1289);
-    event.setTitle("Asfs");
+    event.setTitle("Titlu Titlu");
     event.setSubtitle("subttiel");
     event.setDescription("poc poc");
     event.setSource(source.getDisplayName());
@@ -67,7 +67,10 @@ public class Test {
     EventDAO eventAcc = DAOFactory.getEventDAO();
     // eventAcc.addSource(source);
     // eventAcc.create(event);
-    eventAcc.update(event);
+    // eventAcc.update(event);
+    // eventAcc.delete(event);
+    // System.out.println(eventAcc.retrieveTypesAndSubtypes());
+    System.out.println(eventAcc.findAll());
 
   }
 

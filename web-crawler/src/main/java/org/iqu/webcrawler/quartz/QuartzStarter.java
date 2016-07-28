@@ -34,7 +34,6 @@ public class QuartzStarter implements ServletContextListener {
   @Override
   public void contextInitialized(ServletContextEvent arg0) {
     try {
-
       Crawler crawler = new Crawler(new CrawlerConfiguration());
 
       scheduler = new StdSchedulerFactory().getScheduler();

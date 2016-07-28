@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.iqu.persistence.entities.EventDTO;
 import org.iqu.persistence.entities.SourceDTO;
 import org.iqu.persistence.entities.Type;
+import org.iqu.persistence.entities.TypeDTO;
 
 public class EventDAOImpl implements EventDAO {
 
@@ -121,16 +122,15 @@ public class EventDAOImpl implements EventDAO {
     } catch (SQLException e) {
       LOGGER.info("Type already in database thus Retrieving the Type id", e);
       query.setLength(0);
-      query.append("SELECT SourceID from ");
-      query.append(DatabaseTables.SOURCES);
-      query.append(" where DisplayName = ?, Description = ?");
+      query.append("SELECT TypeID from ");
+      query.append(DatabaseTables.TYPES);
+      query.append(" where TypeName = ?");
       try {
         preparedStatement = connection.prepareStatement(query.toString());
-        preparedStatement.setString(1, source.getDisplayName());
-        preparedStatement.setString(2, source.getDescription());
+        preparedStatement.setString(1, entity.getType());
         ResultSet result = preparedStatement.executeQuery();
         if (result.next()) {
-          type.setId(generatedKeys.getLong(1));
+          type.setId(result.getLong(1));
         }
       } catch (SQLException e1) {
         LOGGER.error("Could not fetch the Type id", e1);
@@ -162,10 +162,94 @@ public class EventDAOImpl implements EventDAO {
       preparedStatement.executeUpdate();
 
       updateRelations(entity);
+
+      updateAuthors();
+      updateTypes();
+      updateImages();
+      updateSources();
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+
+  }
+
+  private void updateTypes() throws SQLException {
+    query.setLength(0);
+    query.append("DELETE FROM ");
+    query.append(DatabaseTables.TYPES);
+    query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
+    query.append(DatabaseTables.EVENTS);
+    query.append(" WHERE ");
+    query.append(DatabaseTables.TYPES);
+    query.append(".TypeID=");
+    query.append(DatabaseTables.EVENTS);
+    query.append(".TypeID)");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.executeUpdate();
+    updateSubtypes();
+  }
+
+  private void updateSubtypes() throws SQLException {
+    query.setLength(0);
+    query.append("DELETE FROM ");
+    query.append(DatabaseTables.SUBTYPES);
+    query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
+    query.append(DatabaseTables.TYPES_HAS_SUBTYPES);
+    query.append(" WHERE ");
+    query.append(DatabaseTables.SUBTYPES);
+    query.append(".SubtypeID=");
+    query.append(DatabaseTables.TYPES_HAS_SUBTYPES);
+    query.append(".SubtypeID)");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.executeUpdate();
+
+  }
+
+  private void updateSources() throws SQLException {
+    query.setLength(0);
+    query.append("DELETE FROM ");
+    query.append(DatabaseTables.SOURCES);
+    query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
+    query.append(DatabaseTables.EVENTS);
+    query.append(" WHERE ");
+    query.append(DatabaseTables.SOURCES);
+    query.append(".SourceID=");
+    query.append(DatabaseTables.EVENTS);
+    query.append(".SourceID)");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.executeUpdate();
+  }
+
+  private void updateImages() throws SQLException {
+    query.setLength(0);
+    query.append("DELETE FROM ");
+    query.append(DatabaseTables.IMAGES);
+    query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
+    query.append(DatabaseTables.EVENTS_HAS_IMAGES);
+    query.append(" WHERE ");
+    query.append(DatabaseTables.IMAGES);
+    query.append(".ImageID=");
+    query.append(DatabaseTables.EVENTS_HAS_IMAGES);
+    query.append(".ImageID)");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.executeUpdate();
+
+  }
+
+  private void updateAuthors() throws SQLException {
+    query.setLength(0);
+    query.append("DELETE FROM ");
+    query.append(DatabaseTables.AUTHORS);
+    query.append(" WHERE NOT EXISTS ( SELECT 1 FROM ");
+    query.append(DatabaseTables.EVENTS_HAS_AUTHORS);
+    query.append(" WHERE ");
+    query.append(DatabaseTables.AUTHORS);
+    query.append(".AuthorID=");
+    query.append(DatabaseTables.EVENTS_HAS_AUTHORS);
+    query.append(".AuthorID)");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.executeUpdate();
 
   }
 
@@ -203,7 +287,7 @@ public class EventDAOImpl implements EventDAO {
     long eventId = 0;
     query.setLength(0);
     query.append("SELECT EventID FROM ");
-    query.append(DatabaseTables.NEWS);
+    query.append(DatabaseTables.EVENTS);
     query.append(" WHERE ExternalURL = ?");
     preparedStatement = connection.prepareStatement(query.toString());
     preparedStatement.setString(1, entity.getExternal_url());
@@ -223,13 +307,161 @@ public class EventDAOImpl implements EventDAO {
 
   @Override
   public List<EventDTO> findAll() {
-    // TODO Auto-generated method stub
-    return null;
+    List<EventDTO> listOfEvents = new ArrayList<EventDTO>();
+    EventDTO event = null;
+    try {
+      connectToDatabase();
+      query.setLength(0);
+      query.append("SELECT * FROM ");
+      query.append(DatabaseTables.EVENTS);
+      preparedStatement = connection.prepareStatement(query.toString());
+      ResultSet result = preparedStatement.executeQuery();
+      while (result.next()) {
+        event = new EventDTO();
+        event.setStartDate(result.getLong("StartDate"));
+        event.setEndDate(result.getLong("EndDate"));
+        event.setExternal_url(result.getString("ExternalURL"));
+        long eventId = getEventId(event);
+        event.setTitle(result.getString("Title"));
+        event.setSubtitle(result.getString("Subtitle"));
+        event.setDescription(result.getString("Description"));
+        event.setAuthors(findAuthorsByEventId(eventId));
+        event.setImages(findImagesByEventId(eventId));
+        event.setBody(result.getString("Body"));
+        int id = result.getInt("SourceID");
+        SourceDTO source = findSourceById(id);
+        id = result.getInt("TypeID");
+        TypeDTO type = findTypeSubtypesById(id);
+        event.setType(type.getType());
+        event.setSubtypes(type.getSubtypes());
+        event.setSource(source.getDisplayName());
+        event.setThumbnail_id(result.getString("Thumbnail_id"));
+        listOfEvents.add(event);
+      }
+    } catch (SQLException e) {
+      LOGGER.error("Could not update the news article", e);
+    }
+    return listOfEvents;
+  }
+
+  private TypeDTO findTypeSubtypesById(int id) throws SQLException {
+    TypeDTO type = new TypeDTO();
+    query.setLength(0);
+    query.append("SELECT TypeName FROM ");
+    query.append(DatabaseTables.TYPES);
+    query.append(" WHERE TypeID = ?");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.setInt(1, id);
+    ResultSet result = preparedStatement.executeQuery();
+    while (result.next()) {
+      type.setType(result.getString("TypeName"));
+    }
+    type.setSubtypes(getSubtypesByTypeId(id));
+    return type;
+  }
+
+  private SourceDTO findSourceById(int id) throws SQLException {
+    query.setLength(0);
+    query.append("SELECT * FROM ");
+    query.append(DatabaseTables.SOURCES);
+    query.append(" WHERE SourceID = ?");
+    preparedStatement = connection.prepareStatement(query.toString());
+    preparedStatement.setInt(1, id);
+    ResultSet sourceResult = preparedStatement.executeQuery();
+    SourceDTO source = new SourceDTO();
+    if (sourceResult.next()) {
+      source.setId(sourceResult.getInt(1));
+      source.setDisplayName(sourceResult.getString(2));
+      source.setDescription(sourceResult.getString(3));
+    }
+    return source;
+  }
+
+  private List<String> findImagesByEventId(long eventId) {
+    List<String> images = new ArrayList<String>();
+    String image = null;
+    try {
+      query.setLength(0);
+      query.append("SELECT URL FROM ");
+      query.append(DatabaseTables.IMAGES);
+      query.append(" JOIN ");
+      query.append(DatabaseTables.EVENTS_HAS_IMAGES);
+      query.append(" ON ");
+      query.append(DatabaseTables.IMAGES);
+      query.append(".ImageID = ");
+      query.append(DatabaseTables.EVENTS_HAS_IMAGES);
+      query.append(".ImageID");
+      query.append(" WHERE ");
+      query.append(DatabaseTables.EVENTS_HAS_IMAGES);
+      query.append(".EventID = ?");
+      preparedStatement = connection.prepareStatement(query.toString());
+      preparedStatement.setLong(1, eventId);
+      ResultSet result = preparedStatement.executeQuery();
+      while (result.next()) {
+        image = new String();
+        image = result.getString("URL");
+        images.add(image);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return images;
+  }
+
+  private List<String> findAuthorsByEventId(long eventId) {
+    List<String> authors = new ArrayList<String>();
+    String author = null;
+    try {
+      query.setLength(0);
+      query.append("SELECT AuthorName FROM ");
+      query.append(DatabaseTables.AUTHORS);
+      query.append(" JOIN ");
+      query.append(DatabaseTables.EVENTS_HAS_AUTHORS);
+      query.append(" ON ");
+      query.append(DatabaseTables.AUTHORS);
+      query.append(".AuthorID = ");
+      query.append(DatabaseTables.EVENTS_HAS_AUTHORS);
+      query.append(".AuthorID");
+      query.append(" WHERE ");
+      query.append(DatabaseTables.EVENTS_HAS_AUTHORS);
+      query.append(".EventID = ?");
+      preparedStatement = connection.prepareStatement(query.toString());
+      preparedStatement.setLong(1, eventId);
+      ResultSet result = preparedStatement.executeQuery();
+      while (result.next()) {
+        author = new String();
+        author = result.getString("AuthorName");
+        authors.add(author);
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return authors;
   }
 
   @Override
   public void delete(EventDTO entity) {
-    // TODO Auto-generated method stub
+    try {
+      entity.setId(getEventId(entity));
+      query.setLength(0);
+      query.append("DELETE FROM ");
+      query.append(DatabaseTables.EVENTS);
+      query.append(" WHERE EventID = ?");
+      connectToDatabase();
+      preparedStatement = connection.prepareStatement(query.toString());
+      preparedStatement.setLong(1, entity.getId());
+      preparedStatement.executeUpdate();
+
+      updateAuthors();
+      updateTypes();
+      updateImages();
+      updateSources();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
 
   }
 
@@ -280,9 +512,58 @@ public class EventDAOImpl implements EventDAO {
   }
 
   @Override
-  public List<Type> retrieveTypesAndSubtypes() {
-    // TODO Auto-generated method stub
-    return null;
+  public List<TypeDTO> retrieveTypesAndSubtypes() {
+    List<TypeDTO> types = new ArrayList<TypeDTO>();
+    TypeDTO type = null;
+    try {
+      connectToDatabase();
+      query.setLength(0);
+      query.append("SELECT * FROM ");
+      query.append(DatabaseTables.TYPES);
+      preparedStatement = connection.prepareStatement(query.toString());
+      ResultSet result = preparedStatement.executeQuery();
+      while (result.next()) {
+        type = new TypeDTO();
+        type.setType(result.getString("TypeName"));
+        type.setSubtypes(getSubtypesByTypeId(result.getLong("TypeID")));
+        types.add(type);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return types;
+  }
+
+  private List<String> getSubtypesByTypeId(long id) {
+    List<String> subtypes = new ArrayList<String>();
+    String subtype = null;
+    query.setLength(0);
+    query.append("SELECT SubtypeName FROM ");
+    query.append(DatabaseTables.SUBTYPES);
+    query.append(" JOIN ");
+    query.append(DatabaseTables.TYPES_HAS_SUBTYPES);
+    query.append(" ON ");
+    query.append(DatabaseTables.SUBTYPES);
+    query.append(".SubtypeID = ");
+    query.append(DatabaseTables.TYPES_HAS_SUBTYPES);
+    query.append(".SubtypeID");
+    query.append(" WHERE ");
+    query.append(DatabaseTables.TYPES_HAS_SUBTYPES);
+    query.append(".TypeID = ?");
+    try {
+      preparedStatement = connection.prepareStatement(query.toString());
+      preparedStatement.setLong(1, id);
+      ResultSet result = preparedStatement.executeQuery();
+      while (result.next()) {
+        subtype = new String();
+        subtype = result.getString("SubtypeName");
+        subtypes.add(subtype);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return subtypes;
   }
 
   @Override
@@ -375,13 +656,12 @@ public class EventDAOImpl implements EventDAO {
     } catch (SQLException e) {
       LOGGER.info("Source already in database thus Retrieving the Source id", e);
       query.setLength(0);
-      query.append("SELECT SourceID from ");
+      query.append("SELECT SourceID FROM ");
       query.append(DatabaseTables.SOURCES);
-      query.append(" where DisplayName = ?, Description = ?");
+      query.append(" where DisplayName = ?");
       try {
-        preparedStatement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+        preparedStatement = connection.prepareStatement(query.toString());
         preparedStatement.setString(1, source.getDisplayName());
-        preparedStatement.setString(2, source.getDescription());
         ResultSet result = preparedStatement.executeQuery();
         if (result.next()) {
           source.setId(result.getInt(1));
