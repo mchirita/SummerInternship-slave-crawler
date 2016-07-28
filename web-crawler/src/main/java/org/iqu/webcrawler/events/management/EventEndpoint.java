@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 import org.iqu.persistence.entities.SourceDTO;
+import org.iqu.persistence.entities.TypeDTO;
 import org.iqu.persistence.service.DAOFactory;
 import org.iqu.persistence.service.EventDAO;
 import org.iqu.webcrawler.entities.Authors;
@@ -20,6 +21,7 @@ import org.iqu.webcrawler.entities.Event;
 import org.iqu.webcrawler.entities.Events;
 import org.iqu.webcrawler.entities.Source;
 import org.iqu.webcrawler.entities.Sources;
+import org.iqu.webcrawler.entities.Type;
 import org.iqu.webcrawler.entities.Types;
 
 /**
@@ -127,16 +129,10 @@ public class EventEndpoint {
   public Response retriveTypes() {
 
     Types types = new Types();
-    // Set<String> subtypes = new HashSet<String>();
-    // subtypes.add("Rock");
-    // subtypes.add("Folk");
-    // types.addType(new Type("music", subtypes));
-    // types.addType(new Type("Circ", subtypes));
-    // List<TypeDTO> typesDB = eventsDAO.retrieveTypesAndSubtypes();
-    // for (Type type : typesDB) {
-    //
-    // }
-
+    List<TypeDTO> typesDB = eventsDAO.retrieveTypesAndSubtypes();
+    for (TypeDTO type : typesDB) {
+      types.addType(new Type(type.getType(), type.getSubtypes()));
+    }
     if (types.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
       LOGGER.error(errorMessage.getMessage());

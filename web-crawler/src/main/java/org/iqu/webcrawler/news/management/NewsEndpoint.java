@@ -48,7 +48,6 @@ public class NewsEndpoint {
     Authors authors = new Authors();
     for (String author : authorsDB) {
       authors.addAuthor(author);
-
     }
     if (authors.size() > 0) {
       return Response.status(Status.OK).entity(authors).build();
@@ -126,7 +125,6 @@ public class NewsEndpoint {
       sources.add(
           new Source(sourceDTO.getId(), sourceDTO.getDisplayName(), sourceDTO.getDescription(), sourceDTO.getImage()));
     }
-
     // // ToDo get sources from db
     // sources.add(new Source(1, "BNR Brasov", "This is the official BNR site",
     // "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
@@ -134,7 +132,6 @@ public class NewsEndpoint {
     // "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
     // sources.add(new Source(3, "BNR Brasov", "This is the official BNR site",
     // "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
-
     if (sources.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch sources, please try again later.");
       LOGGER.error(errorMessage.getMessage());
