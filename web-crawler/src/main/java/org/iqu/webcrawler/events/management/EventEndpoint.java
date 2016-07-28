@@ -1,6 +1,7 @@
 package org.iqu.webcrawler.events.management;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -12,6 +13,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
+import org.iqu.persistence.entities.SourceDTO;
+import org.iqu.persistence.service.DAOFactory;
+import org.iqu.persistence.service.NewsDAO;
 import org.iqu.webcrawler.entities.Authors;
 import org.iqu.webcrawler.entities.ErrorMessage;
 import org.iqu.webcrawler.entities.Event;
@@ -31,6 +35,8 @@ import org.iqu.webcrawler.entities.Types;
 public class EventEndpoint {
 
   private Logger LOGGER = Logger.getLogger(EventEndpoint.class);
+  DAOFactory daoFactory = new DAOFactory();
+  NewsDAO newsDAO = daoFactory.getNewsDAO();
 
   /**
    * Service that will return all authors
@@ -41,7 +47,9 @@ public class EventEndpoint {
   @Produces(MediaType.APPLICATION_JSON)
   public Response retrieveAuthors() {
 
+    List<String> authorss = newsDAO.retrieveAuthors();
     Authors authors = new Authors();
+    authors.setAuthors((Set<String>) authorss);
     authors.addAuthor("Clark Kent");
     authors.addAuthor("Louis Lane");
     authors.addAuthor("Peter Parker");
@@ -85,10 +93,16 @@ public class EventEndpoint {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response retrieveSource() {
-    Source source = new Source("1", "BNR Brasov", "This is the official BNR site",
-        "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg");
 
     Sources sources = new Sources();
+    List<SourceDTO> sourcess = newsDAO.retrieveSources();
+    for (SourceDTO sourceDTO : sourcess) {
+      sources.add(
+          new Source(sourceDTO.getId(), sourceDTO.getDisplayName(), sourceDTO.getDescription(), sourceDTO.getImage()));
+    }
+    Source source = new Source(1, "BNR Brasov", "This is the official BNR site",
+        "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg");
+
     sources.addSource(source);
 
     if (!sources.isEmpty()) {

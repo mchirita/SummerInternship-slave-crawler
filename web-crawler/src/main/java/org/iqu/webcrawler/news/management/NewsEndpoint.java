@@ -108,11 +108,11 @@ public class NewsEndpoint {
     Sources sources = new Sources();
 
     // ToDo get sources from db
-    sources.add(new Source("1", "BNR Brasov", "This is the official BNR site",
+    sources.add(new Source(1, "BNR Brasov", "This is the official BNR site",
         "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
-    sources.add(new Source("2", "BNR Brasov", "This is the official BNR site",
+    sources.add(new Source(2, "BNR Brasov", "This is the official BNR site",
         "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
-    sources.add(new Source("3", "BNR Brasov", "This is the official BNR site",
+    sources.add(new Source(3, "BNR Brasov", "This is the official BNR site",
         "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
 
     if (sources.isEmpty()) {
