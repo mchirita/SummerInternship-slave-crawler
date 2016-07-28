@@ -31,7 +31,8 @@ public class EntityManagerImp implements EntityManager {
 
     for (NewsArticleDTO newsArticle : crawlerNews) {
       if (databaseNews.contains(newsArticle)) {
-        if (newsArticle.getDate() > databaseNews.get(databaseNews.indexOf(newsArticle)).getDate()) {
+        int eventIndex = databaseEvents.indexOf(newsArticle);
+        if (newsArticle.getDate() > databaseNews.get(eventIndex).getDate()) {
           newsDataAccess.update(newsArticle);
         }
       } else {
@@ -46,7 +47,6 @@ public class EntityManagerImp implements EntityManager {
     for (EventDTO event : crawlerEvents) {
       if (databaseEvents.contains(event)) {
         int eventIndex = databaseEvents.indexOf(event);
-        System.out.println(eventIndex);
         if (event.getStartDate() > databaseEvents.get(eventIndex).getStartDate()) {
           eventsDataAccess.update(event);
         }
