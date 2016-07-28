@@ -45,7 +45,11 @@ public class EntityManagerImp implements EntityManager {
 
     for (EventDTO event : crawlerEvents) {
       if (databaseEvents.contains(event)) {
-        eventsDataAccess.update(event);
+        int eventIndex = databaseEvents.indexOf(event);
+        System.out.println(eventIndex);
+        if (event.getStartDate() > databaseEvents.get(eventIndex).getStartDate()) {
+          eventsDataAccess.update(event);
+        }
       } else {
         eventsDataAccess.create(event);
       }

@@ -3,8 +3,17 @@ package org.iqu.persistence.entities;
 import java.util.List;
 
 public class TypeDTO {
+  private long id;
   private String type;
   private List<String> subtypes;
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
 
   public String getType() {
     return type;

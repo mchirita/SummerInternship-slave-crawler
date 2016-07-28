@@ -57,7 +57,7 @@ public class NewsDAOImpl implements NewsDAO {
         source.setId(generatedKeys.getInt(1));
       }
     } catch (SQLException e) {
-      LOGGER.info("Source already in database thus Retrieving the Source id", e);
+      LOGGER.info("Source already in database thus Retrieving the Source id");
       query.setLength(0);
       query.append("SELECT SourceID from ");
       query.append(DatabaseTables.SOURCES);
@@ -147,7 +147,7 @@ public class NewsDAOImpl implements NewsDAO {
         listOfNews.add(newsArticle);
       }
     } catch (SQLException e) {
-      LOGGER.error("Could not update the news article", e);
+      LOGGER.error("Could not retrieve the news articles", e);
     }
     return listOfNews;
   }
@@ -312,7 +312,7 @@ public class NewsDAOImpl implements NewsDAO {
         images.add(image);
       }
     } catch (SQLException e) {
-      e.printStackTrace();
+      LOGGER.error("Could not retrieve images from the database", e);
     }
 
     return images;
@@ -344,8 +344,7 @@ public class NewsDAOImpl implements NewsDAO {
         categories.add(category);
       }
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOGGER.error("Could not retrieve categories from the database", e);
     }
 
     return categories;
@@ -377,8 +376,7 @@ public class NewsDAOImpl implements NewsDAO {
         authors.add(author);
       }
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOGGER.error("Could not retrieve authors from the database", e);
     }
 
     return authors;
@@ -430,7 +428,7 @@ public class NewsDAOImpl implements NewsDAO {
         preparedStatement.executeUpdate();
       }
     } catch (SQLException e) {
-      LOGGER.info("Relations already exist", e);
+      LOGGER.info("Relation already exists");
     }
     ids.clear();
 
@@ -451,7 +449,7 @@ public class NewsDAOImpl implements NewsDAO {
         ids.add(generatedKeys.getInt(1));
       }
     } catch (SQLException e) {
-      LOGGER.info("Source already in database thus Retrieving the Image id", e);
+      LOGGER.info("Source already in database thus Retrieving the Image id");
       query.setLength(0);
       query.append("SELECT ImageID FROM ");
       query.append(DatabaseTables.IMAGES);
@@ -484,7 +482,7 @@ public class NewsDAOImpl implements NewsDAO {
         preparedStatement.executeUpdate();
       }
     } catch (SQLException e) {
-      LOGGER.info("Relations already exist", e);
+      LOGGER.info("Relation already exists", e);
     }
     ids.clear();
 
@@ -505,7 +503,7 @@ public class NewsDAOImpl implements NewsDAO {
         ids.add(generatedKeys.getInt(1));
       }
     } catch (SQLException e) {
-      LOGGER.info("Source already in database thus Retrieving the Category id", e);
+      LOGGER.info("Source already in database thus Retrieving the Category id");
       query.setLength(0);
       query.append("SELECT CategoryID FROM ");
       query.append(DatabaseTables.CATEGORIES);
@@ -537,7 +535,7 @@ public class NewsDAOImpl implements NewsDAO {
         preparedStatement.executeUpdate();
       }
     } catch (SQLException e) {
-      LOGGER.info("Relations already exist", e);
+      LOGGER.info("Relation already exists");
     }
     ids.clear();
   }
@@ -557,7 +555,7 @@ public class NewsDAOImpl implements NewsDAO {
         ids.add(generatedKeys.getInt(1));
       }
     } catch (SQLException e) {
-      LOGGER.info("Source already in database thus Retrieving the Author id", e);
+      LOGGER.info("Source already in database thus Retrieving the Author id");
       query.setLength(0);
       query.append("SELECT AuthorID FROM ");
       query.append(DatabaseTables.AUTHORS);
