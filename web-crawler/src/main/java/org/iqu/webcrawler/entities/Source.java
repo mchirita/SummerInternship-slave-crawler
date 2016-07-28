@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Source {
-  private String id;
+  private int id;
   private String displayName;
   private String description;
   private String image;
@@ -15,7 +15,7 @@ public class Source {
   public Source() {
   }
 
-  public Source(String id, String displayName, String description, String image) {
+  public Source(int id, String displayName, String description, String image) {
     this.id = id;
     this.displayName = displayName;
     this.description = description;
@@ -30,11 +30,11 @@ public class Source {
     this.image = image;
   }
 
-  public String getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -60,7 +60,7 @@ public class Source {
     int result = 1;
     result = prime * result + ((description == null) ? 0 : description.hashCode());
     result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + id;
     result = prime * result + ((image == null) ? 0 : image.hashCode());
     return result;
   }
@@ -84,10 +84,7 @@ public class Source {
         return false;
     } else if (!displayName.equals(other.displayName))
       return false;
-    if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
+    if (id != other.id)
       return false;
     if (image == null) {
       if (other.image != null)
