@@ -1,8 +1,6 @@
 package org.iqu.webcrawler.events.management;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,14 +13,13 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.log4j.Logger;
 import org.iqu.persistence.entities.SourceDTO;
 import org.iqu.persistence.service.DAOFactory;
-import org.iqu.persistence.service.NewsDAO;
+import org.iqu.persistence.service.EventDAO;
 import org.iqu.webcrawler.entities.Authors;
 import org.iqu.webcrawler.entities.ErrorMessage;
 import org.iqu.webcrawler.entities.Event;
 import org.iqu.webcrawler.entities.Events;
 import org.iqu.webcrawler.entities.Source;
 import org.iqu.webcrawler.entities.Sources;
-import org.iqu.webcrawler.entities.Type;
 import org.iqu.webcrawler.entities.Types;
 
 /**
@@ -36,7 +33,7 @@ public class EventEndpoint {
 
   private Logger LOGGER = Logger.getLogger(EventEndpoint.class);
   DAOFactory daoFactory = new DAOFactory();
-  NewsDAO newsDAO = daoFactory.getNewsDAO();
+  EventDAO eventsDAO = daoFactory.getEventDAO();
 
   /**
    * Service that will return all authors
@@ -47,9 +44,11 @@ public class EventEndpoint {
   @Produces(MediaType.APPLICATION_JSON)
   public Response retrieveAuthors() {
 
-    List<String> authorss = newsDAO.retrieveAuthors();
+    List<String> authorsDB = eventsDAO.retrieveAuthors();
     Authors authors = new Authors();
-    authors.setAuthors((Set<String>) authorss);
+    for (String author : authorsDB) {
+      authors.addAuthor(author);
+    }
     authors.addAuthor("Clark Kent");
     authors.addAuthor("Louis Lane");
     authors.addAuthor("Peter Parker");
@@ -76,6 +75,8 @@ public class EventEndpoint {
     Events events = new Events();
     events.addEvent(event1);
 
+    // List<Event> eventsDB = newsDAO.
+
     if (startDate == null) {
       ErrorMessage errorMessage = new ErrorMessage("Start Date Not Found.");
       LOGGER.error(errorMessage.getMessage());
@@ -95,7 +96,7 @@ public class EventEndpoint {
   public Response retrieveSource() {
 
     Sources sources = new Sources();
-    List<SourceDTO> sourcess = newsDAO.retrieveSources();
+    List<SourceDTO> sourcess = eventsDAO.retrieveSources();
     for (SourceDTO sourceDTO : sourcess) {
       sources.add(
           new Source(sourceDTO.getId(), sourceDTO.getDisplayName(), sourceDTO.getDescription(), sourceDTO.getImage()));
@@ -126,11 +127,15 @@ public class EventEndpoint {
   public Response retriveTypes() {
 
     Types types = new Types();
-    Set<String> subtypes = new HashSet<String>();
-    subtypes.add("Rock");
-    subtypes.add("Folk");
-    types.addType(new Type("music", subtypes));
-    types.addType(new Type("Circ", subtypes));
+    // Set<String> subtypes = new HashSet<String>();
+    // subtypes.add("Rock");
+    // subtypes.add("Folk");
+    // types.addType(new Type("music", subtypes));
+    // types.addType(new Type("Circ", subtypes));
+    // List<TypeDTO> typesDB = eventsDAO.retrieveTypesAndSubtypes();
+    // for (Type type : typesDB) {
+    //
+    // }
 
     if (types.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
