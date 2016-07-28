@@ -106,7 +106,9 @@ public class HtmlEventsParser implements Parser<EventModel> {
       event = new EventModel();
       try {
         getTags(element);
-        events.add(event);
+        if (validate(event)) {
+          events.add(event);
+        }
       } catch (ParseException e) {
         LOGGER.error("Invalid tags", e);
       }
@@ -131,6 +133,14 @@ public class HtmlEventsParser implements Parser<EventModel> {
       return dF.parse(date).getTime();
     }
     return 0;
+  }
+
+  private boolean validate(EventModel event) {
+    boolean result = true;
+    if (event.getTitle() == null || event.getExternal_url() == null) {
+      result = false;
+    }
+    return result;
   }
 
 }
