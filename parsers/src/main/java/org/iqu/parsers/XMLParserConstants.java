@@ -1,7 +1,7 @@
 package org.iqu.parsers;
 
 /**
- * Constants for the parser classes.
+ * Constants for XML parsers.
  * 
  * @author Cristi Badoi
  */

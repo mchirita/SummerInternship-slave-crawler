@@ -2,6 +2,12 @@ package org.iqu.persistence.entities;
 
 import java.util.List;
 
+/**
+ * Data transfer class representing an event.
+ * 
+ * @author Beniamin Savu
+ *
+ */
 public class EventDTO {
 
   private String title;

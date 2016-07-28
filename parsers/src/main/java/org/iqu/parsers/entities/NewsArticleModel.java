@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * @author Cristi Badoi
  */
-public class NewsArticleDTO {
+public class NewsArticleModel {
 
   private long date;
   private long id;
@@ -25,7 +25,7 @@ public class NewsArticleDTO {
   private String external_url;
   private String enclosure;
 
-  public NewsArticleDTO() {
+  public NewsArticleModel() {
     authors = new ArrayList<String>();
     categories = new ArrayList<String>();
     images = new ArrayList<String>();
@@ -173,7 +173,7 @@ public class NewsArticleDTO {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    NewsArticleDTO other = (NewsArticleDTO) obj;
+    NewsArticleModel other = (NewsArticleModel) obj;
     if (guid == null) {
       if (other.guid != null)
         return false;

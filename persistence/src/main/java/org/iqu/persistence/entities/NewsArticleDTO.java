@@ -28,14 +28,6 @@ public class NewsArticleDTO {
     authors = new ArrayList<String>();
     categories = new ArrayList<String>();
     images = new ArrayList<String>();
-    guid = "";
-    title = "";
-    subtitle = "";
-    description = "";
-    source = "";
-    body = "";
-    thumbnail_id = "";
-    external_url = "";
   }
 
   public long getId() {
@@ -152,7 +144,7 @@ public class NewsArticleDTO {
 
   @Override
   public String toString() {
-    return "NewsArticle [date=" + date + ", id=" + guid + ", title=" + title + ", subtitle=" + subtitle
+    return "NewsArticleDTO [date=" + date + ", id=" + guid + ", title=" + title + ", subtitle=" + subtitle
         + ", description=" + description + ", authors=" + authors + ", categories=" + categories + ", source=" + source
         + ", body=" + body + ", images=" + images + ", thumbnail_id=" + thumbnail_id + ", external_url=" + external_url
         + "]";

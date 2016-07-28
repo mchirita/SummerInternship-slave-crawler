@@ -2,42 +2,42 @@ package org.iqu.crawler.entities;
 
 import java.util.List;
 
-import org.iqu.parsers.entities.EventDTO;
-import org.iqu.parsers.entities.NewsArticleDTO;
-import org.iqu.parsers.entities.SourceDTO;
+import org.iqu.parsers.entities.EventModel;
+import org.iqu.parsers.entities.NewsArticleModel;
+import org.iqu.parsers.entities.SourceModel;
 
 /**
  * Wrapper class for information provided by a parser.
  * 
  * @author Cristi Badoi
  */
-public class ParsedData {
+public class ParsedDataModel {
 
-  private List<NewsArticleDTO> news;
-  private List<EventDTO> events;
-  private SourceDTO source;
+  private List<NewsArticleModel> news;
+  private List<EventModel> events;
+  private SourceModel source;
 
-  public List<NewsArticleDTO> getNews() {
+  public List<NewsArticleModel> getNews() {
     return news;
   }
 
-  public void setNews(List<NewsArticleDTO> news) {
+  public void setNews(List<NewsArticleModel> news) {
     this.news = news;
   }
 
-  public List<EventDTO> getEvents() {
+  public List<EventModel> getEvents() {
     return events;
   }
 
-  public void setEvents(List<EventDTO> events) {
+  public void setEvents(List<EventModel> events) {
     this.events = events;
   }
 
-  public SourceDTO getSource() {
+  public SourceModel getSource() {
     return source;
   }
 
-  public void setSource(SourceDTO source) {
+  public void setSource(SourceModel source) {
     this.source = source;
   }
 
@@ -64,7 +64,7 @@ public class ParsedData {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    ParsedData other = (ParsedData) obj;
+    ParsedDataModel other = (ParsedDataModel) obj;
     if (events == null) {
       if (other.events != null)
         return false;
