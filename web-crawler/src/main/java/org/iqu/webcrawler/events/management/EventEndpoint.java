@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
+import org.iqu.persistence.entities.EventDTO;
 import org.iqu.persistence.entities.SourceDTO;
 import org.iqu.persistence.entities.TypeDTO;
 import org.iqu.persistence.service.DAOFactory;
@@ -67,23 +68,25 @@ public class EventEndpoint {
   @Path("/")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response retriveEvents(@QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
-      @QueryParam("type") String type, @QueryParam("subType") String subType, @QueryParam("sourceId") String sourceId,
+  public Response retriveEvents(@QueryParam("startDate") long startDate, @QueryParam("endDate") long endDate,
+      @QueryParam("type") String type, @QueryParam("subType") String subType, @QueryParam("sourceId") int sourceId,
       @QueryParam("author") String author, @QueryParam("location") String location) {
 
-    Event event1 = new Event();
-    event1.setDescription("abcdef");
-    event1.setSource("www.google.com");
-    Events events = new Events();
-    events.addEvent(event1);
-
-    // List<Event> eventsDB = newsDAO.
-
-    if (startDate == null) {
+    if (startDate == 0) {
       ErrorMessage errorMessage = new ErrorMessage("Start Date Not Found.");
       LOGGER.error(errorMessage.getMessage());
       return Response.status(Status.BAD_REQUEST).entity(errorMessage).build();
     } else {
+      Events events = new Events();
+      System.out.println(endDate);
+      List<EventDTO> eventsDTO = eventsDAO.retrieveEvents(startDate, endDate, type, subType, sourceId, author);
+      for (EventDTO eventDTO : eventsDTO) {
+        events.add(new Event(eventDTO.getStartDate(), eventDTO.getEndDate(), eventDTO.getId(), eventDTO.getTitle(),
+            eventDTO.getSubtitle(), eventDTO.getDescription(), eventDTO.getType(), eventDTO.getSubtypes(),
+            eventDTO.getSource(), eventDTO.getBody(), eventDTO.getImages(), eventDTO.getThumbnail_id(),
+            eventDTO.getExternal_url(), eventDTO.getAuthors()));
+      }
+
       return Response.ok().entity(events).build();
     }
   }
