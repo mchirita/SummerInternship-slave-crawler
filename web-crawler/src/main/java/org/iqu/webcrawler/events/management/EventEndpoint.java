@@ -35,8 +35,8 @@ import org.iqu.webcrawler.entities.Types;
 public class EventEndpoint {
 
   private Logger LOGGER = Logger.getLogger(EventEndpoint.class);
-  DAOFactory daoFactory = new DAOFactory();
-  EventDAO eventsDAO = daoFactory.getEventDAO();
+  private DAOFactory daoFactory = new DAOFactory();
+  private EventDAO eventsDAO = daoFactory.getEventDAO();
 
   /**
    * Service that will return all authors

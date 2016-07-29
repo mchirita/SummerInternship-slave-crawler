@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
+import org.iqu.persistence.entities.NewsArticleDTO;
 import org.iqu.persistence.entities.SourceDTO;
 import org.iqu.persistence.service.DAOFactory;
 import org.iqu.persistence.service.NewsDAO;
@@ -18,6 +19,7 @@ import org.iqu.webcrawler.entities.Authors;
 import org.iqu.webcrawler.entities.Categories;
 import org.iqu.webcrawler.entities.ErrorMessage;
 import org.iqu.webcrawler.entities.News;
+import org.iqu.webcrawler.entities.SingleNews;
 import org.iqu.webcrawler.entities.Source;
 import org.iqu.webcrawler.entities.Sources;
 
@@ -29,21 +31,13 @@ public class NewsEndpoint {
    */
 
   private static final Logger LOGGER = Logger.getLogger(NewsEndpoint.class);
-  DAOFactory daoFactory = new DAOFactory();
-  NewsDAO newsDAO = daoFactory.getNewsDAO();
+  private DAOFactory daoFactory = new DAOFactory();
+  private NewsDAO newsDAO = daoFactory.getNewsDAO();
 
   @Path("/authors")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response retrieveAuthors() {
-
-    // TODO connect to the database
-
-    // Authors authors = new Authors();
-    // authors.addAuthor("Clark Kent");
-    // authors.addAuthor("Louis Lane");
-    // authors.addAuthor("Peter Parker");
-    // authors.addAuthor("Ville Valo");
     List<String> authorsDB = newsDAO.retrieveAuthors();
     Authors authors = new Authors();
     for (String author : authorsDB) {
@@ -71,11 +65,6 @@ public class NewsEndpoint {
     for (String cat : CatDB) {
       categories.addCategory(cat);
     }
-    // categories.addCategory("music");
-    // categories.addCategory("music");
-    // categories.addCategory("IT");
-    // categories.addCategory("politics");
-
     if (categories.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch categories, please try again later.");
       LOGGER.error(errorMessage.getMessage());
@@ -91,23 +80,24 @@ public class NewsEndpoint {
   @Path("/")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getNews(@QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
+  public Response getNews(@QueryParam("startDate") long startDate, @QueryParam("endDate") long endDate,
       @QueryParam("categories") String categories, @QueryParam("about") String about,
-      @QueryParam("sourceId") String sourceId, @QueryParam("author") String author,
+      @QueryParam("sourceId") int sourceId, @QueryParam("author") String author,
       @QueryParam("location") String location) {
-
-    News news = new News();
-    // SingleNews singleNews1 = new SingleNews();
-    // singleNews1.setDescription("abcdef");
-    // singleNews1.setSource("www.google.com");
-    // singleNews1.setDate("12345");
-    // news.add(singleNews1);
-
-    if (startDate == null) {
+    if (startDate == 0) {
       ErrorMessage errorMessage = new ErrorMessage("Start Date Not Found.");
       LOGGER.error(errorMessage.getMessage());
       return Response.status(Status.BAD_REQUEST).entity(errorMessage).build();
     } else {
+      News news = new News();
+      List<NewsArticleDTO> newsArticleDTAOs = newsDAO.retrieveNews(startDate, endDate, categories, about, sourceId,
+          author);
+      for (NewsArticleDTO newsArticleDTO : newsArticleDTAOs) {
+        news.add(new SingleNews(newsArticleDTO.getDate(), newsArticleDTO.getId(), newsArticleDTO.getTitle(),
+            newsArticleDTO.getSubtitle(), newsArticleDTO.getDescription(), newsArticleDTO.getAuthors(),
+            newsArticleDTO.getCategories(), newsArticleDTO.getSource(), newsArticleDTO.getBody(),
+            newsArticleDTO.getImages(), newsArticleDTO.getThumbnail_id(), newsArticleDTO.getExternal_url()));
+      }
       return Response.ok(Status.OK).entity(news).build();
     }
   }
@@ -125,13 +115,6 @@ public class NewsEndpoint {
       sources.add(
           new Source(sourceDTO.getId(), sourceDTO.getDisplayName(), sourceDTO.getDescription(), sourceDTO.getImage()));
     }
-    // // ToDo get sources from db
-    // sources.add(new Source(1, "BNR Brasov", "This is the official BNR site",
-    // "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
-    // sources.add(new Source(2, "BNR Brasov", "This is the official BNR site",
-    // "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
-    // sources.add(new Source(3, "BNR Brasov", "This is the official BNR site",
-    // "http://www.inoveo.ro/inoveo/wp-content/uploads/2016/04/logo-bnr-portofoliu-simplu.jpg"));
     if (sources.isEmpty()) {
       ErrorMessage errorMessage = new ErrorMessage("Could not fetch sources, please try again later.");
       LOGGER.error(errorMessage.getMessage());
