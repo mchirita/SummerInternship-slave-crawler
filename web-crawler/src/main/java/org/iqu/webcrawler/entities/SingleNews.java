@@ -1,5 +1,7 @@
 package org.iqu.webcrawler.entities;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -14,24 +16,25 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SingleNews {
 
-  private String date;
-  private String id;
+  private long date;
+  private long id;
   private String title;
   private String subtitle;
   private String description;
-  private String[] authors;
-  private String[] categories;
+  private List<String> authors;
+  private List<String> categories;
   private String source;
   private String body;
-  private String image_id;
+  private List<String> image_id;
   private String thumbnail_id;
   private String external_url;
 
   public SingleNews() {
   }
 
-  public SingleNews(String date, String id, String title, String subtitle, String description, String[] authors,
-      String[] categories, String source, String body, String image_id, String thumbnail_id, String external_url) {
+  public SingleNews(long date, long id, String title, String subtitle, String description, List<String> authors,
+      List<String> categories, String source, String body, List<String> image_id, String thumbnail_id,
+      String external_url) {
     super();
     this.date = date;
     this.id = id;
@@ -47,19 +50,19 @@ public class SingleNews {
     this.external_url = external_url;
   }
 
-  public String getDate() {
+  public long getDate() {
     return date;
   }
 
-  public void setDate(String date) {
+  public void setDate(long date) {
     this.date = date;
   }
 
-  public String getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(long id) {
     this.id = id;
   }
 
@@ -87,19 +90,19 @@ public class SingleNews {
     this.description = description;
   }
 
-  public String[] getAuthors() {
+  public List<String> getAuthors() {
     return authors;
   }
 
-  public void setAuthors(String[] authors) {
+  public void setAuthors(List<String> authors) {
     this.authors = authors;
   }
 
-  public String[] getCategories() {
+  public List<String> getCategories() {
     return categories;
   }
 
-  public void setCategories(String[] categories) {
+  public void setCategories(List<String> categories) {
     this.categories = categories;
   }
 
@@ -119,11 +122,11 @@ public class SingleNews {
     this.body = body;
   }
 
-  public String getImage_id() {
+  public List<String> getImage_id() {
     return image_id;
   }
 
-  public void setImage_id(String image_id) {
+  public void setImage_id(List<String> image_id) {
     this.image_id = image_id;
   }
 

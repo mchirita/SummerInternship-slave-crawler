@@ -35,8 +35,8 @@ import org.iqu.webcrawler.entities.Types;
 public class EventEndpoint {
 
   private Logger LOGGER = Logger.getLogger(EventEndpoint.class);
-  DAOFactory daoFactory = new DAOFactory();
-  EventDAO eventsDAO = daoFactory.getEventDAO();
+  private DAOFactory daoFactory = new DAOFactory();
+  private EventDAO eventsDAO = daoFactory.getEventDAO();
 
   /**
    * Service that will return all authors
@@ -52,10 +52,6 @@ public class EventEndpoint {
     for (String author : authorsDB) {
       authors.addAuthor(author);
     }
-    authors.addAuthor("Clark Kent");
-    authors.addAuthor("Louis Lane");
-    authors.addAuthor("Peter Parker");
-    authors.addAuthor("Ville Valo");
 
     if (authors.size() > 0) {
       return Response.status(Status.OK).entity(authors).build();
@@ -69,7 +65,7 @@ public class EventEndpoint {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response retriveEvents(@QueryParam("startDate") long startDate, @QueryParam("endDate") long endDate,
-      @QueryParam("type") String type, @QueryParam("subType") String subType, @QueryParam("sourceId") int sourceId,
+      @QueryParam("type") String type, @QueryParam("subtype") String subType, @QueryParam("sourceId") int sourceId,
       @QueryParam("author") String author, @QueryParam("location") String location) {
 
     if (startDate == 0) {
