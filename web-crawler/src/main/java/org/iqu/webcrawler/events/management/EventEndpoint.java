@@ -51,10 +51,6 @@ public class EventEndpoint {
     for (String author : authorsDB) {
       authors.addAuthor(author);
     }
-    authors.addAuthor("Clark Kent");
-    authors.addAuthor("Louis Lane");
-    authors.addAuthor("Peter Parker");
-    authors.addAuthor("Ville Valo");
 
     if (authors.size() > 0) {
       return Response.status(Status.OK).entity(authors).build();
