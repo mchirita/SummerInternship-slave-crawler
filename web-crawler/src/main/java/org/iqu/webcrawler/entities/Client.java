@@ -1,7 +1,11 @@
 package org.iqu.webcrawler.entities;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Client {
 
   private String host;
@@ -21,10 +25,8 @@ public class Client {
     this.active = active;
   }
 
-  @Override
-  @JsonValue
-  public String toString() {
-    return "Client [host=" + host + ", location=" + location + ", port=" + port + ", active=" + active + "]";
+  public String getHost() {
+    return this.host;
   }
 
 }
