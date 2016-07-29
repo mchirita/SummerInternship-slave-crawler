@@ -1,5 +1,7 @@
 package org.iqu.webcrawler.entities;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -14,28 +16,28 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 
 public class Event {
-  private String startDate;
-  private String endDate;
-  private String id;
+  private long startDate;
+  private long endDate;
+  private long id;
   private String title;
   private String subtitle;
   private String description;
-  private String[] type;
-  private String[] subtypes;
+  private String type;
+  private List<String> subtypes;
   private String source;
   private String body;
-  private String image_id;
+  private List<String> image_id;
   private String thumbnail_id;
   private String external_url;
-  private String author;
+  private List<String> author;
 
   public Event() {
     // TODO Auto-generated constructor stub
   }
 
-  public Event(String startDate, String endDate, String id, String title, String subtitle, String description,
-      String[] type, String[] subtypes, String source, String body, String image_id, String thumbnail_id,
-      String external_url, String author) {
+  public Event(long startDate, long endDate, long id, String title, String subtitle, String description, String type,
+      List<String> subtypes, String source, String body, List<String> image_id, String thumbnail_id,
+      String external_url, List<String> author) {
     super();
     this.startDate = startDate;
     this.endDate = endDate;
@@ -53,27 +55,27 @@ public class Event {
     this.author = author;
   }
 
-  public String getStartDate() {
+  public long getStartDate() {
     return startDate;
   }
 
-  public void setStartDate(String startDate) {
+  public void setStartDate(long startDate) {
     this.startDate = startDate;
   }
 
-  public String getEndDate() {
+  public long getEndDate() {
     return endDate;
   }
 
-  public void setEndDate(String endDate) {
+  public void setEndDate(long endDate) {
     this.endDate = endDate;
   }
 
-  public String getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(long id) {
     this.id = id;
   }
 
@@ -101,19 +103,19 @@ public class Event {
     this.description = description;
   }
 
-  public String[] getType() {
+  public String getType() {
     return type;
   }
 
-  public void setType(String[] type) {
+  public void setType(String type) {
     this.type = type;
   }
 
-  public String[] getSubtypes() {
+  public List<String> getSubtypes() {
     return subtypes;
   }
 
-  public void setSubtypes(String[] subtypes) {
+  public void setSubtypes(List<String> subtypes) {
     this.subtypes = subtypes;
   }
 
@@ -133,11 +135,11 @@ public class Event {
     this.body = body;
   }
 
-  public String getImage_id() {
+  public List<String> getImage_id() {
     return image_id;
   }
 
-  public void setImage_id(String image_id) {
+  public void setImage_id(List<String> image_id) {
     this.image_id = image_id;
   }
 
@@ -157,11 +159,12 @@ public class Event {
     this.external_url = external_url;
   }
 
-  public String getAuthor() {
+  public List<String> getAuthor() {
     return author;
   }
 
-  public void setAuthor(String author) {
+  public void setAuthor(List<String> author) {
     this.author = author;
   }
+
 }

@@ -16,6 +16,7 @@ import org.iqu.persistence.entities.TypeDTO;
 public class EventDAOImpl implements EventDAO {
 
   private Connection connection;
+  private Filter<EventDTO> filter = new EventFilter();
   private PreparedStatement preparedStatement;
   private StringBuilder query = new StringBuilder();
   private List<Integer> ids = new ArrayList<Integer>();
@@ -73,8 +74,52 @@ public class EventDAOImpl implements EventDAO {
   }
 
   @Override
+  public List<EventDTO> retrieveEvents(long startDate, long endDate, String type, String subtypes, int sourceId,
+      String authors) {
+    List<EventDTO> events = new ArrayList<EventDTO>();
+    EventDTO event = null;
+    query.setLength(0);
+    query.append("SELECT DISTINCT Events.* FROM ");
+    query.append(DatabaseTables.EVENTS + ", " + DatabaseTables.TYPES);
+    if (endDate != 0) {
+      query.append(" WHERE StartDate > " + startDate + " AND StartDate < " + endDate);
+    } else {
+      query.append(" WHERE StartDate < " + startDate);
+    }
+    if (sourceId != 0) {
+      query.append(" AND SourceID = " + sourceId);
+    }
+    if (type != null) {
+      query.append(" AND (Events.TypeID = Types.TypeID AND Types.TypeName = '" + type + "')");
+    }
+    try {
+      connectToDatabase();
+      preparedStatement = connection.prepareStatement(query.toString());
+      ResultSet result = preparedStatement.executeQuery();
+      while (result.next()) {
+        event = new EventDTO();
+        buildDTO(event, result);
+        events.add(event);
+      }
+      if (authors != null) {
+        events = filter.checkForAuthors(events, authors);
+      }
+      if (subtypes != null) {
+        events = filter.checkForSubtypes(events, subtypes);
+      }
+    } catch (
+
+    SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return events;
+  }
+
+  @Override
   public EventDTO find(EventDTO entity) {
-    // TODO Auto-generated method stub
+
     return null;
   }
 
@@ -91,30 +136,34 @@ public class EventDAOImpl implements EventDAO {
       ResultSet result = preparedStatement.executeQuery();
       while (result.next()) {
         event = new EventDTO();
-        event.setStartDate(result.getLong("StartDate"));
-        event.setEndDate(result.getLong("EndDate"));
-        event.setExternal_url(result.getString("ExternalURL"));
-        long eventId = getEventId(event);
-        event.setTitle(result.getString("Title"));
-        event.setSubtitle(result.getString("Subtitle"));
-        event.setDescription(result.getString("Description"));
-        event.setAuthors(findAuthorsByEventId(eventId));
-        event.setImages(findImagesByEventId(eventId));
-        event.setBody(result.getString("Body"));
-        int id = result.getInt("SourceID");
-        SourceDTO source = findSourceById(id);
-        id = result.getInt("TypeID");
-        TypeDTO type = findTypeSubtypesById(id);
-        event.setType(type.getType());
-        event.setSubtypes(type.getSubtypes());
-        event.setSource(source.getDisplayName());
-        event.setThumbnail_id(result.getString("Thumbnail_id"));
+        buildDTO(event, result);
         listOfEvents.add(event);
       }
     } catch (SQLException e) {
       LOGGER.error("Could not retrieve the event article", e);
     }
     return listOfEvents;
+  }
+
+  private void buildDTO(EventDTO event, ResultSet result) throws SQLException {
+    event.setStartDate(result.getLong("StartDate"));
+    event.setEndDate(result.getLong("EndDate"));
+    event.setExternal_url(result.getString("ExternalURL"));
+    long eventId = getEventId(event);
+    event.setTitle(result.getString("Title"));
+    event.setSubtitle(result.getString("Subtitle"));
+    event.setDescription(result.getString("Description"));
+    event.setAuthors(findAuthorsByEventId(eventId));
+    event.setImages(findImagesByEventId(eventId));
+    event.setBody(result.getString("Body"));
+    int id = result.getInt("SourceID");
+    SourceDTO source = findSourceById(id);
+    id = result.getInt("TypeID");
+    TypeDTO type = findTypeSubtypesById(id);
+    event.setType(type.getType());
+    event.setSubtypes(type.getSubtypes());
+    event.setSource(source.getDisplayName());
+    event.setThumbnail_id(result.getString("Thumbnail_id"));
   }
 
   @Override

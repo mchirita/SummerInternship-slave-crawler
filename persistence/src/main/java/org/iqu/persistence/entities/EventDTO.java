@@ -137,14 +137,6 @@ public class EventDTO {
     this.external_url = external_url;
   }
 
-  @Override
-  public String toString() {
-    return "EventDTO [title=" + title + ", subtitle=" + subtitle + ", startDate=" + startDate + ", endDate=" + endDate
-        + ", id=" + id + ", description=" + description + ", authors=" + authors + ", type=" + type + ", subtypes="
-        + subtypes + ", source=" + source + ", body=" + body + ", images=" + images + ", thumbnail_id=" + thumbnail_id
-        + ", external_url=" + external_url + "]";
-  }
-
   /**
    * Based solely on external_url field.
    */
