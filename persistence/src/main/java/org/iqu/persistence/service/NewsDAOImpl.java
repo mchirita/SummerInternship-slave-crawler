@@ -15,6 +15,7 @@ import org.iqu.persistence.entities.SourceDTO;
 public class NewsDAOImpl implements NewsDAO {
 
   private Connection connection;
+  private Filter<NewsArticleDTO> filter = new NewsFilter();
   private PreparedStatement preparedStatement;
   private StringBuilder query = new StringBuilder();
   private List<Integer> ids = new ArrayList<Integer>();
@@ -24,6 +25,47 @@ public class NewsDAOImpl implements NewsDAO {
 
   public NewsDAOImpl() {
 
+  }
+
+  @Override
+  public List<NewsArticleDTO> retrieveNews(long startDate, long endDate, String categories, String about, int sourceId,
+      String authors) {
+    List<NewsArticleDTO> news = new ArrayList<NewsArticleDTO>();
+    NewsArticleDTO newsArticle = null;
+    query.setLength(0);
+    query.append("SELECT DISTINCT News.* FROM ");
+    query.append(DatabaseTables.NEWS);
+    if (endDate != 0) {
+      query.append(" WHERE Date > " + startDate + " AND Date < " + endDate);
+    } else {
+      query.append(" WHERE Date < " + startDate);
+    }
+    if (sourceId != 0) {
+      query.append(" AND SourceID = " + sourceId);
+    }
+    try {
+      connectToDatabase();
+      preparedStatement = connection.prepareStatement(query.toString());
+      ResultSet result = preparedStatement.executeQuery();
+      while (result.next()) {
+        newsArticle = new NewsArticleDTO();
+        buildDTO(newsArticle, result);
+        news.add(newsArticle);
+      }
+      if (authors != null) {
+        news = filter.checkForAuthors(news, authors);
+      }
+      if (categories != null) {
+        news = filter.checkForCategories(news, categories);
+      }
+      if (about != null) {
+        news = filter.checkForAbout(news, categories);
+      }
+    } catch (SQLException e) {
+      LOGGER.error("Could not retrieve the news", e);
+    }
+
+    return news;
   }
 
   @Override
@@ -129,27 +171,31 @@ public class NewsDAOImpl implements NewsDAO {
       ResultSet result = preparedStatement.executeQuery();
       while (result.next()) {
         newsArticle = new NewsArticleDTO();
-        newsArticle.setGuid(result.getString("GUID"));
-        long newsId = getNewsId(newsArticle);
-        newsArticle.setDate(result.getLong("Date"));
-        newsArticle.setTitle(result.getString("Title"));
-        newsArticle.setSubtitle(result.getString("Subtitle"));
-        newsArticle.setDescription(result.getString("Description"));
-        newsArticle.setAuthors(findAuthorsByNewsId(newsId));
-        newsArticle.setCategories(findCategoriesByNewsId(newsId));
-        newsArticle.setImages(findImagesByNewsId(newsId));
-        newsArticle.setBody(result.getString("Body"));
-        int id = result.getInt("SourceID");
-        SourceDTO source = findSourceById(id);
-        newsArticle.setSource(source.getDisplayName());
-        newsArticle.setThumbnail_id(result.getString("Thumbnail_id"));
-        newsArticle.setExternal_url(result.getString("ExternalURL"));
+        buildDTO(newsArticle, result);
         listOfNews.add(newsArticle);
       }
     } catch (SQLException e) {
       LOGGER.error("Could not retrieve the news articles", e);
     }
     return listOfNews;
+  }
+
+  private void buildDTO(NewsArticleDTO newsArticle, ResultSet result) throws SQLException {
+    newsArticle.setGuid(result.getString("GUID"));
+    long newsId = getNewsId(newsArticle);
+    newsArticle.setDate(result.getLong("Date"));
+    newsArticle.setTitle(result.getString("Title"));
+    newsArticle.setSubtitle(result.getString("Subtitle"));
+    newsArticle.setDescription(result.getString("Description"));
+    newsArticle.setAuthors(findAuthorsByNewsId(newsId));
+    newsArticle.setCategories(findCategoriesByNewsId(newsId));
+    newsArticle.setImages(findImagesByNewsId(newsId));
+    newsArticle.setBody(result.getString("Body"));
+    int id = result.getInt("SourceID");
+    SourceDTO source = findSourceById(id);
+    newsArticle.setSource(source.getDisplayName());
+    newsArticle.setThumbnail_id(result.getString("Thumbnail_id"));
+    newsArticle.setExternal_url(result.getString("ExternalURL"));
   }
 
   @Override
@@ -711,4 +757,5 @@ public class NewsDAOImpl implements NewsDAO {
 
     return newsId;
   }
+
 }
