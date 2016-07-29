@@ -40,14 +40,13 @@ public class EventFilter implements Filter<EventDTO> {
 
   @Override
   public List<EventDTO> checkForCategories(List<EventDTO> entities, String categories) {
-    return null;
+    return entities;
 
   }
 
   @Override
   public List<EventDTO> checkForAbout(List<EventDTO> entities, String about) {
-    // TODO Auto-generated method stub
-    return null;
+    return entities;
   }
 
 }

@@ -24,8 +24,7 @@ public class NewsFilter implements Filter<NewsArticleDTO> {
 
   @Override
   public List<NewsArticleDTO> checkForSubtypes(List<NewsArticleDTO> entities, String subtypes) {
-    // TODO Auto-generated method stub
-    return null;
+    return entities;
   }
 
   @Override
@@ -60,7 +59,7 @@ public class NewsFilter implements Filter<NewsArticleDTO> {
         resultList.add(article);
       }
     }
-    return null;
+    return resultList;
   }
 
 }

@@ -3,6 +3,7 @@ package org.iqu.persistence.service;
 import java.util.List;
 
 public interface Filter<E> {
+
   public List<E> checkForAuthors(List<E> entities, String authors);
 
   public List<E> checkForSubtypes(List<E> entities, String subtypes);

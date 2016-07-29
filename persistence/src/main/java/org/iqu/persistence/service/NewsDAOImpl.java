@@ -61,11 +61,8 @@ public class NewsDAOImpl implements NewsDAO {
       if (about != null) {
         news = filter.checkForAbout(news, categories);
       }
-    } catch (
-
-    SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (SQLException e) {
+      LOGGER.error("Could not retrieve the news", e);
     }
 
     return news;

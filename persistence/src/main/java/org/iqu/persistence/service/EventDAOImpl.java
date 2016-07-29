@@ -107,11 +107,8 @@ public class EventDAOImpl implements EventDAO {
       if (subtypes != null) {
         events = filter.checkForSubtypes(events, subtypes);
       }
-    } catch (
-
-    SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (SQLException e) {
+      LOGGER.error("Could not retrieve the events", e);
     }
 
     return events;
