@@ -65,7 +65,7 @@ public class EventEndpoint {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response retriveEvents(@QueryParam("startDate") long startDate, @QueryParam("endDate") long endDate,
-      @QueryParam("type") String type, @QueryParam("subType") String subType, @QueryParam("sourceId") int sourceId,
+      @QueryParam("type") String type, @QueryParam("subtype") String subType, @QueryParam("sourceId") int sourceId,
       @QueryParam("author") String author, @QueryParam("location") String location) {
 
     if (startDate == 0) {
